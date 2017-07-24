@@ -1,0 +1,281 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EF0111AF1F263F91006FFFFB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111AE1F263F91006FFFFB /* main.cpp */; };
+		EF0111E31F264109006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0111E21F264109006FFFFB /* liboccommon.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EF0111A91F263F91006FFFFB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		EF0111AB1F263F91006FFFFB /* oclex */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oclex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF0111AE1F263F91006FFFFB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		EF0111E21F264109006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = ../../OCCommon/occommon/build/Debug/liboccommon.a; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EF0111A81F263F91006FFFFB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF0111E31F264109006FFFFB /* liboccommon.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EF0111A21F263F91006FFFFB = {
+			isa = PBXGroup;
+			children = (
+				EF0111C81F263FDA006FFFFB /* Compiler */,
+				EF0111AD1F263F91006FFFFB /* oclex */,
+				EF0111AC1F263F91006FFFFB /* Products */,
+				EF0111E11F264109006FFFFB /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		EF0111AC1F263F91006FFFFB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF0111AB1F263F91006FFFFB /* oclex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EF0111AD1F263F91006FFFFB /* oclex */ = {
+			isa = PBXGroup;
+			children = (
+				EF0111AE1F263F91006FFFFB /* main.cpp */,
+			);
+			path = oclex;
+			sourceTree = "<group>";
+		};
+		EF0111C81F263FDA006FFFFB /* Compiler */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Compiler;
+			sourceTree = "<group>";
+		};
+		EF0111E11F264109006FFFFB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EF0111E21F264109006FFFFB /* liboccommon.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EF0111AA1F263F91006FFFFB /* oclex */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF0111B21F263F91006FFFFB /* Build configuration list for PBXNativeTarget "oclex" */;
+			buildPhases = (
+				EF0111A71F263F91006FFFFB /* Sources */,
+				EF0111A81F263F91006FFFFB /* Frameworks */,
+				EF0111A91F263F91006FFFFB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = oclex;
+			productName = oclex;
+			productReference = EF0111AB1F263F91006FFFFB /* oclex */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EF0111A31F263F91006FFFFB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = "Glenview Software";
+				TargetAttributes = {
+					EF0111AA1F263F91006FFFFB = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = MUUNEV88XL;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = EF0111A61F263F91006FFFFB /* Build configuration list for PBXProject "oclex" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EF0111A21F263F91006FFFFB;
+			productRefGroup = EF0111AC1F263F91006FFFFB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EF0111AA1F263F91006FFFFB /* oclex */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EF0111A71F263F91006FFFFB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF0111AF1F263F91006FFFFB /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		EF0111B01F263F91006FFFFB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SYSTEM_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/occommon $(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/macosx/occommon";
+			};
+			name = Debug;
+		};
+		EF0111B11F263F91006FFFFB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SYSTEM_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/occommon $(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/macosx/occommon";
+			};
+			name = Release;
+		};
+		EF0111B31F263F91006FFFFB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EF0111B41F263F91006FFFFB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EF0111A61F263F91006FFFFB /* Build configuration list for PBXProject "oclex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF0111B01F263F91006FFFFB /* Debug */,
+				EF0111B11F263F91006FFFFB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF0111B21F263F91006FFFFB /* Build configuration list for PBXNativeTarget "oclex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF0111B31F263F91006FFFFB /* Debug */,
+				EF0111B41F263F91006FFFFB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EF0111A31F263F91006FFFFB /* Project object */;
+}
