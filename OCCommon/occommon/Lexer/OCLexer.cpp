@@ -354,7 +354,7 @@ int32_t OCLexer::ReadToken(bool skipSpaces)
 
 	if ((ch == '\'') || (ch == '"')) {
 		ReadStringBody(ch);
-		fTokenID = (ch == '\'') ? PCTOKEN_CHAR : PCTOKEN_STRING;
+		fTokenID = (ch == '\'') ? OCTOKEN_CHAR : OCTOKEN_STRING;
 		return fTokenID;
 	}
 
@@ -368,7 +368,7 @@ int32_t OCLexer::ReadToken(bool skipSpaces)
 			ch = ReadChar();
 		}
 		PushChar(ch);
-		fTokenID = PCTOKEN_TOKEN;
+		fTokenID = OCTOKEN_TOKEN;
 		return fTokenID;
 	}
 
@@ -382,7 +382,7 @@ int32_t OCLexer::ReadToken(bool skipSpaces)
 			fToken.push_back((char)ch);
 			fToken.push_back((char)d);
 			ReadNumberBody();
-			fTokenID = PCTOKEN_NUMBER;
+			fTokenID = OCTOKEN_NUMBER;
 			return fTokenID;
 		} else {
 			/* Not a .N number token. Put things back */
@@ -393,7 +393,7 @@ int32_t OCLexer::ReadToken(bool skipSpaces)
 	if (isdigit(ch)) {
 		fToken.push_back((char)ch);
 		ReadNumberBody();
-		fTokenID = PCTOKEN_NUMBER;
+		fTokenID = OCTOKEN_NUMBER;
 		return fTokenID;
 	}
 
@@ -406,13 +406,13 @@ int32_t OCLexer::ReadToken(bool skipSpaces)
 		int d = ReadChar();
 		if (d == '%') {
 			fToken.push_back((char)d);
-			return fTokenID = PCTOKEN_SECTION;
+			return fTokenID = OCTOKEN_SECTION;
 		} else if (d == '{') {
 			fToken.push_back((char)d);
-			return fTokenID = PCTOKEN_OPENCODE;
+			return fTokenID = OCTOKEN_OPENCODE;
 		} else if (d == '}') {
 			fToken.push_back((char)d);
-			return fTokenID = PCTOKEN_CLOSECODE;
+			return fTokenID = OCTOKEN_CLOSECODE;
 		} else {
 			PushChar(d);
 			return fTokenID = ch;
@@ -422,14 +422,14 @@ int32_t OCLexer::ReadToken(bool skipSpaces)
 		int d = ReadChar();
 		if (d == '$') {
 			fToken.push_back((char)d);
-			return fTokenID = PCTOKEN_CURPARAM;
+			return fTokenID = OCTOKEN_CURPARAM;
 		} else if (isdigit(d)) {
 			do {
 				fToken.push_back((char)d);
 			} while (isdigit(d = ReadChar()));
 			PushChar(d);
 
-			return fTokenID = PCTOKEN_PARAMETER;
+			return fTokenID = OCTOKEN_PARAMETER;
 		} else {
 			PushChar(d);
 			return fTokenID = ch;

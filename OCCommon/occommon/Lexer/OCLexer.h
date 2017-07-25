@@ -18,16 +18,16 @@
 /*																		*/
 /************************************************************************/
 
-#define PCTOKEN_TOKEN		0x10000
-#define PCTOKEN_STRING		0x10001
-#define PCTOKEN_NUMBER		0x10002
-#define PCTOKEN_CHAR		0x10003
+#define OCTOKEN_TOKEN		0x10000
+#define OCTOKEN_STRING		0x10001
+#define OCTOKEN_NUMBER		0x10002
+#define OCTOKEN_CHAR		0x10003
 
-#define PCTOKEN_SECTION		0x10004		/* %% */
-#define PCTOKEN_OPENCODE	0x10005		/* %{ */
-#define PCTOKEN_CLOSECODE	0x10006		/* }% */
-#define PCTOKEN_PARAMETER	0x10007		/* $nnn, n in [0,9] */
-#define PCTOKEN_CURPARAM	0x10008		/* $$ */
+#define OCTOKEN_SECTION		0x10004		/* %% */
+#define OCTOKEN_OPENCODE	0x10005		/* %{ */
+#define OCTOKEN_CLOSECODE	0x10006		/* }% */
+#define OCTOKEN_PARAMETER	0x10007		/* $nnn, n in [0,9] */
+#define OCTOKEN_CURPARAM	0x10008		/* $$ */
 
 /*	OCLexer
  *

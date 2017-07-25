@@ -10,10 +10,22 @@
 		EF0111AF1F263F91006FFFFB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111AE1F263F91006FFFFB /* main.cpp */; };
 		EF0111E31F264109006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0111E21F264109006FFFFB /* liboccommon.a */; };
 		EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */; };
+		EF0111EE1F2789CD006FFFFB /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111ED1F2789CD006FFFFB /* test.cpp */; };
+		EF0111F21F2789DA006FFFFB /* OCLexParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */; };
+		EF0111F41F2789ED006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0111F31F2789ED006FFFFB /* liboccommon.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		EF0111A91F263F91006FFFFB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		EF0111E91F2789CD006FFFFB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -30,6 +42,10 @@
 		EF0111E21F264109006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = ../../OCCommon/occommon/build/Debug/liboccommon.a; sourceTree = "<group>"; };
 		EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexParser.cpp; sourceTree = "<group>"; };
 		EF0111E51F26CBB3006FFFFB /* OCLexParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexParser.h; sourceTree = "<group>"; };
+		EF0111EB1F2789CD006FFFFB /* oclextest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oclextest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF0111ED1F2789CD006FFFFB /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		EF0111F31F2789ED006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = "../../../../Library/Developer/Xcode/DerivedData/OCTools-alzzkwttbjtlkwgzhjspyeulqhwq/Build/Products/Debug/liboccommon.a"; sourceTree = "<group>"; };
+		EF0111F51F278AB4006FFFFB /* test.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = test.l; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +57,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EF0111E81F2789CD006FFFFB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF0111F41F2789ED006FFFFB /* liboccommon.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -49,6 +73,7 @@
 			children = (
 				EF0111C81F263FDA006FFFFB /* Compiler */,
 				EF0111AD1F263F91006FFFFB /* oclex */,
+				EF0111EC1F2789CD006FFFFB /* oclextest */,
 				EF0111AC1F263F91006FFFFB /* Products */,
 				EF0111E11F264109006FFFFB /* Frameworks */,
 			);
@@ -58,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				EF0111AB1F263F91006FFFFB /* oclex */,
+				EF0111EB1F2789CD006FFFFB /* oclextest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -82,9 +108,19 @@
 		EF0111E11F264109006FFFFB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EF0111F31F2789ED006FFFFB /* liboccommon.a */,
 				EF0111E21F264109006FFFFB /* liboccommon.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EF0111EC1F2789CD006FFFFB /* oclextest */ = {
+			isa = PBXGroup;
+			children = (
+				EF0111ED1F2789CD006FFFFB /* test.cpp */,
+				EF0111F51F278AB4006FFFFB /* test.l */,
+			);
+			path = oclextest;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -107,6 +143,23 @@
 			productReference = EF0111AB1F263F91006FFFFB /* oclex */;
 			productType = "com.apple.product-type.tool";
 		};
+		EF0111EA1F2789CD006FFFFB /* oclextest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF0111EF1F2789CD006FFFFB /* Build configuration list for PBXNativeTarget "oclextest" */;
+			buildPhases = (
+				EF0111E71F2789CD006FFFFB /* Sources */,
+				EF0111E81F2789CD006FFFFB /* Frameworks */,
+				EF0111E91F2789CD006FFFFB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = oclextest;
+			productName = oclextest;
+			productReference = EF0111EB1F2789CD006FFFFB /* oclextest */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -117,6 +170,11 @@
 				ORGANIZATIONNAME = "Glenview Software";
 				TargetAttributes = {
 					EF0111AA1F263F91006FFFFB = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = MUUNEV88XL;
+						ProvisioningStyle = Automatic;
+					};
+					EF0111EA1F2789CD006FFFFB = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = MUUNEV88XL;
 						ProvisioningStyle = Automatic;
@@ -136,6 +194,7 @@
 			projectRoot = "";
 			targets = (
 				EF0111AA1F263F91006FFFFB /* oclex */,
+				EF0111EA1F2789CD006FFFFB /* oclextest */,
 			);
 		};
 /* End PBXProject section */
@@ -147,6 +206,15 @@
 			files = (
 				EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */,
 				EF0111AF1F263F91006FFFFB /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF0111E71F2789CD006FFFFB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF0111F21F2789DA006FFFFB /* OCLexParser.cpp in Sources */,
+				EF0111EE1F2789CD006FFFFB /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +328,22 @@
 			};
 			name = Release;
 		};
+		EF0111F01F2789CD006FFFFB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EF0111F11F2789CD006FFFFB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -280,6 +364,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		EF0111EF1F2789CD006FFFFB /* Build configuration list for PBXNativeTarget "oclextest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF0111F01F2789CD006FFFFB /* Debug */,
+				EF0111F11F2789CD006FFFFB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

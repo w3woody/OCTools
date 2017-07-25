@@ -15,6 +15,7 @@
 #include <map>
 #include <list>
 #include <vector>
+#include <utility>
 #include <string>
 
 /************************************************************************/
@@ -37,8 +38,25 @@ class OCLexParser
 
 		bool ParseFile(OCLexer &lex);
 
+		/*
+		 *	Definitions
+		 */
+
+		// Declaration code
+		std::string declCode;		// code in the declaration section
+
+		// definitions
+		std::map<std::string,std::string> definitions;
+
+		// Rules: contains the rules to match against
+		std::list<std::pair<std::string,std::string>> rules;
+
+		// End code block
+		std::string endCode;
 
 	private:
+		bool ParseDeclarations(OCLexer &lex);
+		bool ParseRules(OCLexer &lex);
 };
 
 
