@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		EF0111AF1F263F91006FFFFB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111AE1F263F91006FFFFB /* main.cpp */; };
 		EF0111E31F264109006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0111E21F264109006FFFFB /* liboccommon.a */; };
+		EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,6 +28,8 @@
 		EF0111AB1F263F91006FFFFB /* oclex */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oclex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF0111AE1F263F91006FFFFB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		EF0111E21F264109006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = ../../OCCommon/occommon/build/Debug/liboccommon.a; sourceTree = "<group>"; };
+		EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexParser.cpp; sourceTree = "<group>"; };
+		EF0111E51F26CBB3006FFFFB /* OCLexParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexParser.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +73,8 @@
 		EF0111C81F263FDA006FFFFB /* Compiler */ = {
 			isa = PBXGroup;
 			children = (
+				EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */,
+				EF0111E51F26CBB3006FFFFB /* OCLexParser.h */,
 			);
 			path = Compiler;
 			sourceTree = "<group>";
@@ -140,6 +145,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */,
 				EF0111AF1F263F91006FFFFB /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
