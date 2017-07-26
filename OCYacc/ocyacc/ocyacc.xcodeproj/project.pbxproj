@@ -10,10 +10,22 @@
 		EF0111C21F263FBA006FFFFB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111C11F263FBA006FFFFB /* main.cpp */; };
 		EF0111E01F264101006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0111DF1F264101006FFFFB /* liboccommon.a */; };
 		EF0111FA1F281103006FFFFB /* OCYaccParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111F81F281103006FFFFB /* OCYaccParser.cpp */; };
+		EF0112021F283240006FFFFB /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112011F283240006FFFFB /* test.cpp */; };
+		EF0112061F283265006FFFFB /* OCYaccParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111F81F281103006FFFFB /* OCYaccParser.cpp */; };
+		EF0112081F28327D006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0112071F28327D006FFFFB /* liboccommon.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		EF0111BC1F263FBA006FFFFB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		EF0111FD1F283240006FFFFB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -30,6 +42,9 @@
 		EF0111DF1F264101006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = ../../OCCommon/occommon/build/Debug/liboccommon.a; sourceTree = "<group>"; };
 		EF0111F81F281103006FFFFB /* OCYaccParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccParser.cpp; sourceTree = "<group>"; };
 		EF0111F91F281103006FFFFB /* OCYaccParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccParser.h; sourceTree = "<group>"; };
+		EF0111FF1F283240006FFFFB /* ocyacctest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ocyacctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF0112011F283240006FFFFB /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		EF0112071F28327D006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = "../../../../Library/Developer/Xcode/DerivedData/OCTools-alzzkwttbjtlkwgzhjspyeulqhwq/Build/Products/Debug/liboccommon.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +56,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EF0111FC1F283240006FFFFB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF0112081F28327D006FFFFB /* liboccommon.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -49,6 +72,7 @@
 			children = (
 				EF0111F71F2810E2006FFFFB /* Compiler */,
 				EF0111C01F263FBA006FFFFB /* ocyacc */,
+				EF0112001F283240006FFFFB /* ocyacctest */,
 				EF0111BF1F263FBA006FFFFB /* Products */,
 				EF0111DE1F264101006FFFFB /* Frameworks */,
 			);
@@ -58,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				EF0111BE1F263FBA006FFFFB /* ocyacc */,
+				EF0111FF1F283240006FFFFB /* ocyacctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -73,6 +98,7 @@
 		EF0111DE1F264101006FFFFB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EF0112071F28327D006FFFFB /* liboccommon.a */,
 				EF0111DF1F264101006FFFFB /* liboccommon.a */,
 			);
 			name = Frameworks;
@@ -85,6 +111,14 @@
 				EF0111F91F281103006FFFFB /* OCYaccParser.h */,
 			);
 			path = Compiler;
+			sourceTree = "<group>";
+		};
+		EF0112001F283240006FFFFB /* ocyacctest */ = {
+			isa = PBXGroup;
+			children = (
+				EF0112011F283240006FFFFB /* test.cpp */,
+			);
+			path = ocyacctest;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -107,6 +141,23 @@
 			productReference = EF0111BE1F263FBA006FFFFB /* ocyacc */;
 			productType = "com.apple.product-type.tool";
 		};
+		EF0111FE1F283240006FFFFB /* ocyacctest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF0112031F283240006FFFFB /* Build configuration list for PBXNativeTarget "ocyacctest" */;
+			buildPhases = (
+				EF0111FB1F283240006FFFFB /* Sources */,
+				EF0111FC1F283240006FFFFB /* Frameworks */,
+				EF0111FD1F283240006FFFFB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ocyacctest;
+			productName = ocyacctest;
+			productReference = EF0111FF1F283240006FFFFB /* ocyacctest */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -117,6 +168,11 @@
 				ORGANIZATIONNAME = "Glenview Software";
 				TargetAttributes = {
 					EF0111BD1F263FBA006FFFFB = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = MUUNEV88XL;
+						ProvisioningStyle = Automatic;
+					};
+					EF0111FE1F283240006FFFFB = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = MUUNEV88XL;
 						ProvisioningStyle = Automatic;
@@ -136,6 +192,7 @@
 			projectRoot = "";
 			targets = (
 				EF0111BD1F263FBA006FFFFB /* ocyacc */,
+				EF0111FE1F283240006FFFFB /* ocyacctest */,
 			);
 		};
 /* End PBXProject section */
@@ -147,6 +204,15 @@
 			files = (
 				EF0111FA1F281103006FFFFB /* OCYaccParser.cpp in Sources */,
 				EF0111C21F263FBA006FFFFB /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF0111FB1F283240006FFFFB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF0112061F283265006FFFFB /* OCYaccParser.cpp in Sources */,
+				EF0112021F283240006FFFFB /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,6 +328,22 @@
 			};
 			name = Release;
 		};
+		EF0112041F283240006FFFFB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EF0112051F283240006FFFFB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -282,6 +364,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		EF0112031F283240006FFFFB /* Build configuration list for PBXNativeTarget "ocyacctest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF0112041F283240006FFFFB /* Debug */,
+				EF0112051F283240006FFFFB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
