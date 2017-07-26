@@ -9,8 +9,14 @@
 #include <iostream>
 #include "OCYaccParser.h"
 
-int main(int argc, const char * argv[]) {
-	// insert code here...
-	std::cout << "Hello, World!\n";
+int main(int argc, const char * argv[])
+{
+	OCLexer lexer;
+	lexer.OpenFile("test.yacc");
+
+	OCYaccParser parser;
+	parser.ParseFile(lexer);
+
+	printf("Done.\n");
 	return 0;
 }

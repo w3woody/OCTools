@@ -45,6 +45,7 @@
 		EF0111FF1F283240006FFFFB /* ocyacctest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ocyacctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF0112011F283240006FFFFB /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		EF0112071F28327D006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = "../../../../Library/Developer/Xcode/DerivedData/OCTools-alzzkwttbjtlkwgzhjspyeulqhwq/Build/Products/Debug/liboccommon.a"; sourceTree = "<group>"; };
+		EF0112091F28D829006FFFFB /* test.yacc */ = {isa = PBXFileReference; explicitFileType = sourcecode.yacc; path = test.yacc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				EF0112011F283240006FFFFB /* test.cpp */,
+				EF0112091F28D829006FFFFB /* test.yacc */,
 			);
 			path = ocyacctest;
 			sourceTree = "<group>";
