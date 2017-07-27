@@ -9,12 +9,16 @@
 /* Begin PBXBuildFile section */
 		EF0111DC1F264093006FFFFB /* OCLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111DA1F264093006FFFFB /* OCLexer.cpp */; };
 		EF0111DD1F264093006FFFFB /* OCLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = EF0111DB1F264093006FFFFB /* OCLexer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EF0112131F2955E3006FFFFB /* OCUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = EF0112111F2955E3006FFFFB /* OCUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EF01121C1F2963E5006FFFFB /* OCAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		EF0111D21F264063006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liboccommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF0111DA1F264093006FFFFB /* OCLexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexer.cpp; sourceTree = "<group>"; };
 		EF0111DB1F264093006FFFFB /* OCLexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexer.h; sourceTree = "<group>"; };
+		EF0112111F2955E3006FFFFB /* OCUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUtilities.h; sourceTree = "<group>"; };
+		EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCAlloc.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +35,7 @@
 		EF0111C91F264063006FFFFB = {
 			isa = PBXGroup;
 			children = (
+				EF01120F1F2955C5006FFFFB /* Utilities */,
 				EF0111D91F264070006FFFFB /* Lexer */,
 				EF0111D31F264063006FFFFB /* Products */,
 			);
@@ -47,10 +52,19 @@
 		EF0111D91F264070006FFFFB /* Lexer */ = {
 			isa = PBXGroup;
 			children = (
-				EF0111DA1F264093006FFFFB /* OCLexer.cpp */,
 				EF0111DB1F264093006FFFFB /* OCLexer.h */,
+				EF0111DA1F264093006FFFFB /* OCLexer.cpp */,
 			);
 			path = Lexer;
+			sourceTree = "<group>";
+		};
+		EF01120F1F2955C5006FFFFB /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EF0112111F2955E3006FFFFB /* OCUtilities.h */,
+				EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -61,6 +75,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0111DD1F264093006FFFFB /* OCLexer.h in Headers */,
+				EF0112131F2955E3006FFFFB /* OCUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,6 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0111DC1F264093006FFFFB /* OCLexer.cpp in Sources */,
+				EF01121C1F2963E5006FFFFB /* OCAlloc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

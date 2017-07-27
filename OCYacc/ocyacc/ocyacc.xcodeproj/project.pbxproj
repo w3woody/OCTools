@@ -108,8 +108,8 @@
 		EF0111F71F2810E2006FFFFB /* Compiler */ = {
 			isa = PBXGroup;
 			children = (
-				EF0111F81F281103006FFFFB /* OCYaccParser.cpp */,
 				EF0111F91F281103006FFFFB /* OCYaccParser.h */,
+				EF0111F81F281103006FFFFB /* OCYaccParser.cpp */,
 			);
 			path = Compiler;
 			sourceTree = "<group>";

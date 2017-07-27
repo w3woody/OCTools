@@ -154,7 +154,8 @@ int32_t OCLexer::ReadChar()
 
 /****
 
-Lex-style regular expressions definition from http://dinosaur.compilertools.net/lex/index.html
+Lex-style regular expressions definition from 
+http://dinosaur.compilertools.net/lex/index.html
 
                x        the character "x"
                "x"      an "x", even if x is an operator.
@@ -163,18 +164,18 @@ Lex-style regular expressions definition from http://dinosaur.compilertools.net/
                [x-z]    the characters x, y or z.
                [^x]     any character but x.
                .        any character but newline.
-               ^x       an x at the beginning of a line.
-               <y>x     an x when Lex is in start condition y.
-               x$       an x at the end of a line.
+ ns            ^x       an x at the beginning of a line.
+ ns            <y>x     an x when Lex is in start condition y.
+ ns            x$       an x at the end of a line.
                x?       an optional x.
                x*       0,1,2, ... instances of x.
                x+       1,2,3, ... instances of x.
                x|y      an x or a y.
                (x)      an x.
-               x/y      an x but only if followed by y.
+ ns            x/y      an x but only if followed by y.
                {xx}     the translation of xx from the
                         definitions section.
-               x{m,n}   m through n occurrences of x
+ ns            x{m,n}   m through n occurrences of x
 
 ****/
 
