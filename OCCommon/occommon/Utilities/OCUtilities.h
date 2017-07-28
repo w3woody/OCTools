@@ -10,6 +10,7 @@
 #define OCUtilities_h
 
 #include <stdlib.h>
+#include <string>
 
 /************************************************************************/
 /*																		*/
@@ -35,6 +36,58 @@ class OCAlloc
 		void *fPool;
 		void *fAlloc;
 		size_t fSize;
+};
+
+/************************************************************************/
+/*																		*/
+/*	Integer Set															*/
+/*																		*/
+/************************************************************************/
+
+/*	OCIntegerSet
+ *
+ *		Represents a set of 32-bit integers. Used when building NFAs
+ */
+
+class OCIntegerSet
+{
+	public:
+		OCIntegerSet();
+		OCIntegerSet(const OCIntegerSet &set);
+		~OCIntegerSet();
+
+		OCIntegerSet &operator = (const OCIntegerSet &set);
+
+		bool operator == (const OCIntegerSet &set) const;
+		bool operator < (const OCIntegerSet &set) const;	// for use in map
+
+		/*
+		 *	Modify the set
+		 */
+
+		void Add(uint32_t val);
+		void AddSet(const OCIntegerSet &set);
+
+		bool Contains(uint32_t val);
+
+		void RemoveAll()
+			{
+				size = 0;
+			}
+		void Remove(uint32_t val);
+		void RemoveSet(const OCIntegerSet &set);
+
+		size_t Size()
+			{
+				return size;
+			}
+
+		std::string ToString();
+
+	private:
+		size_t alloc;
+		size_t size;
+		uint32_t *list;		// Sorted list of integer items
 };
 
 

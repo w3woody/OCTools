@@ -37,6 +37,14 @@ http://dinosaur.compilertools.net/lex/index.html
 
 /************************************************************************/
 /*																		*/
+/*	Globals																*/
+/*																		*/
+/************************************************************************/
+
+uint32_t GStateIndex;
+
+/************************************************************************/
+/*																		*/
 /*	Forwards															*/
 /*																		*/
 /************************************************************************/
@@ -102,6 +110,7 @@ static OCLexNFA OCConstructString(OCAlloc &alloc, std::map<std::string,std::stri
 	OCLexNFA ret;
 
 	ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+	ret.start->state = ++GStateIndex;
 	ret.end = ret.start;		// for bookkeeping purposes
 
 	++regex;		// skip opening '"'
@@ -122,6 +131,7 @@ static OCLexNFA OCConstructString(OCAlloc &alloc, std::map<std::string,std::stri
 		 */
 
 		OCLexNFAState *e = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+		e->state = ++GStateIndex;
 
 		OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
 
@@ -212,7 +222,9 @@ static OCLexNFA OCConstructCharSet(OCAlloc &alloc, std::map<std::string,std::str
 
 	OCLexNFA ret;
 	ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+	ret.start->state = ++GStateIndex;
 	ret.end = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+	ret.end->state = ++GStateIndex;
 	t->state = ret.end;
 	t->next = ret.start->list;
 	ret.start->list = t;
@@ -244,7 +256,9 @@ static OCLexNFA OCConstructDefinition(OCAlloc &alloc, std::map<std::string,std::
 
 		OCLexNFA ret;
 		ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+		ret.start->state = ++GStateIndex;
 		ret.end = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+		ret.end->state = ++GStateIndex;
 		OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
 		t->e = true;
 		t->state = ret.end;
@@ -274,6 +288,7 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 	bool hasLast = false;
 
 	ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+	ret.start->state = ++GStateIndex;
 	ret.end = ret.start;		// for bookkeeping purposes
 
 	if ((*regex == ')') || (*regex == 0)) {
@@ -284,6 +299,7 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 		 */
 
 		ret.end = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+		ret.end->state = ++GStateIndex;
 		OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
 		t->e = true;
 		t->state = ret.end;
@@ -393,7 +409,9 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 				 */
 
 				ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+				ret.start->state = ++GStateIndex;
 				ret.end = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+				ret.end->state = ++GStateIndex;
 
 				t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
 				t->e = true;
@@ -465,6 +483,7 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 			}
 
 			OCLexNFAState *e = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
+			e->state = ++GStateIndex;
 
 			OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
 
@@ -504,6 +523,16 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 	}
 
 	return ret;
+}
+
+/*	OCStartRuleConstructor
+ *
+ *		Reset state index
+ */
+
+void OCStartRuleConstructor()
+{
+	GStateIndex = 0;
 }
 
 /*	OCConstructRule

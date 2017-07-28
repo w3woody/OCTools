@@ -36,14 +36,11 @@ static void PrintCharacter(OCLexNFATransition *t)
 
 static void DumpNFADebug(OCLexNFA state)
 {
-	uint32_t index = 1;
-
 	/* Print information */
 	std::set<OCLexNFAState *> states;
 	std::list<OCLexNFAState *> queue;
 	queue.push_back(state.start);
 
-	state.start->endRule = 1;
 	states.insert(state.start);
 
 	while (!queue.empty()) {
@@ -51,28 +48,21 @@ static void DumpNFADebug(OCLexNFA state)
 		queue.pop_front();
 
 		if (state->list == NULL) {
-			printf("%u terminal\n",state->endRule);
+			printf("%u terminal\n",state->state);
 		} else {
 			for (OCLexNFATransition *t = state->list; t; t=t->next) {
-				uint32_t outState;
-
-				if (states.find(t->state) != states.end()) {
-					// Already visited.
-					outState = t->state->endRule;
-				} else {
+				if (states.find(t->state) == states.end()) {
 					// Not visited yet
 					states.insert(t->state);
 					queue.push_back(t->state);
-					outState = ++index;
-					t->state->endRule = outState;
 				}
 
 				if (t->e) {
-					printf("%u --> %u\n",state->endRule,outState);
+					printf("%u --> %u\n",state->state,t->state->state);
 				} else {
-					printf("%u -- ",state->endRule);
+					printf("%u -- ",state->state);
 					PrintCharacter(t);
-					printf(" --> %u\n",outState);
+					printf(" --> %u\n",t->state->state);
 				}
 			}
 		}

@@ -11,6 +11,7 @@
 		EF0111DD1F264093006FFFFB /* OCLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = EF0111DB1F264093006FFFFB /* OCLexer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EF0112131F2955E3006FFFFB /* OCUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = EF0112111F2955E3006FFFFB /* OCUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EF01121C1F2963E5006FFFFB /* OCAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */; };
+		EF01121E1F2B744D006FFFFB /* OCIntegerSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		EF0111DB1F264093006FFFFB /* OCLexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexer.h; sourceTree = "<group>"; };
 		EF0112111F2955E3006FFFFB /* OCUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUtilities.h; sourceTree = "<group>"; };
 		EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCAlloc.cpp; sourceTree = "<group>"; };
+		EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCIntegerSet.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 			children = (
 				EF0112111F2955E3006FFFFB /* OCUtilities.h */,
 				EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */,
+				EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -138,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0111DC1F264093006FFFFB /* OCLexer.cpp in Sources */,
+				EF01121E1F2B744D006FFFFB /* OCIntegerSet.cpp in Sources */,
 				EF01121C1F2963E5006FFFFB /* OCAlloc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

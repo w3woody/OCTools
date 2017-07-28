@@ -49,6 +49,7 @@ struct OCLexNFATransition
 struct OCLexNFAState
 {
 	OCLexNFATransition			*list;
+	uint32_t					state;		// State number
 	bool						end;
 	uint32_t					endRule;	// Rule ID that this ends
 };
@@ -71,14 +72,20 @@ struct OCLexNFA
 /*																		*/
 /************************************************************************/
 
+extern uint32_t GStateIndex;
+
+/*	OCStartRuleConstructor
+ *
+ *		Reset the internal counter for a group of NFAs
+ */
+
+extern void OCStartRuleConstructor();
+
 /*	OCConstructRule
  *
  *		Given a single regular expression, construct the NFA state
  *	in the alloc pool provided
  */
-
-
-// ### TODO: Code to return start and end states.
 
 extern OCLexNFA OCConstructRule(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char *regex);
 
