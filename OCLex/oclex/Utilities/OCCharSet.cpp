@@ -25,6 +25,18 @@ void OCCharSet::Clear()
 	memset(a,0,sizeof(a));
 }
 
+/*	OCCharSet::Invert
+ *
+ *		Negate bit array
+ */
+
+void OCCharSet::Invert()
+{
+	for (int i = 0; i < 8; ++i) {
+		a[i] = ~a[i];
+	}
+}
+
 /*	OCCharSet::ClearCharacter
  *
  *		Clear character

@@ -15,6 +15,8 @@
 
 #include <stdio.h>
 #include <list>
+#include <map>
+#include <string>
 
 /************************************************************************/
 /*																		*/
@@ -51,6 +53,18 @@ struct OCLexNFAState
 	uint32_t					endRule;	// Rule ID that this ends
 };
 
+/*	OCLexNFA
+ *
+ *		Non-deterministic finite automata storage; holds references to
+ *	the front and the end states
+ */
+
+struct OCLexNFA
+{
+	OCLexNFAState				*start;
+	OCLexNFAState				*end;
+};
+
 /************************************************************************/
 /*																		*/
 /*	Routines															*/
@@ -66,6 +80,6 @@ struct OCLexNFAState
 
 // ### TODO: Code to return start and end states.
 
-extern OCLexNFAState *OCConstructRule(OCAlloc &alloc, const char *regex);
+extern OCLexNFA OCConstructRule(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char *regex);
 
 #endif /* OCLexNFA_h */

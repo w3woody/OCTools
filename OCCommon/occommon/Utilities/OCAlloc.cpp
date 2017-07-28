@@ -8,6 +8,7 @@
 
 #include "OCUtilities.h"
 #include <new>
+#include <string.h>
 
 /************************************************************************/
 /*																		*/
@@ -62,22 +63,23 @@ void *OCAlloc::Alloc(size_t size)
 	if (size >= MAXSIZE) {
 		void *ptr = malloc(size + sizeof(void *));
 		if (ptr == NULL) throw std::bad_alloc();
+		memset(ptr,0,size + sizeof(void *));
 		*((void **)ptr) = fAlloc;
 		fAlloc = ptr;
 
-		return (void *)((void **)ptr + 1);
+		return (void *)(1 + (void **)ptr);
 	} else {
 		if (size + fSize >= MAXALLOC) {
 			fPool = malloc(MAXALLOC);
 			if (fPool == NULL) throw std::bad_alloc();
+			memset(fPool,0,MAXALLOC);
 			*((void **)fPool) = fAlloc;
 			fAlloc = fPool;
 
 			fSize = sizeof(void *);
 		}
 
-		unsigned char *mem = (unsigned char *)fPool;
-		void *ret = (void *)(mem + fSize);
+		void *ret = (void *)(fSize + (unsigned char *)fPool);
 		fSize += size;
 		return ret;
 	}

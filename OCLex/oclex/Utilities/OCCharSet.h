@@ -28,6 +28,7 @@ struct OCCharSet
 	uint32_t a[8];
 
 	void Clear();
+	void Invert();
 	void ClearCharacter(unsigned char ch);
 	void SetCharacter(unsigned char ch);
 	bool TestCharacter(unsigned char ch);
