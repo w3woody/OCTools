@@ -10,6 +10,7 @@
 #define OCCharSet_h
 
 #include <stdint.h>
+#include <string.h>
 
 /************************************************************************/
 /*																		*/
@@ -23,19 +24,30 @@
  *	characters; we don't support wide characters.
  */
 
-struct OCCharSet
+class OCCharSet
 {
-	uint32_t a[8];
+	public:
+		OCCharSet()
+			{
+				memset(a,0,sizeof(a));
+			}
 
-	void Clear();
-	void Invert();
-	void ClearCharacter(unsigned char ch);
-	void SetCharacter(unsigned char ch);
-	bool TestCharacter(unsigned char ch);
+		~OCCharSet()
+			{
+			}
 
-	OCCharSet &operator &= (const OCCharSet &cset);
-	OCCharSet &operator |= (const OCCharSet &cset);
-	OCCharSet &operator -= (const OCCharSet &cset);
+		void Clear();
+		void Invert();
+		void ClearCharacter(unsigned char ch);
+		void SetCharacter(unsigned char ch);
+		bool TestCharacter(unsigned char ch);
+
+		OCCharSet &operator &= (const OCCharSet &cset);
+		OCCharSet &operator |= (const OCCharSet &cset);
+		OCCharSet &operator -= (const OCCharSet &cset);
+
+	private:
+		uint32_t a[8];
 };
 
 #endif /* OCCharSet_h */

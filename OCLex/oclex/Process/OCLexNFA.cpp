@@ -37,22 +37,6 @@ http://dinosaur.compilertools.net/lex/index.html
 
 /************************************************************************/
 /*																		*/
-/*	Globals																*/
-/*																		*/
-/************************************************************************/
-
-uint32_t GStateIndex;
-
-/************************************************************************/
-/*																		*/
-/*	Forwards															*/
-/*																		*/
-/************************************************************************/
-
-static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char * &regex);
-
-/************************************************************************/
-/*																		*/
 /*	Construct NFA from regular expression								*/
 /*																		*/
 /************************************************************************/
@@ -70,7 +54,7 @@ static int ToHex(char ch)
  *	escaped character. regex should point ot the character after the '\'.
  */
 
-static char OCEscapeCharacter(const char * &regex)
+char OCLexNFA::EscapeCharacter(const char * &regex)
 {
 	char ch = *regex++;
 
@@ -101,17 +85,32 @@ static char OCEscapeCharacter(const char * &regex)
 	}
 }
 
+// ### TODO: Alloc
+
+/*
+ *	Alloc new state, return index
+ */
+
+uint32_t OCLexNFA::NewState()
+{
+	uint32_t index = (uint32_t)states.size();
+
+	OCLexNFAState state;
+	states.push_back(state);
+
+	return index;
+}
+
 /*
  *	Grab the contents of a string
  */
 
-static OCLexNFA OCConstructString(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char * &regex)
+OCLexNFAReturn OCLexNFA::ConstructString(const char * &regex)
 {
-	OCLexNFA ret;
+	OCLexNFAReturn ret;
 
-	ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-	ret.start->state = ++GStateIndex;
-	ret.end = ret.start;		// for bookkeeping purposes
+	ret.start = NewState();
+	ret.end = ret.start;
 
 	++regex;		// skip opening '"'
 	for (;;) {
@@ -121,7 +120,7 @@ static OCLexNFA OCConstructString(OCAlloc &alloc, std::map<std::string,std::stri
 		if (*regex == '\\') {
 			++regex;
 
-			ch = OCEscapeCharacter(regex);
+			ch = EscapeCharacter(regex);
 		} else {
 			ch = *regex++;
 		}
@@ -130,16 +129,12 @@ static OCLexNFA OCConstructString(OCAlloc &alloc, std::map<std::string,std::stri
 		 *	Add transition to new end state to existing end
 		 */
 
-		OCLexNFAState *e = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-		e->state = ++GStateIndex;
+		uint32_t e = NewState();
+		OCLexNFATransition t;
 
-		OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-
-		t->set.SetCharacter(ch);
-
-		t->state = e;
-		t->next = ret.end->list;
-		ret.end->list = t;
+		t.set.SetCharacter(ch);
+		t.state = e;
+		states[ret.end].list.push_back(t);
 		ret.end = e;
 	}
 
@@ -151,7 +146,7 @@ static OCLexNFA OCConstructString(OCAlloc &alloc, std::map<std::string,std::stri
  *	Construct a transition representing the character set
  */
 
-static OCLexNFA OCConstructCharSet(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char * &regex)
+OCLexNFAReturn OCLexNFA::ConstructCharSet(const char * &regex)
 {
 	bool atStart = true;
 	bool invert = false;
@@ -162,7 +157,7 @@ static OCLexNFA OCConstructCharSet(OCAlloc &alloc, std::map<std::string,std::str
 	 *	in the character sets, returning a transition
 	 */
 
-	OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
+	OCLexNFATransition t;
 
 	++regex;
 	for (;;) {
@@ -179,7 +174,7 @@ static OCLexNFA OCConstructCharSet(OCAlloc &alloc, std::map<std::string,std::str
 			nextChar = *++regex;
 			if (nextChar == '\\') {
 				++regex;
-				nextChar = OCEscapeCharacter(regex);
+				nextChar = EscapeCharacter(regex);
 			}
 			if (nextChar == 0) break;
 
@@ -191,7 +186,7 @@ static OCLexNFA OCConstructCharSet(OCAlloc &alloc, std::map<std::string,std::str
 			}
 
 			for (unsigned char i = startIter; i <= endIter; ++i) {
-				t->set.SetCharacter(i);
+				t.set.SetCharacter(i);
 			}
 
 			++regex;
@@ -200,8 +195,8 @@ static OCLexNFA OCConstructCharSet(OCAlloc &alloc, std::map<std::string,std::str
 		} else if (*regex == '\\') {
 			atStart = false;
 			++regex;
-			lastChar = OCEscapeCharacter(regex);
-			t->set.SetCharacter(lastChar);
+			lastChar = EscapeCharacter(regex);
+			t.set.SetCharacter(lastChar);
 
 		} else {
 			// Set character
@@ -213,25 +208,24 @@ static OCLexNFA OCConstructCharSet(OCAlloc &alloc, std::map<std::string,std::str
 	if (*regex == ']') ++regex;
 
 	if (invert) {
-		t->set.Invert();
+		t.set.Invert();
 	}
 
 	/*
 	 *	Construct transition
 	 */
 
-	OCLexNFA ret;
-	ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-	ret.start->state = ++GStateIndex;
-	ret.end = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-	ret.end->state = ++GStateIndex;
-	t->state = ret.end;
-	t->next = ret.start->list;
-	ret.start->list = t;
+	OCLexNFAReturn ret;
+
+	ret.start = NewState();
+	ret.end = NewState();
+	t.state = ret.end;
+	states[ret.start].list.push_back(t);
+
 	return ret;
 }
 
-static OCLexNFA OCConstructDefinition(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char * &regex)
+OCLexNFAReturn OCLexNFA::ConstructDefinition(const char * &regex)
 {
 	std::string defname;
 
@@ -254,16 +248,15 @@ static OCLexNFA OCConstructDefinition(OCAlloc &alloc, std::map<std::string,std::
 		 *	Return empty sequence
 		 */
 
-		OCLexNFA ret;
-		ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-		ret.start->state = ++GStateIndex;
-		ret.end = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-		ret.end->state = ++GStateIndex;
-		OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-		t->e = true;
-		t->state = ret.end;
-		t->next = ret.start->list;
-		ret.start->list = t;
+		OCLexNFAReturn ret;
+		OCLexNFATransition t;
+
+		ret.start = NewState();
+		ret.end = NewState();
+		t.state = ret.end;
+		t.e = true;
+		states[ret.start].list.push_back(t);
+
 		return ret;
 	} else {
 		/*
@@ -271,7 +264,7 @@ static OCLexNFA OCConstructDefinition(OCAlloc &alloc, std::map<std::string,std::
 		 */
 
 		const char *str = definitions[defname].c_str();
-		return OCConstruct(alloc,definitions,str);
+		return Construct(str);
 	}
 }
 
@@ -281,15 +274,14 @@ static OCLexNFA OCConstructDefinition(OCAlloc &alloc, std::map<std::string,std::
  *	allows me to scan forwards
  */
 
-static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char * &regex)
+OCLexNFAReturn OCLexNFA::Construct(const char * &regex)
 {
-	OCLexNFA ret;
-	OCLexNFA last;
+	OCLexNFAReturn ret;
+	OCLexNFAReturn last;
 	bool hasLast = false;
 
-	ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-	ret.start->state = ++GStateIndex;
-	ret.end = ret.start;		// for bookkeeping purposes
+	ret.start = NewState();
+	ret.end = ret.start;
 
 	if ((*regex == ')') || (*regex == 0)) {
 		/*
@@ -298,13 +290,12 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 		 *		START ---e---> END
 		 */
 
-		ret.end = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-		ret.end->state = ++GStateIndex;
-		OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-		t->e = true;
-		t->state = ret.end;
-		t->next = ret.start->list;
-		ret.start->list = t;
+		OCLexNFATransition t;
+
+		ret.end = NewState();
+		t.e = true;
+		t.state = ret.end;
+		states[ret.start].list.push_back(t);
 
 	} else for (;;) {
 		/*
@@ -323,17 +314,13 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 			 *	0..N of the last expression. Connect for skip and repeat
 			 */
 
-			OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-			t->e = true;
-			t->state = last.end;
-			t->next = last.start->list;
-			last.start->list = t;
+			OCLexNFATransition t;
+			t.e = true;
+			t.state = last.end;
+			states[last.start].list.push_back(t);
 
-			t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-			t->e = true;
-			t->state = last.start;
-			t->next = last.end->list;
-			last.end->list = t;
+			t.state = last.start;
+			states[last.end].list.push_back(t);
 
 			++regex;
 			continue;
@@ -343,11 +330,10 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 			 *	1..N of the last expression. Connect for skip
 			 */
 
-			OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-			t->e = true;
-			t->state = last.start;
-			t->next = last.end->list;
-			last.end->list = t;
+			OCLexNFATransition t;
+			t.e = true;
+			t.state = last.start;
+			states[last.end].list.push_back(t);
 
 			++regex;
 			continue;
@@ -356,11 +342,10 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 			 *	0..1 of the last expression. Connect for skip
 			 */
 
-			OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-			t->e = true;
-			t->state = last.end;
-			t->next = last.start->list;
-			last.start->list = t;
+			OCLexNFATransition t;
+			t.e = true;
+			t.state = last.end;
+			states[last.start].list.push_back(t);
 
 			++regex;
 			continue;
@@ -384,58 +369,48 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 				 *	the same as (xxx)?
 				 */
 
-				ret = OCConstruct(alloc, definitions, regex);
+				ret = Construct(regex);
 
 				/*
 				 *	Construct empty skip state
 				 */
 
-				OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-				t->e = true;
-				t->state = ret.end;
-				t->next = ret.start->list;
-				ret.start->list = t;
+				OCLexNFATransition t;
+				t.e = true;
+				t.state = ret.end;
+				states[ret.start].list.push_back(t);
+
 			} else {
 				/*
 				 *	Parse RHS
 				 */
 
-				OCLexNFATransition *t;
-				OCLexNFA lhs = ret;
-				last = OCConstruct(alloc, definitions, regex);
+				OCLexNFATransition t;
+				OCLexNFAReturn lhs = ret;
+				last = Construct(regex);
 
 				/*
 				 *	Now construct pre/post states
 				 */
 
-				ret.start = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-				ret.start->state = ++GStateIndex;
-				ret.end = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-				ret.end->state = ++GStateIndex;
+				ret.start = NewState();
+				ret.end = NewState();
 
-				t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-				t->e = true;
-				t->state = lhs.start;
-				t->next = ret.start->list;
-				ret.start->list = t;
+				t.e = true;
+				t.state = lhs.start;
+				states[ret.start].list.push_back(t);
 
-				t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-				t->e = true;
-				t->state = last.start;
-				t->next = ret.start->list;
-				ret.start->list = t;
+				t.e = true;
+				t.state = last.start;
+				states[ret.start].list.push_back(t);
 
-				t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-				t->e = true;
-				t->state = ret.end;
-				t->next = lhs.end->list;
-				lhs.end->list = t;
+				t.e = true;
+				t.state = ret.end;
+				states[lhs.end].list.push_back(t);
 
-				t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-				t->e = true;
-				t->state = ret.end;
-				t->next = last.end->list;
-				last.end->list = t;
+				t.e = true;
+				t.state = ret.end;
+				states[last.end].list.push_back(t);
 			}
 			break;
 		}
@@ -447,21 +422,21 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 		if (*regex == '(') {
 			// Recurse and concatenate the return value
 			++regex;
-			last = OCConstruct(alloc, definitions, regex);
+			last = Construct(regex);
 			hasLast = true;
 			if (*regex == ')') ++regex;	// skip end
 
 		} else if (*regex == '\"') {
 			// Handle string.
-			last = OCConstructString(alloc, definitions, regex);
+			last = ConstructString(regex);
 			hasLast = true;
 
 		} else if (*regex == '[') {
-			last = OCConstructCharSet(alloc, definitions, regex);
+			last = ConstructCharSet(regex);
 			hasLast = true;
 
 		} else if (*regex == '{') {
-			last = OCConstructDefinition(alloc, definitions, regex);
+			last = ConstructDefinition(regex);
 			hasLast = true;
 
 		} else {
@@ -474,7 +449,7 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 			char ch;
 			if (*regex == '\\') {
 				++regex;			// skip and escape next character
-				ch = OCEscapeCharacter(regex);
+				ch = EscapeCharacter(regex);
 			} else if (*regex == '.') {
 				ch = 0;		// special marker
 				any = true;
@@ -482,14 +457,14 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 				ch = *regex++;
 			}
 
-			OCLexNFAState *e = (OCLexNFAState *)alloc.Alloc(sizeof(OCLexNFAState));
-			e->state = ++GStateIndex;
 
-			OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
+			uint32_t e = NewState();
+			OCLexNFATransition t;
 
 			if (any) {
+				t.set.Invert();
 			} else {
-				t->set.SetCharacter(ch);
+				t.set.SetCharacter(ch);
 			}
 
 			/*
@@ -500,9 +475,8 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 			last.end = e;			// singleton operators
 			hasLast = true;
 
-			t->state = e;
-			t->next = ret.end->list;
-			ret.end->list = t;
+			t.state = e;
+			states[ret.end].list.push_back(t);
 			ret.end = e;
 
 			continue;
@@ -514,34 +488,13 @@ static OCLexNFA OCConstruct(OCAlloc &alloc, std::map<std::string,std::string> &d
 		 *	rather than try to sort out the new start state we're concatenating
 		 */
 
-		OCLexNFATransition *t = (OCLexNFATransition *)alloc.Alloc(sizeof(OCLexNFATransition));
-		t->e = true;
-		t->state = last.start;
-		t->next = ret.end->list;
-		ret.end->list = t;
+		OCLexNFATransition t;
+		t.e = true;
+		t.state = last.start;
+		states[ret.end].list.push_back(t);
 		ret.end = last.end;
 	}
 
 	return ret;
 }
 
-/*	OCStartRuleConstructor
- *
- *		Reset state index
- */
-
-void OCStartRuleConstructor()
-{
-	GStateIndex = 0;
-}
-
-/*	OCConstructRule
- *
- *		Construct NFA rule from regular expression using Thompson's 
- *	Construction, https://en.wikipedia.org/wiki/Thompson%27s_construction
- */
-
-OCLexNFA OCConstructRule(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char *regex)
-{
-	return OCConstruct(alloc, definitions, regex);
-}

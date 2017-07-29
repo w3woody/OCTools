@@ -17,6 +17,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <vector>
 
 /************************************************************************/
 /*																		*/
@@ -35,8 +36,13 @@ struct OCLexNFATransition
 {
 	OCCharSet					set;
 	bool						e;			// true if this is an empty transition
-	struct OCLexNFATransition	*next;
-	struct OCLexNFAState		*state;
+	uint32_t					state;
+
+	OCLexNFATransition()
+		{
+			e = false;
+			state = 0;
+		}
 };
 
 /*	OCLexNFAState
@@ -48,10 +54,16 @@ struct OCLexNFATransition
 
 struct OCLexNFAState
 {
-	OCLexNFATransition			*list;
-	uint32_t					state;		// State number
-	bool						end;
+	std::list<OCLexNFATransition> list;
+
+	bool						end;		// End marker of rule?
 	uint32_t					endRule;	// Rule ID that this ends
+
+	OCLexNFAState()
+		{
+			end = false;
+			endRule = 0;
+		}
 };
 
 /*	OCLexNFA
@@ -60,10 +72,10 @@ struct OCLexNFAState
  *	the front and the end states
  */
 
-struct OCLexNFA
+struct OCLexNFAReturn
 {
-	OCLexNFAState				*start;
-	OCLexNFAState				*end;
+	uint32_t start;
+	uint32_t end;
 };
 
 /************************************************************************/
@@ -72,21 +84,45 @@ struct OCLexNFA
 /*																		*/
 /************************************************************************/
 
-extern uint32_t GStateIndex;
-
-/*	OCStartRuleConstructor
+/*	OCLexNFA
  *
- *		Reset the internal counter for a group of NFAs
+ *		NFA construction class. This contains all the state necessary to
+ *	construct the NFA rules, including array accessors to look up the states
+ *	by state index
  */
 
-extern void OCStartRuleConstructor();
+class OCLexNFA
+{
+	public:
+		OCLexNFA(std::map<std::string,std::string> &defn) : definitions(defn)
+			{
+				stateIndex = 0;
+			}
 
-/*	OCConstructRule
- *
- *		Given a single regular expression, construct the NFA state
- *	in the alloc pool provided
- */
+		~OCLexNFA()
+			{
+			}
 
-extern OCLexNFA OCConstructRule(OCAlloc &alloc, std::map<std::string,std::string> &definitions, const char *regex);
+		OCLexNFAReturn AddRule(const char *regex)
+			{
+				return Construct(regex);
+			}
+
+		std::vector<OCLexNFAState> states;
+
+	private:
+		uint32_t stateIndex;
+		std::map<std::string,std::string> &definitions;
+
+		OCLexNFAReturn Construct(const char *&regex);
+		char EscapeCharacter(const char *&regex);
+
+		OCLexNFAReturn ConstructString(const char *&regex);
+		OCLexNFAReturn ConstructCharSet(const char *&regex);
+		OCLexNFAReturn ConstructDefinition(const char *&regex);
+
+		uint32_t NewState();
+};
+
 
 #endif /* OCLexNFA_h */

@@ -14,55 +14,51 @@
 #include "OCLexNFA.h"
 #include <set>
 
-static void PrintCharacter(OCLexNFATransition *t)
+static void PrintCharacter(OCLexNFATransition &t)
 {
 	int i;
-	uint32_t *p = t->set.a;
-
-	for (i = 0; i < 8; ++i) {
-		if (p[i] != (uint32_t)-1) break;
-	}
-	if (i >= 8) {
-		printf(".");
-		return;
-	}
 
 	for (i = 32; i < 128; ++i) {
-		if (t->set.TestCharacter(i)) {
+		if (t.set.TestCharacter(i)) {
 			printf("%c",(char)i);
 		}
 	}
 }
 
-static void DumpNFADebug(OCLexNFA state)
+static void DumpNFADebug(OCLexNFA &c, OCLexNFAReturn ret)
 {
 	/* Print information */
-	std::set<OCLexNFAState *> states;
-	std::list<OCLexNFAState *> queue;
-	queue.push_back(state.start);
+	std::set<uint32_t> states;
+	std::list<uint32_t> queue;
 
-	states.insert(state.start);
+	queue.push_back(ret.start);
+	states.insert(ret.start);
 
 	while (!queue.empty()) {
-		OCLexNFAState *state = queue.front();
+		uint32_t state = queue.front();
 		queue.pop_front();
 
-		if (state->list == NULL) {
-			printf("%u terminal\n",state->state);
+		OCLexNFAState &s = c.states[state];
+
+		if (s.list.empty()) {
+			printf("%u terminal\n",state);
 		} else {
-			for (OCLexNFATransition *t = state->list; t; t=t->next) {
-				if (states.find(t->state) == states.end()) {
+			std::list<OCLexNFATransition>::iterator iter;
+
+			for (iter = s.list.begin(); iter != s.list.end(); ++iter) {
+				OCLexNFATransition &t = *iter;
+				if (states.find(t.state) == states.end()) {
 					// Not visited yet
-					states.insert(t->state);
-					queue.push_back(t->state);
+					states.insert(t.state);
+					queue.push_back(t.state);
 				}
 
-				if (t->e) {
-					printf("%u --> %u\n",state->state,t->state->state);
+				if (t.e) {
+					printf("%u --> %u\n",state,t.state);
 				} else {
-					printf("%u -- ",state->state);
+					printf("%u -- ",state);
 					PrintCharacter(t);
-					printf(" --> %u\n",t->state->state);
+					printf(" --> %u\n",t.state);
 				}
 			}
 		}
@@ -81,13 +77,13 @@ void Test1()
 
 void Test2()
 {
-	OCAlloc pool;
 	std::map<std::string,std::string> definitions;
+	OCLexNFA construct(definitions);
 
 	definitions["D"] = "[0-9]";
 
-	OCLexNFA ret = OCConstructRule(pool, definitions, "{D}\"AC\\\"\"(ABC|(DE)+F[A-C]?)");
-	DumpNFADebug(ret);
+	OCLexNFAReturn ret = construct.AddRule("{D}\"AC\\\"\"(ABC|(DE)+F[A-C]?)");
+	DumpNFADebug(construct,ret);
 }
 
 void Test3()
