@@ -34,9 +34,9 @@
 
 struct OCLexNFATransition
 {
-	OCCharSet					set;
-	bool						e;			// true if this is an empty transition
-	uint32_t					state;
+	OCCharSet	set;
+	bool		e;			// true if this is an empty transition
+	uint32_t	state;
 
 	OCLexNFATransition()
 		{

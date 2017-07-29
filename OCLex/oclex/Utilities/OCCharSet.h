@@ -46,8 +46,20 @@ class OCCharSet
 		OCCharSet &operator |= (const OCCharSet &cset);
 		OCCharSet &operator -= (const OCCharSet &cset);
 
+		bool operator == (const OCCharSet &set) const;
+		bool operator < (const OCCharSet &set) const;	// for use in map
+
+		bool Contains(const OCCharSet &set) const;
+		bool IsEmpty() const;
+
+		OCCharSet operator & (const OCCharSet &b) const;
+		OCCharSet operator | (const OCCharSet &b) const;
+		OCCharSet operator ^ (const OCCharSet &b) const;
+		OCCharSet operator ~ () const;
+
 	private:
 		uint32_t a[8];
 };
+
 
 #endif /* OCCharSet_h */

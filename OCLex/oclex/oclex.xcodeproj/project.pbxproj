@@ -17,6 +17,7 @@
 		EF01120E1F295584006FFFFB /* OCLexNFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01120B1F295580006FFFFB /* OCLexNFA.cpp */; };
 		EF0112191F295BEF006FFFFB /* OCCharSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112171F295BEF006FFFFB /* OCCharSet.cpp */; };
 		EF01121A1F295C36006FFFFB /* OCCharSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112171F295BEF006FFFFB /* OCCharSet.cpp */; };
+		EF0112211F2CFAEB006FFFFB /* OCLexDFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -54,6 +55,8 @@
 		EF01120C1F295580006FFFFB /* OCLexNFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexNFA.h; sourceTree = "<group>"; };
 		EF0112171F295BEF006FFFFB /* OCCharSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCCharSet.cpp; sourceTree = "<group>"; };
 		EF0112181F295BEF006FFFFB /* OCCharSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCharSet.h; sourceTree = "<group>"; };
+		EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexDFA.cpp; sourceTree = "<group>"; };
+		EF0112201F2CFAEB006FFFFB /* OCLexDFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexDFA.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +141,8 @@
 			children = (
 				EF01120C1F295580006FFFFB /* OCLexNFA.h */,
 				EF01120B1F295580006FFFFB /* OCLexNFA.cpp */,
+				EF0112201F2CFAEB006FFFFB /* OCLexDFA.h */,
+				EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */,
 			);
 			path = Process;
 			sourceTree = "<group>";
@@ -244,6 +249,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0112191F295BEF006FFFFB /* OCCharSet.cpp in Sources */,
+				EF0112211F2CFAEB006FFFFB /* OCLexDFA.cpp in Sources */,
 				EF0111F21F2789DA006FFFFB /* OCLexParser.cpp in Sources */,
 				EF0111EE1F2789CD006FFFFB /* test.cpp in Sources */,
 				EF01120D1F295580006FFFFB /* OCLexNFA.cpp in Sources */,

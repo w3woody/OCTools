@@ -69,6 +69,80 @@ bool OCCharSet::TestCharacter(unsigned char ch)
 
 /************************************************************************/
 /*																		*/
+/*	Containment															*/
+/*																		*/
+/************************************************************************/
+
+/*	OCCharSet::Contains
+ *
+ *		Returns true if the item passed in is equal to, or the items are
+ *	contained in, the current item.
+ *
+ *		In essence this does the following operation:
+ *
+ *		self	set		value	-->  ~(~self & set)
+ *		0		0		1
+ *		0		1		0
+ *		1		0		1
+ *		1		1		1
+ */
+
+bool OCCharSet::Contains(const OCCharSet &set) const
+{
+	for (int i = 0; i < 8; ++i) {
+		if (~a[i] & set.a[i]) return false;
+	}
+	return true;
+}
+
+/*	OCCharSet::IsEmpty
+ *
+ *		Is this empty?
+ */
+
+bool OCCharSet::IsEmpty() const
+{
+	for (int i = 0; i < 8; ++i) {
+		if (a[i]) return false;
+	}
+	return true;
+}
+
+/************************************************************************/
+/*																		*/
+/*	Compare																*/
+/*																		*/
+/************************************************************************/
+
+/*	OCCharSet::operator ==
+ *
+ *		Are the two equal?
+ */
+
+bool OCCharSet::operator == (const OCCharSet &set) const
+{
+	for (int i = 0; i < 8; ++i) {
+		if (a[i] != set.a[i]) return false;
+	}
+	return true;
+}
+
+/*	OCCharSet::operator <
+ *
+ *		Compare for using in map?
+ */
+
+bool OCCharSet::operator < (const OCCharSet &set) const
+{
+	for (int i = 0; i < 8; ++i) {
+		if (a[i] < set.a[i]) return true;
+		if (a[i] > set.a[i]) return false;
+	}
+	return false;
+}
+
+/************************************************************************/
+/*																		*/
 /*	Math																*/
 /*																		*/
 /************************************************************************/
@@ -118,5 +192,49 @@ OCCharSet &OCCharSet::operator -= (const OCCharSet &cset)
 	}
 
 	return *this;
+}
+
+
+/************************************************************************/
+/*																		*/
+/*	Binary operators													*/
+/*																		*/
+/************************************************************************/
+
+OCCharSet OCCharSet::operator & (const OCCharSet &b) const
+{
+	OCCharSet s;
+
+	for (int i = 0; i < 8; ++i) {
+		s.a[i] = a[i] & b.a[i];
+	}
+	return s;
+}
+
+OCCharSet OCCharSet::operator | (const OCCharSet &b) const
+{
+	OCCharSet s;
+
+	for (int i = 0; i < 8; ++i) {
+		s.a[i] = a[i] | b.a[i];
+	}
+	return s;
+}
+
+OCCharSet OCCharSet::operator ^ (const OCCharSet &b) const
+{
+	OCCharSet s;
+
+	for (int i = 0; i < 8; ++i) {
+		s.a[i] = a[i] ^ b.a[i];
+	}
+	return s;
+}
+
+OCCharSet OCCharSet::operator ~ () const
+{
+	OCCharSet s = *this;
+	s.Invert();
+	return s;
 }
 

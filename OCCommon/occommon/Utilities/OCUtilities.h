@@ -77,9 +77,13 @@ class OCIntegerSet
 		void Remove(uint32_t val);
 		void RemoveSet(const OCIntegerSet &set);
 
-		size_t Size()
+		size_t Size() const
 			{
 				return size;
+			}
+		uint32_t Item(size_t index) const
+			{
+				return list[index];
 			}
 
 		std::string ToString();
