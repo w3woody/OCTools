@@ -90,10 +90,36 @@ void Test2()
 	DumpNFADebug(ret);
 }
 
+void Test3()
+{
+	OCIntegerSet set;
+
+	set.Add(5);
+	set.Add(2);
+	set.Add(4);
+	set.Add(1);
+	set.Remove(2);
+	printf("%s\n",set.ToString().c_str());
+
+	OCIntegerSet set2;
+	set2.Add(2);
+	set2.Add(3);
+	set2.Add(7);
+	set.AddSet(set2);
+	printf("%s\n",set.ToString().c_str());
+
+	set2.RemoveAll();
+	set2.Add(2);
+	set2.Add(4);
+	set.RemoveSet(set2);
+	printf("%s\n",set.ToString().c_str());
+}
+
 int main(int argc, const char * argv[])
 {
 	Test1();
 	Test2();
+	Test3();
 
 	printf("Done.\n");
 	return 0;

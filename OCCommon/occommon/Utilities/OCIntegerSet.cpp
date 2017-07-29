@@ -192,14 +192,19 @@ void OCIntegerSet::Add(uint32_t val)
 	 *	Now run the list from the top to insert
 	 */
 
+	bool insert = false;
 	for (size_t off = size; off > 0; --off) {
 		uint32_t tmp = list[off-1];
 		if (tmp > val) {
 			list[off] = tmp;
 		} else {
 			list[off] = val;
+			insert = true;
 			break;
 		}
+	}
+	if (!insert) {
+		list[0] = val;
 	}
 	++size;
 }
@@ -254,6 +259,9 @@ void OCIntegerSet::AddSet(const OCIntegerSet &set)
 			--a;
 		}
 	}
+	while (a > 0) {
+		list[--d] = list[--a];
+	}
 
 	size = alloc - d;
 	if (d > 0) {
@@ -302,7 +310,7 @@ void OCIntegerSet::RemoveSet(const OCIntegerSet &set)
 
 	while ((a < size) && (b < set.size)) {
 		uint32_t av = list[a];
-		uint32_t bv = list[b];
+		uint32_t bv = set.list[b];
 
 		if (av == bv) {
 			++a;
