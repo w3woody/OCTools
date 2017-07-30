@@ -13,6 +13,7 @@
 #include "OCLexParser.h"
 #include "OCLexNFA.h"
 #include "OCLexDFA.h"
+#include "OCLexGenerator.h"
 #include <set>
 
 static void PrintCharacter(OCLexNFATransition &t)
@@ -134,16 +135,20 @@ void Test4()
 	std::map<std::string,std::string> definitions;
 	definitions["D"] = "[0-9]";
 
-	OCLexDFA dfa(definitions);
+	OCLexGenerator dfa(definitions);
 
-	dfa.AddRuleSet("{D}+", "A");
-	dfa.AddRuleSet("[A-Za-z][A-Za-z0-9]*", "B");
-	dfa.AddRuleSet("0x[A-Fa-f0-9]+", "C");
-	dfa.AddRuleSet(".","D");
+	dfa.AddRuleSet("{D}+", "return 0x10001;");
+	dfa.AddRuleSet("[A-Za-z][A-Za-z0-9]*", "return 0x10002;");
+	dfa.AddRuleSet("0x[A-Fa-f0-9]+", "return 0x10003;");
+	dfa.AddRuleSet(".","return textBuffer[0];");
 
 	dfa.GenerateDFA();
 
 	PrintDFA(dfa);
+
+	printf("\n\n\n");
+	dfa.WriteOCFile(stdout);
+
 }
 
 int main(int argc, const char * argv[])

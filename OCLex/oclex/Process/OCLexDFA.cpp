@@ -150,6 +150,11 @@ void OCLexDFA::SplitCharSet(std::vector<OCCharSet> &set)
 					b -= c;
 					if (a.IsEmpty()) {
 						set[i] = c;
+						if (b.IsEmpty()) {
+							// Degenerate and interesting case. We truncate
+							// b, update a, and continue
+							set.erase(set.begin() + j);
+						}
 					} else if (b.IsEmpty()) {
 						set[j] = c;
 					} else {
@@ -369,6 +374,31 @@ bool OCLexDFA::GenerateDFA()
 			dfaState.list.push_back(t);
 		}
 	}
+
+	/*
+	 *	At this point we've calculated the DFA. The last step, used when
+	 *	generating the tables, is to build the character class set so
+	 *	we can reduce the size of our output tables
+	 */
+
+	// Accumulate a unique list of all possible character transitions
+	std::set<OCCharSet> charSet;
+	std::vector<OCLexDFAState>::iterator dfaIter;
+	for (dfaIter = dfaStates.begin(); dfaIter != dfaStates.end(); ++dfaIter) {
+		std::vector<OCLexDFATransition>::iterator titer;
+		for (titer = dfaIter->list.begin(); titer != dfaIter->list.end(); ++titer) {
+			charSet.insert(titer->set);
+		}
+	}
+
+	// Uniquely identify the sets
+	charClasses.clear();
+	std::set<OCCharSet>::iterator setIter;
+	for (setIter = charSet.begin(); setIter != charSet.end(); ++setIter) {
+		charClasses.push_back(*setIter);
+	}
+
+	SplitCharSet(charClasses);
 
 	return true;
 }

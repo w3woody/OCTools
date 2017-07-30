@@ -98,4 +98,4 @@ class OCLexer
 };
 
 
-#endif /* OCLexer_hpp */
+#endif /* OCLexer_h */

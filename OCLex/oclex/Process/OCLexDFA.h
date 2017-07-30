@@ -87,6 +87,7 @@ class OCLexDFA: public OCLexNFA
 		 *	Final DFA structure
 		 */
 
+		std::vector<OCCharSet> charClasses;
 		std::vector<std::string> codeRules;
 		std::vector<OCLexDFAState> dfaStates;
 
