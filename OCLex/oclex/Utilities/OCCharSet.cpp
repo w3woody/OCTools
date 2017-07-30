@@ -62,7 +62,7 @@ void OCCharSet::SetCharacter(unsigned char ch)
  *		Teset if character is set
  */
 
-bool OCCharSet::TestCharacter(unsigned char ch)
+bool OCCharSet::TestCharacter(unsigned char ch) const
 {
 	return	(a[0x07 & (ch >> 5)] & 1UL << (0x1F & ch)) ? true : false;
 }
@@ -236,5 +236,103 @@ OCCharSet OCCharSet::operator ~ () const
 	OCCharSet s = *this;
 	s.Invert();
 	return s;
+}
+
+/************************************************************************/
+/*																		*/
+/*	Debugging															*/
+/*																		*/
+/************************************************************************/
+
+static std::string StringForChar(int ch)
+{
+	char buffer[32];
+
+	if ((ch < 32) || (ch >= 128)) {
+		sprintf(buffer,"\\%03o",ch);
+	} else if ((ch == '[') || (ch == ']') || (ch == '-') || (ch == '^')) {
+		sprintf(buffer,"\\%c",(char)ch);
+	} else {
+		buffer[0] = (char)ch;
+		buffer[1] = 0;
+	}
+
+	return buffer;
+}
+
+/*	OCCharSet::ToString
+ *
+ *		Convert to a shortcut string for debugging purposes
+ */
+
+std::string OCCharSet::ToString() const
+{
+	std::string ret;
+	int charCount;
+	int c;
+
+	/*
+	 *	Test special cases
+	 */
+
+	bool flag = false;
+	for (int i = 0; i < 8; ++i) {
+		if (~a[i] != 0) {
+			flag = true;
+			break;
+		}
+	}
+
+	if (!flag) {
+		return ".";
+	}
+
+	flag = false;
+	for (int i = 0; i < 8; ++i) {
+		if (a[i] != 0) {
+			flag = true;
+			break;
+		}
+	}
+
+	if (!flag) {
+		return "[]";
+	}
+
+	/*
+	 *	Now iterate forward to draw up the string
+	 */
+
+	charCount = 0;
+	c = 0;
+	while (c < 256) {
+		/* Skip spaces */
+		while (!TestCharacter(c)) ++c;
+		if (c >= 256) break;
+		int sc = c;
+		while ((c < 256) && TestCharacter(c)) {
+			++c;
+			++charCount;
+		}
+
+		if (c - sc == 1) {
+			ret.append(StringForChar(sc));
+		} else if (c - sc == 2) {
+			ret.append(StringForChar(sc));
+			ret.append(StringForChar(c-1));
+		} else {
+			ret.append(StringForChar(sc));
+			ret.append("-");
+			ret.append(StringForChar(c-1));
+		}
+	}
+
+	if (charCount == 1) {
+		return ret;
+	}
+
+	std::string ch = "[";
+	ch.append(ret).append("]");
+	return ch;
 }
 

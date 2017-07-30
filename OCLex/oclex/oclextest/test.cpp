@@ -12,6 +12,7 @@
 #include <OCUtilities.h>
 #include "OCLexParser.h"
 #include "OCLexNFA.h"
+#include "OCLexDFA.h"
 #include <set>
 
 static void PrintCharacter(OCLexNFATransition &t)
@@ -56,9 +57,7 @@ static void DumpNFADebug(OCLexNFA &c, OCLexNFAReturn ret)
 				if (t.e) {
 					printf("%u --> %u\n",state,t.state);
 				} else {
-					printf("%u -- ",state);
-					PrintCharacter(t);
-					printf(" --> %u\n",t.state);
+					printf("%u -- %s --> %u\n",state,t.set.ToString().c_str(),t.state);
 				}
 			}
 		}
@@ -111,11 +110,48 @@ void Test3()
 	printf("%s\n",set.ToString().c_str());
 }
 
+void PrintDFA(const OCLexDFA &dfa)
+{
+	int i,len = (int)dfa.dfaStates.size();
+	for (i = 0; i < len; ++i) {
+		const OCLexDFAState &s = dfa.dfaStates[i];
+
+		int t,tlen = (int)s.list.size();
+		for (t = 0; t < tlen; ++t) {
+			const OCLexDFATransition &trans = s.list[t];
+
+			printf("%d -- %s --> %u\n",i,trans.set.ToString().c_str(),trans.state);
+		}
+
+		if (s.end) {
+			printf("%u endrule %s\n",i,dfa.codeRules[s.endRule].c_str());
+		}
+	}
+}
+
+void Test4()
+{
+	std::map<std::string,std::string> definitions;
+	definitions["D"] = "[0-9]";
+
+	OCLexDFA dfa(definitions);
+
+	dfa.AddRuleSet("{D}+", "A");
+	dfa.AddRuleSet("[A-Za-z][A-Za-z0-9]*", "B");
+	dfa.AddRuleSet("0x[A-Fa-f0-9]+", "C");
+	dfa.AddRuleSet(".","D");
+
+	dfa.GenerateDFA();
+
+	PrintDFA(dfa);
+}
+
 int main(int argc, const char * argv[])
 {
-	Test1();
-	Test2();
-	Test3();
+//	Test1();
+//	Test2();
+//	Test3();
+	Test4();
 
 	printf("Done.\n");
 	return 0;

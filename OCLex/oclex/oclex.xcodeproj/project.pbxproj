@@ -18,6 +18,7 @@
 		EF0112191F295BEF006FFFFB /* OCCharSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112171F295BEF006FFFFB /* OCCharSet.cpp */; };
 		EF01121A1F295C36006FFFFB /* OCCharSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112171F295BEF006FFFFB /* OCCharSet.cpp */; };
 		EF0112211F2CFAEB006FFFFB /* OCLexDFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */; };
+		EF0112221F2D5840006FFFFB /* OCLexDFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -238,6 +239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */,
+				EF0112221F2D5840006FFFFB /* OCLexDFA.cpp in Sources */,
 				EF0111AF1F263F91006FFFFB /* main.cpp in Sources */,
 				EF01121A1F295C36006FFFFB /* OCCharSet.cpp in Sources */,
 				EF01120E1F295584006FFFFB /* OCLexNFA.cpp in Sources */,

@@ -453,6 +453,7 @@ OCLexNFAReturn OCLexNFA::Construct(const char * &regex)
 			} else if (*regex == '.') {
 				ch = 0;		// special marker
 				any = true;
+				++regex;
 			} else {
 				ch = *regex++;
 			}

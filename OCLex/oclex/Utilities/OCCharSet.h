@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <string>
 
 /************************************************************************/
 /*																		*/
@@ -40,7 +41,7 @@ class OCCharSet
 		void Invert();
 		void ClearCharacter(unsigned char ch);
 		void SetCharacter(unsigned char ch);
-		bool TestCharacter(unsigned char ch);
+		bool TestCharacter(unsigned char ch) const;
 
 		OCCharSet &operator &= (const OCCharSet &cset);
 		OCCharSet &operator |= (const OCCharSet &cset);
@@ -56,6 +57,8 @@ class OCCharSet
 		OCCharSet operator | (const OCCharSet &b) const;
 		OCCharSet operator ^ (const OCCharSet &b) const;
 		OCCharSet operator ~ () const;
+
+		std::string ToString() const;
 
 	private:
 		uint32_t a[8];

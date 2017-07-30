@@ -125,8 +125,9 @@ void OCLexDFA::SplitCharSet(std::vector<OCCharSet> &set)
 {
 	if (set.size() <= 1) return;		// Nothing to split
 
-	bool split = false;
+	bool split;
 	do {
+		split = false;
 		size_t len = set.size();
 		for (size_t i = 0; (i < len) && !split; ++i) {
 			for (size_t j = i+1; j < len; ++j) {
@@ -196,7 +197,7 @@ void OCLexDFA::FindEndRule(OCLexDFAState &state, const OCIntegerSet &set)
 		uint32_t nfaState = set.Item(i);
 
 		const OCLexNFAState &s = states[nfaState];
-		if (state.end) {
+		if (s.end) {
 			if (!found) {
 				ruleIndex = s.endRule;
 				found = true;
@@ -257,6 +258,10 @@ bool OCLexDFA::GenerateDFA()
 	FindEndRule(dfa,start);
 	dfaStates.push_back(dfa);
 
+	if (dfa.end) {
+		fprintf(stderr,"Warning: Lex rules contains a potentially empty regular expression");
+	}
+
 	setMap[start] = stateID;
 	stateQueue.push_back(start);
 
@@ -278,7 +283,6 @@ bool OCLexDFA::GenerateDFA()
 		stateQueue.pop_front();
 
 		stateID = setMap[state];
-		OCLexDFAState &dfaState = dfaStates[stateID];
 
 		/*
 		 *	Build total list of transitions
@@ -294,8 +298,10 @@ bool OCLexDFA::GenerateDFA()
 
 			OCLexNFAState &nfa = states[nfaState];
 			for (iter = nfa.list.begin(); iter != nfa.list.end(); ++iter) {
-				transitions.push_back(*iter);
-				cset.push_back(iter->set);
+				if (!iter->e) {
+					transitions.push_back(*iter);
+					cset.push_back(iter->set);
+				}
 			}
 		}
 
@@ -336,17 +342,18 @@ bool OCLexDFA::GenerateDFA()
 			 *	if it does not, add it.
 			 */
 
+			int newStateID;
 			if (setMap.end() == setMap.find(newState)) {
-				stateID = (uint32_t)dfaStates.size();
+				newStateID = (uint32_t)dfaStates.size();
 
 				OCLexDFAState dfa;
 				FindEndRule(dfa,newState);
 				dfaStates.push_back(dfa);
 
-				setMap[newState] = stateID;
+				setMap[newState] = newStateID;
 				stateQueue.push_back(newState);
 			} else {
-				stateID = setMap[newState];
+				newStateID = setMap[newState];
 			}
 
 			/*
@@ -354,8 +361,10 @@ bool OCLexDFA::GenerateDFA()
 			 *	state in stateID.
 			 */
 
+			OCLexDFAState &dfaState = dfaStates[stateID];
+
 			OCLexDFATransition t;
-			t.state = stateID;		// state we're going to
+			t.state = newStateID;	// state we're going to
 			t.set = *csetIter;		// transition which triggers new state
 			dfaState.list.push_back(t);
 		}
