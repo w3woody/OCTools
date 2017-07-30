@@ -32,13 +32,18 @@ static const char *GHeader =
 	" *\tand EOF is marked with -1.\n"                                        \
 	" */\n"                                                                   \
 	"\n"                                                                      \
+	"#ifndef OCFileInputProtocol\n"                                           \
+	"#define OCFileInputProtocol\n"                                           \
+	"\n"                                                                      \
 	"@protocol OCFileInput <NSObject>\n"                                      \
 	"- (int)readByte;\n"                                                      \
 	"@end\n"                                                                  \
 	"\n"                                                                      \
+	"#endif\n"                                                                \
+	"\n"                                                                      \
 	"/*\t%s\n"                                                                \
 	" *\n"                                                                    \
-	" *\t\tThe standard interface used by the automatically generated lexer.\n" \
+	" *\t\tThe standard lexical parser\n"                                     \
 	" */\n"                                                                   \
 	"\n"                                                                      \
 	"@interface %s : NSObject\n"                                              \

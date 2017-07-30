@@ -15,9 +15,14 @@
  *	and EOF is marked with -1.
  */
 
+#ifndef OCFileInputProtocol
+#define OCFileInputProtocol
+
 @protocol OCFileInput <NSObject>
 - (int)readByte;
 @end
+
+#endif
 
 /*
  *	This is a sample hand-built lexer, used to help figure out the code to
