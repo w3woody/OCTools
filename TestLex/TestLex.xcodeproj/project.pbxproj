@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		EF0112301F2E0781006FFFFB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EF01122F1F2E0781006FFFFB /* main.m */; };
 		EF0112391F2E07D7006FFFFB /* OCLexer.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0112381F2E07D7006FFFFB /* OCLexer.m */; };
+		EF0112401F2E781A006FFFFB /* OCTest.m in Sources */ = {isa = PBXBuildFile; fileRef = EF01123F1F2E781A006FFFFB /* OCTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,8 @@
 		EF01122F1F2E0781006FFFFB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EF0112371F2E07D7006FFFFB /* OCLexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexer.h; sourceTree = "<group>"; };
 		EF0112381F2E07D7006FFFFB /* OCLexer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCLexer.m; sourceTree = "<group>"; };
+		EF01123E1F2E781A006FFFFB /* OCTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCTest.h; sourceTree = "<group>"; };
+		EF01123F1F2E781A006FFFFB /* OCTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +74,8 @@
 			children = (
 				EF0112371F2E07D7006FFFFB /* OCLexer.h */,
 				EF0112381F2E07D7006FFFFB /* OCLexer.m */,
+				EF01123E1F2E781A006FFFFB /* OCTest.h */,
+				EF01123F1F2E781A006FFFFB /* OCTest.m */,
 			);
 			path = Lex;
 			sourceTree = "<group>";
@@ -134,6 +139,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0112391F2E07D7006FFFFB /* OCLexer.m in Sources */,
+				EF0112401F2E781A006FFFFB /* OCTest.m in Sources */,
 				EF0112301F2E0781006FFFFB /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -265,6 +271,7 @@
 				EF0112351F2E0781006FFFFB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -147,8 +147,7 @@ void Test4()
 	PrintDFA(dfa);
 
 	printf("\n\n\n");
-	dfa.WriteOCFile(stdout);
-
+	dfa.WriteOCFile("OCTest",stdout);
 }
 
 int main(int argc, const char * argv[])
