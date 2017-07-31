@@ -166,7 +166,7 @@ write:
         @property (assign) NSInteger intProperty;
     }
 
-Note that all four sections are optional in the OCLex file, and may be
+Note that all five sections are optional in the OCLex file, and may be
 omitted. 
 
 #### Rules
