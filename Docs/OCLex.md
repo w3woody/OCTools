@@ -149,7 +149,7 @@ class declaration in the header file.
 For example, if you wish to include a new method in your class declaration,
 you can write:
 
-    %header {
+    %global {
         - (NSInteger)intValue;
     }
 
