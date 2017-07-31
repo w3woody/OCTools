@@ -1,7 +1,5 @@
 # OCLex
 
-01234567890123456789012345678901234567890123456789012345678901234567890123456789
-
 A sorta drop-in replacement for Lex which generates a text lexical parser in
 Objective C.
 
