@@ -65,6 +65,7 @@ bool OCLexParser::ParseFile(OCLexer &lex)
 	 *
 	 *		definition regex
 	 *		or %{...%}
+	 *		%class { ... }
 	 *
 	 *	rules:
 	 *
@@ -136,6 +137,49 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 			} else {
 				inError = false;
 				definitions[def] = rule;
+			}
+		} else if (sym == '%') {
+			/*
+			 *	Class declarations
+			 */
+
+			sym = lex.ReadToken();
+			if ((sym != OCTOKEN_TOKEN) || (lex.fToken != "class")) {
+				fprintf(stderr,"%s:%d Syntax error in declarations\n",lex.fFileName.c_str(),lex.fTokenLine);
+			} else {
+				int sym = lex.ReadToken();
+				if (sym == '{') {
+					inError = false;
+					std::string code;
+
+					/*
+					 *	Parse the stream of tokens, copying them over.
+					 */
+
+					int cdepth = 1;
+
+					for (;;) {
+						sym = lex.ReadToken(false);
+						if (sym == -1) {
+							fprintf(stderr,"%s:%d Unexpected end of file reached in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
+							return false;
+						} else if (sym == '{') {
+							++cdepth;
+							code += lex.fToken;
+						} else if (sym == '}') {
+							--cdepth;
+							if (cdepth <= 0) break;
+							code += lex.fToken;
+						} else {
+							code += lex.fToken;
+						}
+					}
+
+					classDecl = code;
+				} else {
+					inError = true;
+					fprintf(stderr,"%s:%d Syntax error in declarations\n",lex.fFileName.c_str(),lex.fTokenLine);
+				}
 			}
 		} else {
 			if (!inError) {

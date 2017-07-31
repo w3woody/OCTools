@@ -88,6 +88,7 @@ class OCLexDFA: public OCLexNFA
 		 */
 
 		std::string declCode;
+		std::string classDecl;
 		std::string endCode;
 
 		std::vector<OCCharSet> charClasses;

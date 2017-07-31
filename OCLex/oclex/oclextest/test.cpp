@@ -16,17 +16,6 @@
 #include "OCLexGenerator.h"
 #include <set>
 
-static void PrintCharacter(OCLexNFATransition &t)
-{
-	int i;
-
-	for (i = 32; i < 128; ++i) {
-		if (t.set.TestCharacter(i)) {
-			printf("%c",(char)i);
-		}
-	}
-}
-
 static void DumpNFADebug(OCLexNFA &c, OCLexNFAReturn ret)
 {
 	/* Print information */
