@@ -46,7 +46,9 @@ class OCLexParser
 		std::string declCode;		// code in the declaration section
 
 		// Class parameters
-		std::string classDecl;		// code in output file declarations
+		std::string classHeader;	// code in .h header section
+		std::string classLocal;		// code in .m code declarations
+		std::string classGlobal;	// code in .h code declaratiokns
 
 		// definitions
 		std::map<std::string,std::string> definitions;

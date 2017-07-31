@@ -216,7 +216,9 @@ int main(int argc, const char * argv[])
 
 	OCLexGenerator generator(parser.definitions);
 	generator.declCode = parser.declCode;
-	generator.classDecl = parser.classDecl;
+	generator.classGlobal = parser.classGlobal;
+	generator.classLocal = parser.classLocal;
+	generator.classHeader = parser.classHeader;
 	generator.endCode = parser.endCode;
 
 	// Add rules and generate NFA

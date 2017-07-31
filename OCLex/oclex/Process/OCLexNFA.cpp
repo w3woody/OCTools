@@ -85,8 +85,6 @@ char OCLexNFA::EscapeCharacter(const char * &regex)
 	}
 }
 
-// ### TODO: Alloc
-
 /*
  *	Alloc new state, return index
  */
@@ -172,6 +170,16 @@ OCLexNFAReturn OCLexNFA::ConstructCharSet(const char * &regex)
 			char nextChar;
 
 			nextChar = *++regex;
+
+			// Fringe case: -], we count the ] as a close. If you want
+			// to run the range to ], insert \] instead.
+			if (nextChar == ']') {
+				atStart = false;
+				lastChar = '-';
+				t.set.SetCharacter(lastChar);
+				continue;
+			}
+
 			if (nextChar == '\\') {
 				++regex;
 				nextChar = EscapeCharacter(regex);
@@ -203,6 +211,7 @@ OCLexNFAReturn OCLexNFA::ConstructCharSet(const char * &regex)
 
 			atStart = false;
 			lastChar = *regex++;
+			t.set.SetCharacter(lastChar);
 		}
 	}
 	if (*regex == ']') ++regex;
@@ -260,11 +269,30 @@ OCLexNFAReturn OCLexNFA::ConstructDefinition(const char * &regex)
 		return ret;
 	} else {
 		/*
-		 *	Recursively parse the embedded regular expression
+		 *	Determine if we are already in this definition. If we are, we
+		 *	are in a loop
 		 */
 
+		if (inDefinition.find(defname) != inDefinition.end()) {
+			fprintf(stderr,"Definition %s creates an infinite loop of definitions",defname.c_str());
+			fprintf(stderr,"Fatal. Halting");
+			exit(1);
+		}
+
+
+		/*
+		 *	Recursively parse the embedded regular expression, tracking those
+		 *	definitions we've already hit.
+		 */
+
+		inDefinition.insert(defname);
+
 		const char *str = definitions[defname].c_str();
-		return Construct(str);
+		OCLexNFAReturn ret = Construct(str);
+
+		inDefinition.erase(defname);
+
+		return ret;
 	}
 }
 

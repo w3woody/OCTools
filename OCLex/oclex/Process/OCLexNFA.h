@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <list>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -113,6 +114,7 @@ class OCLexNFA
 	private:
 		uint32_t stateIndex;
 		std::map<std::string,std::string> &definitions;
+		std::set<std::string> inDefinition;
 
 		OCLexNFAReturn Construct(const char *&regex);
 		char EscapeCharacter(const char *&regex);

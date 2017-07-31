@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+
+
 /*	OCFileInput
  *
  *		The input file stream must correspond to this interface to read
@@ -49,4 +51,7 @@
 
 - (NSInteger)lex;						// Method to read next token
 
+
+
 @end
+

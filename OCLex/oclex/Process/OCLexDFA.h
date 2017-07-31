@@ -87,9 +87,11 @@ class OCLexDFA: public OCLexNFA
 		 *	Final DFA structure
 		 */
 
-		std::string declCode;
-		std::string classDecl;
-		std::string endCode;
+		std::string declCode;			// include section of .m
+		std::string classHeader;		// class declaration of .h
+		std::string classLocal;			// class declaration of .m
+		std::string classGlobal;		// class declaration of .h
+		std::string endCode;			// code section of .m
 
 		std::vector<OCCharSet> charClasses;
 		std::vector<std::string> codeRules;
