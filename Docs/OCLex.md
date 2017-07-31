@@ -211,7 +211,7 @@ rule--and the longest substring matches all the way from the very first "/*"
 of the first comment all the way down to the last "*/" of the "Done" comment.
 
 **Unlike Lex or Flex**, you must provide rules for matching all possible
-substring; there is no implicit rule to ignore illegal characters. If you wish
+substrings; there is no implicit rule to ignore illegal characters. If you wish
 to emulate this behavior, you must provide the following as the last rule in
 your rule set:
 
@@ -226,7 +226,7 @@ Instead, this must be written:
 
     {DIGIT}+     { return INTEGER; }
 
-(Note: when the code segment is written to the Objective C file, the curly
+When the code segment is written to the Objective C file, the curly
 braces are stripped. So if you need to declare a local variable in your action
 code segment, you will need to write:
 
@@ -350,7 +350,7 @@ The overall header file that is written by oclex looks like the following:
     @property (copy)   NSString *text;		// string of last read token
     @property (assign) NSString *abort;		// Set to abort string if problem
     
-    - (NSInteger)lex;						// Method to read next token
+    - (NSInteger)lex;						    // Method to read next token
     // (Optional %global declarations go here)
     @end
 

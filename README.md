@@ -22,6 +22,10 @@ environment to simultaneously parse multiple files. The individual classes are
 not thread safe, meaning one instance of a class cannot be accessed by multiple
 threads at the same time.)
 
+## Using with Xcode
+
+(TODO: Insert instructions on how to build and incorporate into Xcode.)
+
 ## License
 
 Licensed under the open-source BSD license:
