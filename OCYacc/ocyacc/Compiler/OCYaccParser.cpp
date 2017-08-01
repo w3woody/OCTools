@@ -265,6 +265,49 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						startSymbol = lex.fToken;
 					}
 
+				} else if ((lex.fToken == "global") || (lex.fToken == "local") || (lex.fToken == "header")) {
+					/*
+					 *	Parse the stream of tokens for code storage
+					 */
+
+					std::string codeType = lex.fToken;
+					int sym = lex.ReadToken();
+					if (sym == '{') {
+						std::string code;
+
+						/*
+						 *	Parse the stream of tokens, copying them over.
+						 */
+
+						int cdepth = 1;
+
+						for (;;) {
+							sym = lex.ReadToken(false);
+							if (sym == -1) {
+								fprintf(stderr,"%s:%d Unexpected end of file reached in declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
+								return false;
+							} else if (sym == '{') {
+								++cdepth;
+								code += lex.fToken;
+							} else if (sym == '}') {
+								--cdepth;
+								if (cdepth <= 0) break;
+								code += lex.fToken;
+							} else {
+								code += lex.fToken;
+							}
+						}
+
+						if (codeType == "header") {
+							classHeader = code;
+						} else if (codeType == "local") {
+							classLocal = code;
+						} else {
+							classGlobal = code;
+						}
+					} else {
+						fprintf(stderr,"%s:%d Syntax error in declarations\n",lex.fFileName.c_str(),lex.fTokenLine);
+					}
 				} else {
 					fprintf(stderr,"%s:%d Unknown declaration %s in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
 

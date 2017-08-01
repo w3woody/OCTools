@@ -42,11 +42,11 @@ class OCYaccParser
 		 *	Definitions
 		 */
 
-		// Declaration code
-		std::string declCode;		// code in the declaration section
-
-		// End code block
-		std::string endCode;
+		std::string declCode;			// include section of .m
+		std::string classHeader;		// class declaration of .h
+		std::string classLocal;			// class declaration of .m
+		std::string classGlobal;		// class declaration of .h
+		std::string endCode;			// code section of .m
 
 		/*
 		 *	Associativity, if declared for terminal symbols
