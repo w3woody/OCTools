@@ -13,6 +13,8 @@
 		EF0112021F283240006FFFFB /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112011F283240006FFFFB /* test.cpp */; };
 		EF0112061F283265006FFFFB /* OCYaccParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111F81F281103006FFFFB /* OCYaccParser.cpp */; };
 		EF0112081F28327D006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0112071F28327D006FFFFB /* liboccommon.a */; };
+		EF0112441F314916006FFFFB /* OCYaccNFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112421F314916006FFFFB /* OCYaccNFA.cpp */; };
+		EF0112451F314916006FFFFB /* OCYaccNFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112421F314916006FFFFB /* OCYaccNFA.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,6 +48,8 @@
 		EF0112011F283240006FFFFB /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		EF0112071F28327D006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = "../../../../Library/Developer/Xcode/DerivedData/OCTools-alzzkwttbjtlkwgzhjspyeulqhwq/Build/Products/Debug/liboccommon.a"; sourceTree = "<group>"; };
 		EF0112091F28D829006FFFFB /* test.yacc */ = {isa = PBXFileReference; explicitFileType = sourcecode.yacc; path = test.yacc; sourceTree = "<group>"; };
+		EF0112421F314916006FFFFB /* OCYaccNFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccNFA.cpp; sourceTree = "<group>"; };
+		EF0112431F314916006FFFFB /* OCYaccNFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccNFA.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +75,7 @@
 		EF0111B51F263FBA006FFFFB = {
 			isa = PBXGroup;
 			children = (
+				EF0112411F3148E0006FFFFB /* Process */,
 				EF0111F71F2810E2006FFFFB /* Compiler */,
 				EF0111C01F263FBA006FFFFB /* ocyacc */,
 				EF0112001F283240006FFFFB /* ocyacctest */,
@@ -121,6 +126,15 @@
 				EF0112091F28D829006FFFFB /* test.yacc */,
 			);
 			path = ocyacctest;
+			sourceTree = "<group>";
+		};
+		EF0112411F3148E0006FFFFB /* Process */ = {
+			isa = PBXGroup;
+			children = (
+				EF0112421F314916006FFFFB /* OCYaccNFA.cpp */,
+				EF0112431F314916006FFFFB /* OCYaccNFA.h */,
+			);
+			path = Process;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -204,6 +218,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF0112441F314916006FFFFB /* OCYaccNFA.cpp in Sources */,
 				EF0111FA1F281103006FFFFB /* OCYaccParser.cpp in Sources */,
 				EF0111C21F263FBA006FFFFB /* main.cpp in Sources */,
 			);
@@ -213,6 +228,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF0112451F314916006FFFFB /* OCYaccNFA.cpp in Sources */,
 				EF0112061F283265006FFFFB /* OCYaccParser.cpp in Sources */,
 				EF0112021F283240006FFFFB /* test.cpp in Sources */,
 			);
