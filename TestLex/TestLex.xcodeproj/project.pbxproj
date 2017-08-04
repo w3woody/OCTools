@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EF0112301F2E0781006FFFFB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EF01122F1F2E0781006FFFFB /* main.m */; };
-		EF0112721F34AA39006FFFFB /* OCLexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0112711F34AA39006FFFFB /* OCLexTest.m */; };
+		EF0112751F34C4CD006FFFFB /* OCLexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0112741F34C4CD006FFFFB /* OCLexTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +26,8 @@
 /* Begin PBXFileReference section */
 		EF01122C1F2E0781006FFFFB /* TestLex */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestLex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF01122F1F2E0781006FFFFB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		EF0112701F34AA39006FFFFB /* OCLexTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexTest.h; sourceTree = "<group>"; };
-		EF0112711F34AA39006FFFFB /* OCLexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCLexTest.m; sourceTree = "<group>"; };
+		EF0112731F34C4CD006FFFFB /* OCLexTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexTest.h; sourceTree = "<group>"; };
+		EF0112741F34C4CD006FFFFB /* OCLexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCLexTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,8 +69,8 @@
 		EF0112361F2E0791006FFFFB /* Lex */ = {
 			isa = PBXGroup;
 			children = (
-				EF0112701F34AA39006FFFFB /* OCLexTest.h */,
-				EF0112711F34AA39006FFFFB /* OCLexTest.m */,
+				EF0112731F34C4CD006FFFFB /* OCLexTest.h */,
+				EF0112741F34C4CD006FFFFB /* OCLexTest.m */,
 			);
 			path = Lex;
 			sourceTree = "<group>";
@@ -134,7 +134,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0112301F2E0781006FFFFB /* main.m in Sources */,
-				EF0112721F34AA39006FFFFB /* OCLexTest.m in Sources */,
+				EF0112751F34C4CD006FFFFB /* OCLexTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

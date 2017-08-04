@@ -240,6 +240,42 @@ code segment, you will need to write:
 
 Note that actions may span multiple lines.
 
+##### Token Values associated with Rules
+
+OCLex uses a slightly different mechanism for passing values to OCYacc than
+used by Lex and Yacc. To review, Yacc uses the %union directive to specify
+a union structure in C to represent the potential values of symbols and tokens.
+This structure is exposed to Lex via the **yylval** global, which is a union
+object declared with the contents of the %union declaration.
+
+Thus, if you wish to pass back an integer value associated with a token (such
+as returning the integer value of a string of digits), you can declare in Yacc
+a union like:
+
+    %union {
+        int tokenValue;
+    }
+    %token <tokenValue> INTEGER
+
+And in your Lex production rule, write:
+
+    [0-9]+    { yylval.tokenValue = atoi(yytext); return INTEGER; }
+
+Objective-C does not provide unions, so OCLex and OCYacc uses a different
+mechanism. Each token in OCYacc may have an associated type; the type represents
+a class that stores the value. No %union{...} declaration is required.
+
+Thus, in OCYacc, you'd replace the above with:
+
+    %token <NSNumber> INTEGER
+
+This indicates our integer value is returned in an NSNumber object. You would
+then set the value **self.value** to the value in your Lex production rule:
+
+    [0-9]+    { self.value = @( self.text.intValue ); return INTEGER; }
+
+See the [OCYacc](OCYacc.ml) documentation for more information.
+
 #### Code
 
 The final code segment is optional and may be omitted. If provided, any code
@@ -267,6 +303,7 @@ file "MyInput.l":
     @property (copy)   NSString *filename; // marked filename (if provided)
     @property (copy)   NSString *text;     // string of last read token
     @property (assign) NSString *abort;    // Set to abort string if problem
+    @property (strong) id<NSObject> value; // Lex/Yacc value of token (optional)
     
     - (NSInteger)lex;                      // Method to read next token
     
@@ -300,6 +337,10 @@ The fields provided are:
     If the **lex** method returns -1 because of an error, the **abort** field
     will contain a text string explaining the error. On and end of file
     condition, **abort** will be nil.
+
+* **value**
+    An optional value which is associated with a token that is used by OCYacc.
+    See the discussion above for more information.
 
 ### The OCFileInput protocol
 

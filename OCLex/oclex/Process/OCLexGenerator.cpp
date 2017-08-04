@@ -61,6 +61,8 @@ static const char *GHeader2 =
 	"- (NSString *)abort;\n"                                                  \
 	"\n"                                                                      \
 	"- (NSInteger)lex;\n"                                                     \
+	"\n"                                                                      \
+	"- (id<NSObject>)value;\n"                                                \
 	"@end\n"                                                                  \
 	"\n"                                                                      \
 	"#endif\n"
@@ -87,6 +89,7 @@ static const char *GHeader2 =
 	"@property (copy)   NSString *filename;\t// marked filename (if provided)\n" \
 	"@property (copy)   NSString *text;\t\t// string of last read token\n"    \
 	"@property (assign) NSString *abort;\t\t// Set to abort string if problem\n" \
+	"@property (strong) id<NSObject> value;\t// Lex/Yacc value of token (optional)\n"    \
 	"\n"                                                                      \
 	"- (NSInteger)lex;\t\t\t\t\t\t// Method to read next token\n"             \
 	"\n";

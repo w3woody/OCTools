@@ -44,6 +44,8 @@
 - (NSString *)abort;
 
 - (NSInteger)lex;
+
+- (id<NSObject>)value;
 @end
 
 #endif
@@ -70,6 +72,7 @@
 @property (copy)   NSString *filename;	// marked filename (if provided)
 @property (copy)   NSString *text;		// string of last read token
 @property (assign) NSString *abort;		// Set to abort string if problem
+@property (strong) id<NSObject> value;	// Lex/Yacc value of token (optional)
 
 - (NSInteger)lex;						// Method to read next token
 

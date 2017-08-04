@@ -106,3 +106,4 @@ Characters during parsing are then converted to their respective character class
 
 The other tables that are generated include the transition tables themselves (which represent the f' function transitioning from DFA states as integers to new DFA states), and the action rules associated with each DFA state, if any.
 
+We also use an optimization to reduce the size of the final transition table f'. By compressing the transition table using a [Compressed Sparse Row](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_.28CSR.2C_CRS_or_Yale_format.29) format, we trade an O(log(N)) lookup on the symbol class with a significant reduction in the resulting matrix size. See the generated code for more information.
