@@ -125,21 +125,6 @@ void OCLexDFA::SplitCharSet(std::vector<OCCharSet> &set)
 {
 	if (set.size() <= 1) return;		// Nothing to split
 
-	static int Count = 0;
-	printf("%d\n",++Count);
-	{
-		size_t i,len = set.size();
-		for (i = 0; i < len; ++i) {
-			std::string str = set[i].ToString();
-			if (str == "*") {
-				printf("###\n");
-			}
-			if (Count == 7) {
-				printf("%s\n",str.c_str());
-			}
-		}
-	}
-
 	bool split;
 	do {
 		split = false;
@@ -187,16 +172,6 @@ void OCLexDFA::SplitCharSet(std::vector<OCCharSet> &set)
 			}
 		}
 	} while (split);
-
-	{
-		size_t i,len = set.size();
-		for (i = 0; i < len; ++i) {
-			std::string str = set[i].ToString();
-			if (str == "*") {
-				printf("###\n");
-			}
-		}
-	}
 }
 
 /************************************************************************/

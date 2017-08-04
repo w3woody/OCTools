@@ -96,7 +96,7 @@ static void ParseArgs(int argc, const char *argv[])
 	GInputFile[0] = 0;
 	GClassName[0] = 0;
 
-	for (int i = 1; i < argc; ++i) {
+	for (int i = 1; i < argc; ) {
 		ptr = argv[i++];
 		if (*ptr == '-') {
 			if (!strcmp(ptr,"-h")) {
@@ -174,7 +174,7 @@ int main(int argc, const char * argv[])
 	 */
 
 	if (GClassName[0] == 0) {
-		char *x,*y = NULL, *w = GInputFile;
+		char *x,*y = NULL, *w = GOutputFile;
 		size_t s;
 
 		for (x = GInputFile; *x; ++x) {

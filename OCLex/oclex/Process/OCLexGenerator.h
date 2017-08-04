@@ -43,7 +43,7 @@ class OCLexGenerator : public OCLexDFA
 		void WriteOCFile(const char *className, FILE *f);
 
 	private:
-		void WriteArray(FILE *f, uint16_t *list, size_t len);
+		void WriteArray(FILE *f, uint32_t *list, size_t len);
 		void WriteActions(FILE *f);
 
 		void WriteStates(FILE *f);

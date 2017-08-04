@@ -43,12 +43,34 @@ static const char *GHeader2 =
 	"\n"                                                                      \
 	"#endif\n"                                                                \
 	"\n"                                                                      \
-	"/*\t%s\n"                                                                \
+	"/*\tOCLexInput\n"                                                        \
 	" *\n"                                                                    \
-	" *\t\tThe standard lexical parser\n"                                     \
+	" *\t\tThe protocol for our lex reader file that the lex stream must\n"   \
+	" *\tprovide. This is the same as the protocol generated as part of the OCYacc\n" \
+	" *\toutput, and allows us to glue the Lexer and Parser together.\n"      \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"@interface %s : NSObject\n"                                              \
+	"#ifndef OCLexInputProtocol\n"                                            \
+	"#define OCLexInputProtocol\n"                                            \
+	"\n"                                                                      \
+	"@protocol OCLexInput <NSObject>\n"                                       \
+	"- (NSInteger)line;\n"                                                    \
+	"- (NSInteger)column;\n"                                                  \
+	"- (NSString *)filename;\n"                                               \
+	"- (NSString *)text;\n"                                                   \
+	"- (NSString *)abort;\n"                                                  \
+	"\n"                                                                      \
+	"- (NSInteger)lex;\n"                                                     \
+	"@end\n"                                                                  \
+	"\n"                                                                      \
+	"#endif\n"
+	"\n"                                                                      \
+	"/*\t%s\n"                                                                \
+	" *\n"                                                                    \
+	" *\t\tThe generated lexical parser\n"                                    \
+	" */\n"                                                                   \
+	"\n"                                                                      \
+	"@interface %s : NSObject <OCLexInput>\n"                                 \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tExternal interfaces\n"                                               \
@@ -338,6 +360,37 @@ static const char *GSource3 =
 	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
+	" *\tRead the state for the class/state combination. Decodes the sparce \n" \
+	" *\tmatrix that is compressed in StateMachineIA/JA/A above. If the\n"    \
+	" *\tentry is not found, returns MAXSTATES. This is the same as the lookup\n" \
+	" *\tStateMachine[class][state] if the StateMachine sparse array was\n"   \
+	" *\tunrolled\n"                                                          \
+	" */\n"                                                                   \
+	"\n"                                                                      \
+	"- (uint16_t)stateForClass:(uint16_t)charClass state:(uint16)state\n"     \
+	"{\n"                                                                     \
+	"\tsize_t min,max,mid;\n"                                                 \
+	"\n"                                                                      \
+	"\t/* Find range */\n"                                                    \
+	"\tmin = StateMachineIA[state];\n"                                        \
+	"\tmax = StateMachineIA[state+1];\n"                                      \
+	"\n"                                                                      \
+	"\t/* Binary search for value in ja */\n"                                 \
+	"\twhile (min < max) {\n"                                                 \
+	"\t\tmid = (min + max)/2;\n"                                              \
+	"\t\tuint16_t j = StateMachineJA[mid];\n"                                 \
+	"\t\tif (charClass == j) {\n"                                             \
+	"\t\t\treturn StateMachineA[mid];\n"                                      \
+	"\t\t} else if (charClass < j) {\n"                                       \
+	"\t\t\tmax = mid;\n"                                                      \
+	"\t\t} else {\n"                                                          \
+	"\t\t\tmin = mid+1;\n"                                                    \
+	"\t\t}\n"                                                                 \
+	"\t}\n"                                                                   \
+	"\treturn MAXSTATES;\n"                                                   \
+	"}\n"                                                                     \
+	"\n"                                                                      \
+	"/*\n"                                                                    \
 	" *\tInternal methods declared within the Lex file\n"                     \
 	" */\n";
 
@@ -383,7 +436,7 @@ static const char *GSource4 =
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\tuint16_t charClass = CharClass[ch];\n"                             \
-	"\t\t\tuint16_t newState = StateMachine[charClass + MAXCHARCLASS * state];\n" \
+	"\t\t\tuint16_t newState = [self stateForClass:charClass state:state];\n" \
 	"\t\t\tif (newState >= MAXSTATES) {\n"                                    \
 	"\t\t\t\t/* Illegal state transition */\n"                                \
 	"\t\t\t\tbreak;\n"                                                        \
@@ -478,7 +531,7 @@ static const char *GSource5 =
  *		Write an array. This simply writes the list of items to an array
  */
 
-void OCLexGenerator::WriteArray(FILE *f, uint16_t *list, size_t len)
+void OCLexGenerator::WriteArray(FILE *f, uint32_t *list, size_t len)
 {
 	size_t i = 0;
 
@@ -529,14 +582,14 @@ void OCLexGenerator::WriteStates(FILE *f)
 	 *	Generate the character class list.
 	 */
 
-	uint16_t carray[256];
+	uint32_t carray[256];
 	size_t i,len = charClasses.size();
 	for (i = 0; i < 256; ++i) carray[i] = (uint16_t)len;
 	for (i = 0; i < len; ++i) {
 		const OCCharSet &set = charClasses[i];
 		for (int j = 0; j < 256; ++j) {
 			if (set.TestCharacter((unsigned char)j)) {
-				carray[j] = i;
+				carray[j] = (uint32_t)i;
 			}
 		}
 	}
@@ -570,10 +623,10 @@ void OCLexGenerator::WriteStates(FILE *f)
 
 	size_t alen = codeRules.size();
 	len = dfaStates.size();
-	uint16_t *scratch = (uint16_t *)malloc(len * sizeof(uint16_t));
+	uint32_t *scratch = (uint32_t *)malloc(len * sizeof(uint32_t));
 	for (i = 0; i < len; ++i) {
 		OCLexDFAState &state = dfaStates[i];
-		scratch[i] = state.end ? state.endRule : alen;
+		scratch[i] = state.end ? state.endRule : (uint32_t)alen;
 	}
 
 	fprintf(f,"static uint16_t StateActions[%zu] = {\n",len);
@@ -586,7 +639,7 @@ void OCLexGenerator::WriteStates(FILE *f)
 
 	size_t clen = charClasses.size();
 	size_t tlen = len * clen;
-	scratch = (uint16_t *)malloc(tlen * sizeof(uint16_t));
+	scratch = (uint32_t *)malloc(tlen * sizeof(uint32_t));
 
 	size_t ptr = 0;
 	for (i = 0; i < len; ++i) {
@@ -598,13 +651,13 @@ void OCLexGenerator::WriteStates(FILE *f)
 			 *	Find the transition which intersects
 			 */
 
-			uint16_t newState = (uint16_t)len;
+			uint32_t newState = (uint32_t)len;
 
 			std::vector<OCLexDFATransition>::iterator t;
 			for (t = state.list.begin(); t != state.list.end(); ++t) {
 				if (t->set.Contains(cset)) {
 					// This transition contains our cset. Set and move on
-					newState = (uint16_t)t->state;
+					newState = (uint32_t)t->state;
 					break;
 				}
 			}
@@ -613,16 +666,32 @@ void OCLexGenerator::WriteStates(FILE *f)
 		}
 	}
 
-	fprintf(f,"/*  StateMachine\n");
+	// New format
+	fprintf(f,"/*  StateMachineIA, StateMachineJA, StateMachineA\n");
 	fprintf(f," *\n");
-	fprintf(f," *      Lex state machine. Each item indicates the transition from\n");
-	fprintf(f," *  a character set and the state to a new state. The new state is\n");
-	fprintf(f," *  MAXSTATES if the transition is illegal.\n");
+	        // 01234567890123456789012345678901234567890123456789012345678901234567890123456789
+	fprintf(f," *      Lex state machine in compressed sparce row storage format. We do this\n");
+	fprintf(f," *  in order to compact the resulting sparse matrix state machine so we don't\n");
+	fprintf(f," *  consume as much space. Decoding the new state becomes an O(log(N)) process\n");
+	fprintf(f," *  on the input character class as we use a binary search on the JA array.\n");
 	fprintf(f," *\n");
-	fprintf(f," *      The index is charClass + state * MAXCHARCLASS\n");
+	fprintf(f," *      See the article below for more information:\n");
+	fprintf(f," *\n");
+	fprintf(f," *      https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_.28CSR.2C_CRS_or_Yale_format.29\n");
 	fprintf(f," */\n\n");
-	fprintf(f,"static uint16_t StateMachine[%zu] = {\n",tlen);
-	WriteArray(f,scratch,tlen);
+
+	OCCompressStates comp(clen,len,scratch,(uint32_t)len);
+
+	fprintf(f,"static uint16_t StateMachineIA[%zu] = {\n",comp.iwidth);
+	WriteArray(f,comp.ia,comp.iwidth);
+	fprintf(f,"};\n\n");
+
+	fprintf(f,"static uint16_t StateMachineJA[%zu] = {\n",comp.asize);
+	WriteArray(f,comp.ja,comp.asize);
+	fprintf(f,"};\n\n");
+
+	fprintf(f,"static uint16_t StateMachineA[%zu] = {\n",comp.asize);
+	WriteArray(f,comp.a,comp.asize);
 	fprintf(f,"};\n\n");
 
 	free(scratch);

@@ -95,4 +95,38 @@ class OCIntegerSet
 };
 
 
+/************************************************************************/
+/*																		*/
+/*	State Machine Compression											*/
+/*																		*/
+/************************************************************************/
+
+/*	OCCompressStates
+ *
+ *		Given an input array and the dimensions of the array, this generates
+ *	a compressed state machine using the CSR sparce compression format
+ *	documented here:
+ *
+ *	https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_.28CSR.2C_CRS_or_Yale_format.29
+ */
+
+class OCCompressStates
+{
+	public:
+		// States are in row major format
+		OCCompressStates(size_t width, size_t height, uint32_t *states, uint32_t illegal);
+		~OCCompressStates();
+
+		/*
+		 *	Values calculated on construction
+		 */
+
+		size_t iwidth;
+		uint32_t *ia;
+
+		size_t asize;
+		uint32_t *ja;
+		uint32_t *a;
+};
+
 #endif /* OCUtilities_h */

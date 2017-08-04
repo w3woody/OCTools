@@ -12,6 +12,7 @@
 		EF0112131F2955E3006FFFFB /* OCUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = EF0112111F2955E3006FFFFB /* OCUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EF01121C1F2963E5006FFFFB /* OCAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */; };
 		EF01121E1F2B744D006FFFFB /* OCIntegerSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */; };
+		EF0112691F33ED7F006FFFFB /* OCCompressStates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112681F33ED7F006FFFFB /* OCCompressStates.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		EF0112111F2955E3006FFFFB /* OCUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUtilities.h; sourceTree = "<group>"; };
 		EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCAlloc.cpp; sourceTree = "<group>"; };
 		EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCIntegerSet.cpp; sourceTree = "<group>"; };
+		EF0112681F33ED7F006FFFFB /* OCCompressStates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCCompressStates.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				EF0112111F2955E3006FFFFB /* OCUtilities.h */,
 				EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */,
 				EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */,
+				EF0112681F33ED7F006FFFFB /* OCCompressStates.cpp */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -143,6 +146,7 @@
 				EF0111DC1F264093006FFFFB /* OCLexer.cpp in Sources */,
 				EF01121E1F2B744D006FFFFB /* OCIntegerSet.cpp in Sources */,
 				EF01121C1F2963E5006FFFFB /* OCAlloc.cpp in Sources */,
+				EF0112691F33ED7F006FFFFB /* OCCompressStates.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

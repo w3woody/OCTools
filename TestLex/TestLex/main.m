@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "OCLexer.h"
+#import "OCLexTest.h"
 
 @interface TestReader : NSObject <OCFileInput>
 @property (assign) NSInteger pos;
@@ -28,9 +28,9 @@ int main(int argc, const char * argv[]) {
 	    // insert code here...
 
 		TestReader *r = [[TestReader alloc] init];
-		r.test = @"132 . A123 0x0FG";
+		r.test = @"132 + 3.14 * 5";
 
-		OCLexer *lexer = [[OCLexer alloc] initWithStream:r];
+		OCLexTest *lexer = [[OCLexTest alloc] initWithStream:r];
 		NSInteger ident;
 
 		while (-1 != (ident = [lexer lex])) {

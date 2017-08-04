@@ -8,8 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EF0112301F2E0781006FFFFB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EF01122F1F2E0781006FFFFB /* main.m */; };
-		EF0112391F2E07D7006FFFFB /* OCLexer.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0112381F2E07D7006FFFFB /* OCLexer.m */; };
-		EF0112401F2E781A006FFFFB /* OCTest.m in Sources */ = {isa = PBXBuildFile; fileRef = EF01123F1F2E781A006FFFFB /* OCTest.m */; };
+		EF0112721F34AA39006FFFFB /* OCLexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0112711F34AA39006FFFFB /* OCLexTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,10 +26,8 @@
 /* Begin PBXFileReference section */
 		EF01122C1F2E0781006FFFFB /* TestLex */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestLex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF01122F1F2E0781006FFFFB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		EF0112371F2E07D7006FFFFB /* OCLexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexer.h; sourceTree = "<group>"; };
-		EF0112381F2E07D7006FFFFB /* OCLexer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCLexer.m; sourceTree = "<group>"; };
-		EF01123E1F2E781A006FFFFB /* OCTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCTest.h; sourceTree = "<group>"; };
-		EF01123F1F2E781A006FFFFB /* OCTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCTest.m; sourceTree = "<group>"; };
+		EF0112701F34AA39006FFFFB /* OCLexTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexTest.h; sourceTree = "<group>"; };
+		EF0112711F34AA39006FFFFB /* OCLexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCLexTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,10 +69,8 @@
 		EF0112361F2E0791006FFFFB /* Lex */ = {
 			isa = PBXGroup;
 			children = (
-				EF0112371F2E07D7006FFFFB /* OCLexer.h */,
-				EF0112381F2E07D7006FFFFB /* OCLexer.m */,
-				EF01123E1F2E781A006FFFFB /* OCTest.h */,
-				EF01123F1F2E781A006FFFFB /* OCTest.m */,
+				EF0112701F34AA39006FFFFB /* OCLexTest.h */,
+				EF0112711F34AA39006FFFFB /* OCLexTest.m */,
 			);
 			path = Lex;
 			sourceTree = "<group>";
@@ -138,9 +133,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF0112391F2E07D7006FFFFB /* OCLexer.m in Sources */,
-				EF0112401F2E781A006FFFFB /* OCTest.m in Sources */,
 				EF0112301F2E0781006FFFFB /* main.m in Sources */,
+				EF0112721F34AA39006FFFFB /* OCLexTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -26,12 +26,34 @@
 
 #endif
 
-/*	test
+/*	OCLexInput
  *
- *		The standard lexical parser
+ *		The protocol for our lex reader file that the lex stream must
+ *	provide. This is the same as the protocol generated as part of the OCYacc
+ *	output, and allows us to glue the Lexer and Parser together.
  */
 
-@interface test : NSObject
+#ifndef OCLexInputProtocol
+#define OCLexInputProtocol
+
+@protocol OCLexInput <NSObject>
+- (NSInteger)line;
+- (NSInteger)column;
+- (NSString *)filename;
+- (NSString *)text;
+- (NSString *)abort;
+
+- (NSInteger)lex;
+@end
+
+#endif
+
+/*	test
+ *
+ *		The generated lexical parser
+ */
+
+@interface test : NSObject <OCLexInput>
 
 /*
  *	External interfaces

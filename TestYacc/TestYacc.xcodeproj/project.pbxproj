@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EF0112551F335509006FFFFB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0112541F335509006FFFFB /* main.m */; };
+		EF0112611F3356F9006FFFFB /* OCYacc.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0112601F3356F9006FFFFB /* OCYacc.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,8 @@
 /* Begin PBXFileReference section */
 		EF0112511F335509006FFFFB /* TestYacc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestYacc; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF0112541F335509006FFFFB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EF01125F1F3356F9006FFFFB /* OCYacc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYacc.h; sourceTree = "<group>"; };
+		EF0112601F3356F9006FFFFB /* OCYacc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCYacc.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +44,7 @@
 		EF0112481F335509006FFFFB = {
 			isa = PBXGroup;
 			children = (
+				EF01125B1F33565C006FFFFB /* Yacc */,
 				EF0112531F335509006FFFFB /* TestYacc */,
 				EF0112521F335509006FFFFB /* Products */,
 			);
@@ -60,6 +64,15 @@
 				EF0112541F335509006FFFFB /* main.m */,
 			);
 			path = TestYacc;
+			sourceTree = "<group>";
+		};
+		EF01125B1F33565C006FFFFB /* Yacc */ = {
+			isa = PBXGroup;
+			children = (
+				EF01125F1F3356F9006FFFFB /* OCYacc.h */,
+				EF0112601F3356F9006FFFFB /* OCYacc.m */,
+			);
+			path = Yacc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -121,6 +134,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0112551F335509006FFFFB /* main.m in Sources */,
+				EF0112611F3356F9006FFFFB /* OCYacc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +265,7 @@
 				EF01125A1F335509006FFFFB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
