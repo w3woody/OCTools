@@ -7,11 +7,91 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "OCYacc.h"
 
-int main(int argc, const char * argv[]) {
+/************************************************************************/
+/*                                                                      */
+/*  Test Lex environment												*/
+/*                                                                      */
+/************************************************************************/
+
+
+static int GData[] = {
+	YACCTOKEN_ID, '*', YACCTOKEN_ID, '+', YACCTOKEN_ID
+};
+static NSString *GTokens[] = {
+	@"3", @"*", @"4", @"+", @"5"
+};
+
+/*
+ *	OCLexTest
+ *
+ *		test lexer
+ */
+
+@interface OCLexTest : NSObject <OCLexInput>
+{
+	NSInteger index;
+}
+
+- (NSInteger)lex;
+
+@property (assign) NSInteger line;
+@property (assign) NSInteger column;
+@property (copy) NSString *filename;
+@property (copy) NSString *text;
+@property (copy) NSString *abort;
+@property (strong) id<NSObject> value;
+
+@end
+
+@implementation OCLexTest
+- (instancetype)init
+{
+	if (nil != (self = [super init])) {
+		index = 0;
+	}
+	return self;
+}
+
+- (NSInteger)lex
+{
+	if (index >= (sizeof(GData)/sizeof(int))) return -1;
+	self.text = GTokens[index];
+	return GData[index++];
+}
+@end
+
+/************************************************************************/
+/*                                                                      */
+/*  Test Error handler													*/
+/*                                                                      */
+/************************************************************************/
+
+@interface OCError: NSObject<OCYaccError>
+@end
+
+@implementation OCError
+- (void)errorFrom:(OCYacc *)yacc line:(NSInteger)line column:(NSInteger)column
+		filename:(NSString *)fname token:(NSString *)text
+		errorMessage:(NSString *)error
+{
+	NSLog(@"token %@: %@",text,error);
+}
+@end
+
+
+/*
+ *	Test
+ */
+int main(int argc, const char * argv[])
+{
 	@autoreleasepool {
-	    // insert code here...
-	    NSLog(@"Hello, World!");
+		OCYacc *y = [[OCYacc alloc] initWithLexer:[[OCLexTest alloc] init]];
+
+		[y parse];
+
+	    NSLog(@"Done.");
 	}
 	return 0;
 }
