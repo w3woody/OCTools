@@ -148,7 +148,6 @@ static uint16_t StateMachineA[23] = {
 }
 
 @property (strong) id<OCFileInput> file;
-
 @property (strong) NSMutableArray<NSNumber *> *stack;
 
 
@@ -449,9 +448,11 @@ static uint16_t StateMachineA[23] = {
 	uint16_t action = MAXACTIONS;
 
 	self.abort = NULL;
+	self.value = NULL;
+	self.text = NULL;
 
 	/*
-	 *	Run until we hit EOF
+	 *	Run until we hit EOF or a production rule triggers a return
 	 */
 
 	for (;;) {
@@ -555,19 +556,19 @@ static uint16_t StateMachineA[23] = {
 
 		switch (action) {
             case 0:
-                 [self pushNumber]; 
+                [self pushNumber]; 
                 break;
 
             case 1:
-                 [self doOperator]; 
+                [self doOperator]; 
                 break;
 
             case 2:
-                 return [self stackValue]; 
+                return [self stackValue]; 
                 break;
 
             case 3:
-                   
+                
                 break;
 
 			default:

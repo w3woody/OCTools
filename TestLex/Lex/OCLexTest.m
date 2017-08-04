@@ -449,9 +449,11 @@ static uint16_t StateMachineA[23] = {
 	uint16_t action = MAXACTIONS;
 
 	self.abort = NULL;
+	self.value = NULL;
+	self.text = NULL;
 
 	/*
-	 *	Run until we hit EOF
+	 *	Run until we hit EOF or a production rule triggers a return
 	 */
 
 	for (;;) {

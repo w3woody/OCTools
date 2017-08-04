@@ -408,10 +408,12 @@ static const char *GSource4 =
 	"\tuint16_t action = MAXACTIONS;\n"                                       \
 	"\n"                                                                      \
 	"\tself.abort = NULL;\n"                                                  \
+	"\tself.value = NULL;\n"                                                  \
+	"\tself.text = NULL;\n"                                                   \
 	"\n"                                                                      \
 	"\t/*\n"                                                                  \
-	"\t *\tRun until we hit EOF\n"                                            \
-	"\t */\n"                                                                 \
+	"\t *\tRun until we hit EOF or a production rule triggers a return\n"     \
+	"\t */\n"
 	"\n"                                                                      \
 	"\tfor (;;) {\n"                                                          \
 	"\t\t/*\n"                                                                \

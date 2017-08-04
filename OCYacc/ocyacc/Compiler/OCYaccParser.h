@@ -89,9 +89,6 @@ class OCYaccParser
 
 		std::map<std::string,std::string> symbolType;
 
-		// union definition
-		std::string unionDecl;
-
 		// Code declaration section
 		std::map<std::string,SymbolDecl> symbols;
 

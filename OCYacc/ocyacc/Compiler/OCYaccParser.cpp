@@ -117,7 +117,6 @@ void OCYaccParser::SkipToNextDeclaration(OCLexer &lex)
 
 bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 {
-	bool hasUnion = false;
 	for (;;) {
 		int32_t sym = lex.ReadToken();
 
@@ -134,50 +133,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 				fprintf(stderr,"%s:%d Syntax error in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
 				SkipToNextDeclaration(lex);
 			} else {
-				if (lex.fToken == "union") {
-					/*
-					 *	Parse the union declaration
-					 */
-
-					if (hasUnion) {
-						fprintf(stderr,"%s:%d duplicate %%union section\n",lex.fFileName.c_str(),lex.fTokenLine);
-						SkipToNextDeclaration(lex);
-						continue;
-					}
-					hasUnion = true;
-
-					/*
-					 *	Parse between '{' and '}'
-					 */
-
-					if ('{' != lex.ReadToken()) {
-						fprintf(stderr,"%s:%d Expect { after %%union\n",lex.fFileName.c_str(),lex.fTokenLine);
-
-						SkipToNextDeclaration(lex);
-					} else {
-						std::string unionStr;
-						int cdepth = 1;
-
-						for (;;) {
-							sym = lex.ReadToken(false);
-							if (sym == -1) {
-								fprintf(stderr,"%s:%d Unexpected end of file reached in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
-								return false;
-							} else if (sym == '{') {
-								++cdepth;
-								unionStr += lex.fToken;
-							} else if (sym == '}') {
-								--cdepth;
-								if (cdepth <= 0) break;
-								unionStr += lex.fToken;
-							} else {
-								unionStr += lex.fToken;
-							}
-						}
-
-						unionDecl = unionStr;
-					}
-				} else if (lex.fToken == "type") {
+				if (lex.fToken == "type") {
 					/*
 					 *	Parse the type declaration
 					 */
@@ -456,8 +412,8 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 
 				int cdepth = 1;
 
+				sym = lex.ReadToken(true);
 				for (;;) {
-					sym = lex.ReadToken(false);
 					if (sym == -1) {
 						fprintf(stderr,"%s:%d Unexpected end of file reached in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
 						return false;
@@ -471,6 +427,7 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 					} else {
 						inst.code += lex.fToken;
 					}
+					sym = lex.ReadToken(false);
 				}
 
 				// Skip forward after {...} code block

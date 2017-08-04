@@ -162,8 +162,8 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 
 					int cdepth = 1;
 
+					sym = lex.ReadToken(true);
 					for (;;) {
-						sym = lex.ReadToken(false);
 						if (sym == -1) {
 							fprintf(stderr,"%s:%d Unexpected end of file reached in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
 							return false;
@@ -177,6 +177,7 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 						} else {
 							code += lex.fToken;
 						}
+						sym = lex.ReadToken(false);
 					}
 
 					if (codeType == "header") {
@@ -226,8 +227,8 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 
 			int cdepth = 1;
 
+			sym = lex.ReadToken(true);
 			for (;;) {
-				sym = lex.ReadToken(false);
 				if (sym == -1) {
 					fprintf(stderr,"%s:%d Unexpected end of file reached in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
 					return false;
@@ -241,6 +242,7 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 				} else {
 					code += lex.fToken;
 				}
+				sym = lex.ReadToken(false);
 			}
 
 			std::pair<std::string,std::string> p(regex,code);
