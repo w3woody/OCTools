@@ -32,6 +32,8 @@ OCYaccParser::~OCYaccParser()
 {
 }
 
+#warning TODO: Insert error statement if parsing an empty rule. We don't handle empty rules during LR(1) construction.
+
 /************************************************************************/
 /*																		*/
 /*	Parse file															*/
