@@ -1,13 +1,17 @@
 //
-//  OCYaccLALR.h
+//  OCYaccLR1.h
 //  ocyacc
 //
 //  Created by William Woody on 8/5/17.
 //  Copyright © 2017 Glenview Software. All rights reserved.
 //
 
-#ifndef OCYaccLALR_h
-#define OCYaccLALR_h
+#ifndef OCYaccLR1_h
+#define OCYaccLR1_h
+
+/*
+ *	This file implements Knuth LR(1) algorithm.
+ */
 
 #include <stdio.h>
 #include <set>
@@ -22,19 +26,19 @@
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLALR
+/*	OCYaccLR1
  *
  *		Construct the LALR state tables from the input grammar
  */
 
-class OCYaccLALR
+class OCYaccLR1
 {
 	public:
-		OCYaccLALR();
-		~OCYaccLALR();
+		OCYaccLR1();
+		~OCYaccLR1();
 
 		// Construct LALR tables; return false if error.
-		bool ConstructLALR(OCYaccParser &p);
+		bool ConstructLR1(OCYaccParser &p);
 
 
 	private:
@@ -59,21 +63,25 @@ class OCYaccLALR
 		{
 			size_t rule;
 			size_t pos;
+			std::string token;
 
 			// For storing in map and set
 			bool operator == (const Item &set) const
 				{
-					return (rule == set.rule) && (pos == set.pos);
+					return (rule == set.rule) && (pos == set.pos) && (token == set.token);
 				}
 			bool operator != (const Item &set) const
 				{
-					return (rule != set.rule) || (pos != set.pos);
+					return (rule != set.rule) || (pos != set.pos) || (token != set.token);
 				}
 			bool operator < (const Item &set) const
 				{
 					if (rule < set.rule) return true;
 					if (rule > set.rule) return false;
 					if (pos < set.pos) return true;
+					if (pos > set.pos) return false;
+					if (token < set.token) return true;
+					if (token > set.token) return false;
 					return false;
 				}
 		};
@@ -143,10 +151,11 @@ class OCYaccLALR
 		std::vector<ItemSet> itemSets;		// Item sets
 		std::map<size_t,std::map<std::string,Transition>> trans; // src: term->dst
 
+		std::set<std::string> First(std::vector<std::string> gl) const;
 		void Closure(ItemSet &set) const;
 		void BuildItemSets();
 
 		void DebugPrintItemSet(const ItemSet &set) const;
 };
 
-#endif /* OCYaccLALR_h */
+#endif /* OCYaccLR1_h */

@@ -1,12 +1,12 @@
 //
-//  OCYaccLALR.cpp
+//  OCYaccLR1.cpp
 //  ocyacc
 //
 //  Created by William Woody on 8/5/17.
 //  Copyright © 2017 Glenview Software. All rights reserved.
 //
 
-#include "OCYaccLALR.h"
+#include "OCYaccLR1.h"
 
 /************************************************************************/
 /*																		*/
@@ -21,21 +21,21 @@
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLALR::OCYaccLALR
+/*	OCYaccLR1::OCYaccLR1
  *
  *		Construct
  */
 
-OCYaccLALR::OCYaccLALR()
+OCYaccLR1::OCYaccLR1()
 {
 }
 
-/*	OCYaccLALR::~OCYaccLALR
+/*	OCYaccLR1::~OCYaccLR1
  *
  *		Destruct
  */
 
-OCYaccLALR::~OCYaccLALR()
+OCYaccLR1::~OCYaccLR1()
 {
 }
 
@@ -45,39 +45,83 @@ OCYaccLALR::~OCYaccLALR()
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLALR::Closure
+
+/*	OCYaccLR1::First
+ *
+ *		Implement the First() algorithm to find the first tokens in the
+ *	grammar list gl.
+ */
+
+std::set<std::string> OCYaccLR1::First(std::vector<std::string> gl) const
+{
+	std::set<std::string> ret;
+
+	if (gl.size() == 0) {
+		ret.insert("$end");
+		return ret;
+	}
+	if (productions.find(gl[0]) == productions.end()) {
+		// front of gl is a token.
+		ret.insert(gl[0]);
+		return ret;
+	}
+
+	std::set<std::string> v;
+	std::vector<std::string> q;
+	v.insert(gl[0]);
+	q.push_back(gl[0]);
+
+	/*
+	 *	Iterate through all found production rules and find their initial
+	 *	tokens. We assume none of our rules are empty.
+	 */
+
+	while (!q.empty()) {
+		std::string production = q.back();
+		q.pop_back();
+
+		size_t i,len = grammar.size();
+		for (i = 0; i < len; ++i) {
+			const Rule &r = grammar[i];
+			if (production == r.production) {
+				std::string g = r.tokenlist[0];
+				if (productions.find(g) != productions.end()) {
+					// g is a production rule.
+					if (v.find(g) == v.end()) {
+						q.push_back(g);
+						v.insert(g);
+					}
+				} else {
+					// g is a token.
+					ret.insert(g);
+				}
+			}
+		}
+	}
+
+	return ret;
+}
+
+/*	OCYaccLR1::Closure
  *
  *		Close the item set. Given an item set, this closes the set by
  *	finding all the production rules that are triggered by this
- *	transition
+ *	transition, tracking the terminal which follows each item set as we go.
  */
 
-void OCYaccLALR::Closure(ItemSet &set) const
+void OCYaccLR1::Closure(ItemSet &set) const
 {
-	std::vector<std::string> queue;
-	std::set<std::string> inside;
+	std::vector<Item> queue;
+	std::set<Item> inside;
 
 	/*
-	 *	Scan the set of items in set, and populate q with the list of
-	 *	productions that may be added.
+	 *	Add our current set of items to the queue and to inside.
 	 */
 
 	std::set<Item>::iterator iter;
 	for (iter = set.items.begin(); iter != set.items.end(); ++iter) {
-		const Rule &r = grammar[iter->rule];
-		if (iter->pos < r.tokenlist.size()) {
-			std::string prod = r.tokenlist[iter->pos];
-
-			if (productions.find(prod) != productions.end()) {
-				/*
-				 *	This is a production rule, so iterate the entire list and
-				 *	add the appropriate items
-				 */
-
-				queue.push_back(prod);
-				inside.insert(prod);
-			}
-		}
+		queue.push_back(*iter);
+		inside.insert(*iter);
 	}
 
 	/*
@@ -85,40 +129,60 @@ void OCYaccLALR::Closure(ItemSet &set) const
 	 */
 
 	while (!queue.empty()) {
-		std::string production = queue.back();
+		Item item = queue.back();
 		queue.pop_back();
 
 		/*
-		 *	Add the rules that are in this production
+		 *	Determine if the item's next token is a production
 		 */
 
-		size_t i,len = grammar.size();
-		for (i = 0; i < len; ++i) {
-			const Rule &r = grammar[i];
-			if (production == r.production) {
+		const Rule &r = grammar[item.rule];
+		if (item.pos >= r.tokenlist.size()) continue;
+		std::string p = r.tokenlist[item.pos];
+		if (productions.find(p) != productions.end()) {
+			/*
+			 *	Next item is a production. First, find First()
+			 */
+
+			std::vector<std::string> gl;
+			for (size_t i = item.pos+1; i < r.tokenlist.size(); ++i) {
+				gl.push_back(r.tokenlist[i]);
+			}
+			gl.push_back(item.token);
+
+			std::set<std::string> f = First(gl);
+
+			/*
+			 *	Now construct the new item sets for each token
+			 */
+
+			std::set<std::string>::iterator fiter;
+			for (fiter = f.begin(); fiter != f.end(); ++fiter) {
+
 				/*
-				 *	Construct the new item
+				 *	Iterate all matching rules
 				 */
 
-				Item item;
-				item.rule = i;
-				item.pos = 0;
-				set.items.insert(item);
+				size_t i,len = grammar.size();
+				for (i = 0; i < len; ++i) {
+					const Rule &pr = grammar[i];
+					if (pr.production == p) {
+						/*
+						 *	Construct new item
+						 */
 
-				/*
-				 *	Grab the first production of this rule and insert
-				 */
+						Item newItem;
 
-				if (r.tokenlist.size() > 0) {
-					std::string newprod = r.tokenlist[0];
+						newItem.rule = i;
+						newItem.pos = 0;
+						newItem.token = *fiter;
 
-					if (productions.find(newprod) != productions.end()) {
-						// newprod is a production.
+						set.items.insert(newItem);
 
-						if (inside.find(newprod) == inside.end()) {
-							// We haven't scanned this yet, add to queue
-							queue.push_back(newprod);
-							inside.insert(newprod);
+						if (inside.find(newItem) == inside.end()) {
+							/* Not inside. */
+							inside.insert(newItem);
+							queue.push_back(newItem);
 						}
 					}
 				}
@@ -127,13 +191,14 @@ void OCYaccLALR::Closure(ItemSet &set) const
 	}
 }
 
-/*	OCYaccLALR::BuildItemSets
+/*	OCYaccLR1::BuildItemSets
  *
  *		Build the item sets, as well as the translation table.
  */
 
-void OCYaccLALR::BuildItemSets()
+void OCYaccLR1::BuildItemSets()
 {
+
 	std::vector<ItemSet> queue;
 	std::set<ItemSet> inside;
 	size_t index = 0;
@@ -145,6 +210,7 @@ void OCYaccLALR::BuildItemSets()
 	Item item;
 	item.rule = 0;
 	item.pos = 0;
+	item.token = "$end";
 	ItemSet iset;
 	iset.index = index++;
 	iset.items.insert(item);
@@ -192,6 +258,7 @@ void OCYaccLALR::BuildItemSets()
 				Item item;
 				item.rule = iter->rule;
 				item.pos = iter->pos+1;
+				item.token = iter->token;
 
 				newSets[token].items.insert(item);
 			}
@@ -240,12 +307,12 @@ void OCYaccLALR::BuildItemSets()
 	}
 }
 
-/*	OCYaccLALR::DebugPrintItemSet
+/*	OCYaccLR1::DebugPrintItemSet
  *
  *		Debug item; prints the item set
  */
 
-void OCYaccLALR::DebugPrintItemSet(const ItemSet &set) const
+void OCYaccLR1::DebugPrintItemSet(const ItemSet &set) const
 {
 	/*
 	 *	Run through and print the rules with dot notation
@@ -267,7 +334,8 @@ void OCYaccLALR::DebugPrintItemSet(const ItemSet &set) const
 		if (iter->pos == len) {
 			printf(" .");
 		}
-		printf("\n");
+
+		printf(" , %s\n",iter->token.c_str());
 	}
 }
 
@@ -277,7 +345,7 @@ void OCYaccLALR::DebugPrintItemSet(const ItemSet &set) const
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLALR::ConstructLALR
+/*	OCYaccLR1::ConstructLALR
  *
  *		Given the parser contents, construct the LALR parse table. If there
  *	is a problem this returns false.
@@ -292,7 +360,7 @@ void OCYaccLALR::DebugPrintItemSet(const ItemSet &set) const
  *		https://www.cs.uic.edu/~spopuri/cparser.html
  */
 
-bool OCYaccLALR::ConstructLALR(OCYaccParser &p)
+bool OCYaccLR1::ConstructLR1(OCYaccParser &p)
 {
 	/*
 	 *	Reset

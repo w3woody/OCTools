@@ -34,6 +34,8 @@ OCYaccParser::~OCYaccParser()
 
 #warning TODO: Insert error statement if parsing an empty rule. We don't handle empty rules during LR(1) construction.
 
+#warning TODO: Update parser to track order of %left and %right tokens; the order we see these declarations determines precedence. See the documentation for YACC at section 6 at http://dinosaur.compilertools.net/yacc/index.html for more information.
+
 /************************************************************************/
 /*																		*/
 /*	Parse file															*/
@@ -53,7 +55,7 @@ bool OCYaccParser::ParseFile(OCLexer &lex)
 	 *	Parse the lex file format. The format is the same as used by flex
 	 *	as outlined in the following document:
 	 *
-	 *		http://dinosaur.compilertools.net/flex/flex_6.html
+	 *		http://dinosaur.compilertools.net/yacc/index.html
 	 *
 	 *	In summary the document is
 	 *

@@ -8,18 +8,21 @@
 
 #include <iostream>
 #include "OCYaccParser.h"
-#include "OCYaccLALR.h"
+#include "OCYaccLR1.h"
 
 int main(int argc, const char * argv[])
 {
 	OCLexer lexer;
-	lexer.OpenFile("test2.y");
+	lexer.OpenFile("test3.y");
 
 	OCYaccParser parser;
 	parser.ParseFile(lexer);
 
-	OCYaccLALR lalr;
-	lalr.ConstructLALR(parser);
+//	OCYaccLALR lalr;
+//	lalr.ConstructLALR(parser);
+
+	OCYaccLR1 lalr;
+	lalr.ConstructLR1(parser);
 
 	printf("Done.\n");
 	return 0;
