@@ -54,6 +54,7 @@
 		EF0112771F360388006FFFFB /* OCYaccLALR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccLALR.h; sourceTree = "<group>"; };
 		EF01127A1F364219006FFFFB /* test2.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = test2.y; sourceTree = "<group>"; };
 		EF92A88B1F38FF6300E27361 /* test3.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = test3.y; sourceTree = "<group>"; };
+		EF92A88C1F393ABF00E27361 /* test4.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = test4.y; sourceTree = "<group>"; };
 		EFB8BEB01F38EB2300E8F952 /* OCYaccLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccLR1.cpp; sourceTree = "<group>"; };
 		EFB8BEB11F38EB2300E8F952 /* OCYaccLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccLR1.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -132,6 +133,7 @@
 				EF0112091F28D829006FFFFB /* test.y */,
 				EF01127A1F364219006FFFFB /* test2.y */,
 				EF92A88B1F38FF6300E27361 /* test3.y */,
+				EF92A88C1F393ABF00E27361 /* test4.y */,
 			);
 			path = ocyacctest;
 			sourceTree = "<group>";

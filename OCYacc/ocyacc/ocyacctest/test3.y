@@ -1,10 +1,11 @@
-%token n
+%token c d
 
-%start E
+%start G
 
 %%
 
-E : E '+' E
-  | E '*' E
-  | n
+G : C C
+  ;
+C : c C
+  | d
   ;
