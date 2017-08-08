@@ -1,17 +1,13 @@
 //
-//  OCYaccLR1.h
+//  OCYaccSLR.h
 //  ocyacc
 //
 //  Created by William Woody on 8/5/17.
 //  Copyright © 2017 Glenview Software. All rights reserved.
 //
 
-#ifndef OCYaccLR1_h
-#define OCYaccLR1_h
-
-/*
- *	This file implements Knuth LR(1) algorithm.
- */
+#ifndef OCYaccSLR_h
+#define OCYaccSLR_h
 
 #include <stdio.h>
 #include <set>
@@ -26,18 +22,18 @@
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLR1
+/*	OCYaccSLR
  *
- *		Construct the LR1 state tables from the input grammar
+ *		Construct the SLR state tables from the input grammar
  */
 
-class OCYaccLR1
+class OCYaccSLR
 {
 	public:
-		OCYaccLR1();
-		~OCYaccLR1();
+		OCYaccSLR();
+		~OCYaccSLR();
 
-		// Construct LR1 tables; return false if error.
+		// Construct SLR grammar.
 		bool Construct(OCYaccParser &p);
 
 
@@ -63,25 +59,21 @@ class OCYaccLR1
 		{
 			size_t rule;
 			size_t pos;
-			std::string token;
 
 			// For storing in map and set
 			bool operator == (const Item &set) const
 				{
-					return (rule == set.rule) && (pos == set.pos) && (token == set.token);
+					return (rule == set.rule) && (pos == set.pos);
 				}
 			bool operator != (const Item &set) const
 				{
-					return (rule != set.rule) || (pos != set.pos) || (token != set.token);
+					return (rule != set.rule) || (pos != set.pos);
 				}
 			bool operator < (const Item &set) const
 				{
 					if (rule < set.rule) return true;
 					if (rule > set.rule) return false;
 					if (pos < set.pos) return true;
-					if (pos > set.pos) return false;
-					if (token < set.token) return true;
-					if (token > set.token) return false;
 					return false;
 				}
 		};
@@ -150,12 +142,15 @@ class OCYaccLR1
 		std::set<std::string> productions;	// Productions
 		std::vector<ItemSet> itemSets;		// Item sets
 		std::map<size_t,std::map<std::string,Transition>> trans; // src: term->dst
+		std::map<std::string, std::set<std::string>> follow;
 
-		std::set<std::string> First(std::vector<std::string> gl) const;
 		void Closure(ItemSet &set) const;
 		void BuildItemSets();
+
+		std::set<std::string> First(std::vector<std::string> gl) const;
+		void BuildFollow();
 
 		void DebugPrintItemSet(const ItemSet &set) const;
 };
 
-#endif /* OCYaccLR1_h */
+#endif /* OCYaccSLR_h */

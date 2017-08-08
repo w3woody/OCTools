@@ -1,17 +1,13 @@
 //
-//  OCYaccLR1.h
+//  OCYaccLR0.h
 //  ocyacc
 //
 //  Created by William Woody on 8/5/17.
 //  Copyright © 2017 Glenview Software. All rights reserved.
 //
 
-#ifndef OCYaccLR1_h
-#define OCYaccLR1_h
-
-/*
- *	This file implements Knuth LR(1) algorithm.
- */
+#ifndef OCYaccLR0_h
+#define OCYaccLR0_h
 
 #include <stdio.h>
 #include <set>
@@ -26,18 +22,18 @@
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLR1
+/*	OCYaccLR0
  *
- *		Construct the LR1 state tables from the input grammar
+ *		Construct the LR0 state tables from the input grammar
  */
 
-class OCYaccLR1
+class OCYaccLR0
 {
 	public:
-		OCYaccLR1();
-		~OCYaccLR1();
+		OCYaccLR0();
+		~OCYaccLR0();
 
-		// Construct LR1 tables; return false if error.
+		// Construct LR0 grammar.
 		bool Construct(OCYaccParser &p);
 
 
@@ -63,25 +59,21 @@ class OCYaccLR1
 		{
 			size_t rule;
 			size_t pos;
-			std::string token;
 
 			// For storing in map and set
 			bool operator == (const Item &set) const
 				{
-					return (rule == set.rule) && (pos == set.pos) && (token == set.token);
+					return (rule == set.rule) && (pos == set.pos);
 				}
 			bool operator != (const Item &set) const
 				{
-					return (rule != set.rule) || (pos != set.pos) || (token != set.token);
+					return (rule != set.rule) || (pos != set.pos);
 				}
 			bool operator < (const Item &set) const
 				{
 					if (rule < set.rule) return true;
 					if (rule > set.rule) return false;
 					if (pos < set.pos) return true;
-					if (pos > set.pos) return false;
-					if (token < set.token) return true;
-					if (token > set.token) return false;
 					return false;
 				}
 		};
@@ -151,11 +143,10 @@ class OCYaccLR1
 		std::vector<ItemSet> itemSets;		// Item sets
 		std::map<size_t,std::map<std::string,Transition>> trans; // src: term->dst
 
-		std::set<std::string> First(std::vector<std::string> gl) const;
 		void Closure(ItemSet &set) const;
 		void BuildItemSets();
 
 		void DebugPrintItemSet(const ItemSet &set) const;
 };
 
-#endif /* OCYaccLR1_h */
+#endif /* OCYaccLR0_h */
