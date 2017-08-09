@@ -34,7 +34,7 @@ class OCYaccLALR
 		~OCYaccLALR();
 
 		// Construct LALR tables; return false if error.
-		bool ConstructLALR(OCYaccParser &p);
+		bool Construct(OCYaccParser &p);
 
 
 	private:
@@ -59,6 +59,7 @@ class OCYaccLALR
 		{
 			size_t rule;
 			size_t pos;
+			std::set<std::string> follow;
 
 			// For storing in map and set
 			bool operator == (const Item &set) const
@@ -85,6 +86,7 @@ class OCYaccLALR
 
 		struct ItemSet
 		{
+			bool followMark;
 			size_t index;
 			std::set<Item> items;
 
@@ -143,8 +145,10 @@ class OCYaccLALR
 		std::vector<ItemSet> itemSets;		// Item sets
 		std::map<size_t,std::map<std::string,Transition>> trans; // src: term->dst
 
+		std::set<std::string> First(std::vector<std::string> gl) const;
 		void Closure(ItemSet &set) const;
 		void BuildItemSets();
+		void PropagateFollow();
 
 		void DebugPrintItemSet(const ItemSet &set) const;
 };

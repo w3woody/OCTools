@@ -63,16 +63,16 @@ class OCYaccLR1
 		{
 			size_t rule;
 			size_t pos;
-			std::string token;
+			std::string follow;
 
 			// For storing in map and set
 			bool operator == (const Item &set) const
 				{
-					return (rule == set.rule) && (pos == set.pos) && (token == set.token);
+					return (rule == set.rule) && (pos == set.pos) && (follow == set.follow);
 				}
 			bool operator != (const Item &set) const
 				{
-					return (rule != set.rule) || (pos != set.pos) || (token != set.token);
+					return (rule != set.rule) || (pos != set.pos) || (follow != set.follow);
 				}
 			bool operator < (const Item &set) const
 				{
@@ -80,8 +80,8 @@ class OCYaccLR1
 					if (rule > set.rule) return false;
 					if (pos < set.pos) return true;
 					if (pos > set.pos) return false;
-					if (token < set.token) return true;
-					if (token > set.token) return false;
+					if (follow < set.follow) return true;
+					if (follow > set.follow) return false;
 					return false;
 				}
 		};

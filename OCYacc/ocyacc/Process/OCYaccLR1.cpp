@@ -148,7 +148,7 @@ void OCYaccLR1::Closure(ItemSet &set) const
 			for (size_t i = item.pos+1; i < r.tokenlist.size(); ++i) {
 				gl.push_back(r.tokenlist[i]);
 			}
-			gl.push_back(item.token);
+			gl.push_back(item.follow);
 
 			std::set<std::string> f = First(gl);
 
@@ -175,7 +175,7 @@ void OCYaccLR1::Closure(ItemSet &set) const
 
 						newItem.rule = i;
 						newItem.pos = 0;
-						newItem.token = *fiter;
+						newItem.follow = *fiter;
 
 						set.items.insert(newItem);
 
@@ -210,7 +210,7 @@ void OCYaccLR1::BuildItemSets()
 	Item item;
 	item.rule = 0;
 	item.pos = 0;
-	item.token = "$end";
+	item.follow = "$end";
 	ItemSet iset;
 	iset.index = index++;
 	iset.items.insert(item);
@@ -258,7 +258,7 @@ void OCYaccLR1::BuildItemSets()
 				Item item;
 				item.rule = iter->rule;
 				item.pos = iter->pos+1;
-				item.token = iter->token;
+				item.follow = iter->follow;
 
 				newSets[token].items.insert(item);
 			}
@@ -335,7 +335,7 @@ void OCYaccLR1::DebugPrintItemSet(const ItemSet &set) const
 			printf(" .");
 		}
 
-		printf(" , %s\n",iter->token.c_str());
+		printf(" , %s\n",iter->follow.c_str());
 	}
 }
 
@@ -442,8 +442,6 @@ bool OCYaccLR1::Construct(OCYaccParser &p)
 	 *	Step 1: Build the item sets and translation tables. This is basically
 	 *	the first step in building the LR(0) grammar.
 	 */
-
-#warning Review pg 224, etc., + line table algorithm
 
 	BuildItemSets();
 
