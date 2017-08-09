@@ -15,7 +15,7 @@
 int main(int argc, const char * argv[])
 {
 	OCLexer lexer;
-	lexer.OpenFile("test2.y");
+	lexer.OpenFile("test5.y");
 
 	OCYaccParser parser;
 	parser.ParseFile(lexer);
