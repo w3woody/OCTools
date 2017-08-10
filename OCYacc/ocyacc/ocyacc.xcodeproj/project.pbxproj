@@ -66,6 +66,7 @@
 		EF92A8951F3A246000E27361 /* test5.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = test5.y; sourceTree = "<group>"; };
 		EFB8BEB01F38EB2300E8F952 /* OCYaccLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccLR1.cpp; sourceTree = "<group>"; };
 		EFB8BEB11F38EB2300E8F952 /* OCYaccLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccLR1.h; sourceTree = "<group>"; };
+		EFBF28951F3CA73800935504 /* test6.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = test6.y; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +145,7 @@
 				EF92A88B1F38FF6300E27361 /* test3.y */,
 				EF92A88C1F393ABF00E27361 /* test4.y */,
 				EF92A8951F3A246000E27361 /* test5.y */,
+				EFBF28951F3CA73800935504 /* test6.y */,
 			);
 			path = ocyacctest;
 			sourceTree = "<group>";

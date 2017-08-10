@@ -1,16 +1,17 @@
-%token n
+%token n e
 
-%start E
+%start P
 
 %%
 
-E : A
+P : E P
+  | E
   ;
 
-A : M
-  | A '+' M
+E : A ';'
+  | e ';'
   ;
 
-M : n
-  | M '*' n
+A : n '+' A
+  | n
   ;

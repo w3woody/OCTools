@@ -16,7 +16,7 @@
 int main(int argc, const char * argv[])
 {
 	OCLexer lexer;
-	if (!lexer.OpenFile("test.y")) {
+	if (!lexer.OpenFile("test2.y")) {
 		printf("Unable to open\n");
 		exit(-1);
 	}
