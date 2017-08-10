@@ -16,16 +16,19 @@
 int main(int argc, const char * argv[])
 {
 	OCLexer lexer;
-	lexer.OpenFile("test2.y");
+	if (!lexer.OpenFile("test.y")) {
+		printf("Unable to open\n");
+		exit(-1);
+	}
 
 	OCYaccParser parser;
 	parser.ParseFile(lexer);
 
-	OCYaccLALR lalr;
-	lalr.Construct(parser);
-
-//	OCYaccLR1 lalr;
+//	OCYaccLALR lalr;
 //	lalr.Construct(parser);
+
+	OCYaccLR1 lalr;
+	lalr.Construct(parser);
 
 //	OCYaccSLR lalr;
 //	lalr.Construct(parser);
