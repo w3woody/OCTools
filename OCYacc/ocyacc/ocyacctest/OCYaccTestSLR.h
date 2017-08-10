@@ -1,13 +1,13 @@
 //
-//  OCYaccLR0.h
+//  OCYaccTestSLR.h
 //  ocyacc
 //
 //  Created by William Woody on 8/5/17.
 //  Copyright © 2017 Glenview Software. All rights reserved.
 //
 
-#ifndef OCYaccLR0_h
-#define OCYaccLR0_h
+#ifndef OCYaccTestSLR_h
+#define OCYaccTestSLR_h
 
 #include <stdio.h>
 #include <set>
@@ -22,18 +22,18 @@
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLR0
+/*	OCYaccTestSLR
  *
- *		Construct the LR0 state tables from the input grammar
+ *		Construct the SLR state tables from the input grammar
  */
 
-class OCYaccLR0
+class OCYaccTestSLR
 {
 	public:
-		OCYaccLR0();
-		~OCYaccLR0();
+		OCYaccTestSLR();
+		~OCYaccTestSLR();
 
-		// Construct LR0 grammar.
+		// Construct SLR grammar.
 		bool Construct(OCYaccParser &p);
 
 
@@ -142,11 +142,15 @@ class OCYaccLR0
 		std::set<std::string> productions;	// Productions
 		std::vector<ItemSet> itemSets;		// Item sets
 		std::map<size_t,std::map<std::string,Transition>> trans; // src: term->dst
+		std::map<std::string, std::set<std::string>> follow;
 
 		void Closure(ItemSet &set) const;
 		void BuildItemSets();
 
+		std::set<std::string> First(std::vector<std::string> gl) const;
+		void BuildFollow();
+
 		void DebugPrintItemSet(const ItemSet &set) const;
 };
 
-#endif /* OCYaccLR0_h */
+#endif /* OCYaccTestSLR_h */

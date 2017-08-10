@@ -1,12 +1,12 @@
 //
-//  OCYaccLALR.cpp
+//  OCYaccTestLALR.cpp
 //  ocyacc
 //
 //  Created by William Woody on 8/5/17.
 //  Copyright © 2017 Glenview Software. All rights reserved.
 //
 
-#include "OCYaccLALR.h"
+#include "OCYaccTestLALR.h"
 
 /************************************************************************/
 /*																		*/
@@ -21,21 +21,21 @@
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLALR::OCYaccLALR
+/*	OCYaccTestLALR::OCYaccTestLALR
  *
  *		Construct
  */
 
-OCYaccLALR::OCYaccLALR()
+OCYaccTestLALR::OCYaccTestLALR()
 {
 }
 
-/*	OCYaccLALR::~OCYaccLALR
+/*	OCYaccTestLALR::~OCYaccTestLALR
  *
  *		Destruct
  */
 
-OCYaccLALR::~OCYaccLALR()
+OCYaccTestLALR::~OCYaccTestLALR()
 {
 }
 
@@ -46,13 +46,13 @@ OCYaccLALR::~OCYaccLALR()
 /************************************************************************/
 
 
-/*	OCYaccLALR::First
+/*	OCYaccTestLALR::First
  *
  *		Implement the First() algorithm to find the first tokens in the
  *	grammar list gl.
  */
 
-std::set<std::string> OCYaccLALR::First(std::vector<std::string> gl) const
+std::set<std::string> OCYaccTestLALR::First(std::vector<std::string> gl) const
 {
 	std::set<std::string> ret;
 
@@ -102,7 +102,7 @@ std::set<std::string> OCYaccLALR::First(std::vector<std::string> gl) const
 	return ret;
 }
 
-/*	OCYaccLALR::Closure
+/*	OCYaccTestLALR::Closure
  *
  *		Close the item set. Given an item set, this closes the set by
  *	finding all the production rules that are triggered by this
@@ -113,7 +113,7 @@ std::set<std::string> OCYaccLALR::First(std::vector<std::string> gl) const
  *	LALR-style item set.
  */
 
-void OCYaccLALR::Closure(ItemSet &set) const
+void OCYaccTestLALR::Closure(ItemSet &set) const
 {
 	/*
 	 *	Private structure.
@@ -254,12 +254,12 @@ void OCYaccLALR::Closure(ItemSet &set) const
 	}
 }
 
-/*	OCYaccLALR::BuildItemSets
+/*	OCYaccTestLALR::BuildItemSets
  *
  *		Build the item sets, as well as the translation table.
  */
 
-void OCYaccLALR::BuildItemSets()
+void OCYaccTestLALR::BuildItemSets()
 {
 	std::vector<ItemSet> queue;
 	std::set<ItemSet> inside;
@@ -369,12 +369,12 @@ void OCYaccLALR::BuildItemSets()
 	}
 }
 
-/*	OCYaccLALR::PropagateFollow
+/*	OCYaccTestLALR::PropagateFollow
  *
  *		Propagate the follow lists
  */
 
-void OCYaccLALR::PropagateFollow()
+void OCYaccTestLALR::PropagateFollow()
 {
 	// Set all item sets as needing processing
 	size_t i,len = itemSets.size();
@@ -506,12 +506,12 @@ void OCYaccLALR::PropagateFollow()
 }
 
 
-/*	OCYaccLALR::DebugPrintItemSet
+/*	OCYaccTestLALR::DebugPrintItemSet
  *
  *		Debug item; prints the item set
  */
 
-void OCYaccLALR::DebugPrintItemSet(const ItemSet &set) const
+void OCYaccTestLALR::DebugPrintItemSet(const ItemSet &set) const
 {
 	/*
 	 *	Run through and print the rules with dot notation
@@ -549,7 +549,7 @@ void OCYaccLALR::DebugPrintItemSet(const ItemSet &set) const
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLALR::Construct
+/*	OCYaccTestLALR::Construct
  *
  *		Given the parser contents, construct the LALR parse table. If there
  *	is a problem this returns false.
@@ -564,7 +564,7 @@ void OCYaccLALR::DebugPrintItemSet(const ItemSet &set) const
  *		https://www.cs.uic.edu/~spopuri/cparser.html
  */
 
-bool OCYaccLALR::Construct(OCYaccParser &p)
+bool OCYaccTestLALR::Construct(OCYaccParser &p)
 {
 	/*
 	 *	Reset

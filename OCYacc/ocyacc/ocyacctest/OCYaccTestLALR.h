@@ -1,13 +1,13 @@
 //
-//  OCYaccLALR.h
+//  OCYaccTestLALR.h
 //  ocyacc
 //
 //  Created by William Woody on 8/5/17.
 //  Copyright © 2017 Glenview Software. All rights reserved.
 //
 
-#ifndef OCYaccLALR_h
-#define OCYaccLALR_h
+#ifndef OCYaccTestLALR_h
+#define OCYaccTestLALR_h
 
 #include <stdio.h>
 #include <set>
@@ -22,16 +22,16 @@
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccLALR
+/*	OCYaccTestLALR
  *
  *		Construct the LALR state tables from the input grammar
  */
 
-class OCYaccLALR
+class OCYaccTestLALR
 {
 	public:
-		OCYaccLALR();
-		~OCYaccLALR();
+		OCYaccTestLALR();
+		~OCYaccTestLALR();
 
 		// Construct LALR tables; return false if error.
 		bool Construct(OCYaccParser &p);
@@ -153,4 +153,4 @@ class OCYaccLALR
 		void DebugPrintItemSet(const ItemSet &set) const;
 };
 
-#endif /* OCYaccLALR_h */
+#endif /* OCYaccTestLALR_h */
