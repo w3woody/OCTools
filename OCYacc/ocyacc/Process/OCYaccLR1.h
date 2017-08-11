@@ -51,10 +51,10 @@ class OCYaccLR1
 		uint32_t	maxToken;		// tokens are < this value
 		uint32_t	maxProduction;	// maxToken <= productions are < this value
 
-		std::map<std::string,uint32_t>	tokens;			// terminal token to ID
-		std::map<std::string,uint32_t>	productions;	// production to ID
 		std::vector<std::string> tokenList;
 		std::vector<std::string> productionList;
+
+		uint32_t	TokenForChar(std::string str);
 
 		/*
 		 *	Rules: represents a single production rule A -> B C D ... code
@@ -71,6 +71,108 @@ class OCYaccLR1
 		 */
 
 		std::vector<Rule> grammar;
+
+		bool		BuildGrammar(OCYaccParser &p);
+
+		/*
+		 *	State Machine Representation
+		 */
+
+		/*	Item
+		 *
+		 *		An item is a rule (represented by index) and an index into the
+		 *	set of tokens that represent the rule.
+		 */
+
+		struct Item
+		{
+			size_t rule;
+			size_t pos;
+			uint32_t follow;		// follow grammar symbol
+
+			// For storing in map and set
+			bool operator == (const Item &set) const
+				{
+					return (rule == set.rule) && (pos == set.pos) && (follow == set.follow);
+				}
+			bool operator != (const Item &set) const
+				{
+					return (rule != set.rule) || (pos != set.pos) || (follow != set.follow);
+				}
+			bool operator < (const Item &set) const
+				{
+					if (rule < set.rule) return true;
+					if (rule > set.rule) return false;
+					if (pos < set.pos) return true;
+					if (pos > set.pos) return false;
+					if (follow < set.follow) return true;
+					if (follow > set.follow) return false;
+					return false;
+				}
+		};
+
+		/*	ItemSet
+		 *
+		 *		An item set is a set of items.
+		 */
+
+		struct ItemSet
+		{
+			size_t index;
+			std::set<Item> items;
+
+			// For storing in map and set
+			bool operator == (const ItemSet &set) const
+				{
+					if (items.size() != set.items.size()) return false;
+
+					std::set<Item>::const_iterator aiter,biter;
+					aiter = items.cbegin();
+					biter = set.items.cbegin();
+
+					while ((aiter != items.cend()) && (biter != set.items.cend())) {
+						if (*aiter != *biter) return false;
+						++aiter;
+						++biter;
+					}
+					return true;
+				}
+			bool operator < (const ItemSet &set) const
+				{
+					std::set<Item>::const_iterator aiter,biter;
+
+					aiter = items.cbegin();
+					biter = set.items.cbegin();
+
+					while ((aiter != items.cend()) && (biter != set.items.cend())) {
+						if (*aiter < *biter) return true;
+						if (*aiter != *biter) return false;
+						++aiter;
+						++biter;
+					}
+					if ((aiter == items.cend()) && (biter != set.items.cend())) {
+						/* If first is empty and second is not, then less */
+						return true;
+					}
+					return false;
+				}
+		};
+
+		/*
+		 *	itemSets: the states S of our LR(1) state machine.
+		 *	trans: the transitions T of our LR(1) state machine.
+		 */
+
+		std::vector<ItemSet> itemSets;		// Item sets
+		std::map<size_t,std::map<uint32_t,size_t>> trans; // src: term->dst
+
+		/*
+		 *	State machine construction support
+		 */
+
+		std::set<uint32_t> First(const std::vector<uint32_t> &gl) const;
+		void Closure(ItemSet &set) const;
+		void BuildStateMachine();
 };
 
 #endif /* OCYaccLR1_h */

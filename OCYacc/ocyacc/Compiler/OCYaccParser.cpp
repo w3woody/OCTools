@@ -357,11 +357,13 @@ void OCYaccParser::SkipToNextRule(OCLexer &lex)
 
 bool OCYaccParser::ParseRules(OCLexer &lex)
 {
+	bool retVal = true;
+
 	for (;;) {
 		int32_t sym = lex.ReadToken();
 
-		if (sym == OCTOKEN_SECTION) return true;
-		if (sym == -1) return true;
+		if (sym == OCTOKEN_SECTION) return retVal;
+		if (sym == -1) return retVal;
 
 		if (sym != OCTOKEN_TOKEN) {
 			fprintf(stderr,"%s:%d Syntax error in declaration section\n",lex.fFileName.c_str(),lex.fTokenLine);
@@ -374,6 +376,14 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 		 */
 
 		std::string symName = lex.fToken;
+		if (symName == "error") {
+			fprintf(stderr,"%s:%d error is a reserved word and cannot be used as a production rule name\n",lex.fFileName.c_str(),lex.fTokenLine);
+			retVal = false;
+		}
+		if (symbols.find(symName) != symbols.end()) {
+			fprintf(stderr,"%s:%d Duplicate rule name %s\n",lex.fFileName.c_str(),lex.fTokenLine,symName.c_str());
+			retVal = false;
+		}
 
 		/*
 		 *	Parse requred ':'
@@ -460,12 +470,13 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 			} else if (sym != '|') {
 				fprintf(stderr,"%s:%d Syntax error: expected ';' or '|'\n",lex.fFileName.c_str(),lex.fTokenLine);
 				SkipToNextRule(lex);
+				retVal = false;
 				break;
 			}
 		}
 
 		/*
-		 *	Store declaration
+		 *	Store declaration.
 		 */
 
 		symbols[symName] = decl;
