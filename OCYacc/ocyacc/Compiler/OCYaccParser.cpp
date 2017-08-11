@@ -32,7 +32,6 @@ OCYaccParser::~OCYaccParser()
 {
 }
 
-#warning TODO: Insert error statement if parsing an empty rule. We don't handle empty rules during LR(1) construction.
 
 #warning TODO: Update parser to track order of %left and %right tokens; the order we see these declarations determines precedence. See the documentation for YACC at section 6 at http://dinosaur.compilertools.net/yacc/index.html for more information.
 
@@ -121,6 +120,8 @@ void OCYaccParser::SkipToNextDeclaration(OCLexer &lex)
 
 bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 {
+	uint16_t precedence = 0;
+
 	for (;;) {
 		int32_t sym = lex.ReadToken();
 
@@ -182,19 +183,22 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 
 				} else if ((lex.fToken == "left") || (lex.fToken == "right") || (lex.fToken == "nonassoc") || (lex.fToken == "token")) {
 					/*
-					 *	Parse the association
+					 *	Parse the association and track the precedence.
+					 *	Note that two or more tokens on the same %left or
+					 *	%right have the same precedence.
 					 */
 
-					Assoc a;
+					Precedence a;
 					if (lex.fToken == "left") {
-						a = Left;
+						a.assoc = Left;
 					} else if (lex.fToken == "right") {
-						a = Right;
+						a.assoc = Right;
 					} else if (lex.fToken == "nonassoc") {
-						a = NonAssoc;
+						a.assoc = NonAssoc;
 					} else {
-						a = None;
+						a.assoc = None;
 					}
+					a.prec = ++precedence;
 
 					/*
 					 *	Now grab tokens while we can
@@ -402,6 +406,10 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 				} else {
 					break;
 				}
+			}
+
+			if (inst.tokenlist.size() == 0) {
+				fprintf(stderr,"%s:%d Symbol %s is empty. OCYacc does not support empty symbols\n",lex.fFileName.c_str(),lex.fTokenLine,symName.c_str());
 			}
 
 			/*

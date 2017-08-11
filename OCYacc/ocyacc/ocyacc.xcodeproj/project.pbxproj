@@ -17,6 +17,8 @@
 		EFBF28A01F3D14DC00935504 /* OCYaccTestLR0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF28991F3D14DC00935504 /* OCYaccTestLR0.cpp */; };
 		EFBF28A11F3D14DC00935504 /* OCYaccTestLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF289B1F3D14DC00935504 /* OCYaccTestLR1.cpp */; };
 		EFBF28A21F3D14DC00935504 /* OCYaccTestSLR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF289D1F3D14DC00935504 /* OCYaccTestSLR.cpp */; };
+		EFF29F4F1F3D271D00024C76 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */; };
+		EFF29F501F3D271D00024C76 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,6 +65,8 @@
 		EFBF289C1F3D14DC00935504 /* OCYaccTestLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestLR1.h; sourceTree = "<group>"; };
 		EFBF289D1F3D14DC00935504 /* OCYaccTestSLR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccTestSLR.cpp; sourceTree = "<group>"; };
 		EFBF289E1F3D14DC00935504 /* OCYaccTestSLR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestSLR.h; sourceTree = "<group>"; };
+		EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccLR1.cpp; sourceTree = "<group>"; };
+		EFF29F4E1F3D271D00024C76 /* OCYaccLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccLR1.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +161,8 @@
 		EF0112411F3148E0006FFFFB /* Process */ = {
 			isa = PBXGroup;
 			children = (
+				EFF29F4E1F3D271D00024C76 /* OCYaccLR1.h */,
+				EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */,
 			);
 			path = Process;
 			sourceTree = "<group>";
@@ -242,6 +248,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFF29F4F1F3D271D00024C76 /* OCYaccLR1.cpp in Sources */,
 				EF0111FA1F281103006FFFFB /* OCYaccParser.cpp in Sources */,
 				EF0111C21F263FBA006FFFFB /* main.cpp in Sources */,
 			);
@@ -257,6 +264,7 @@
 				EFBF28A21F3D14DC00935504 /* OCYaccTestSLR.cpp in Sources */,
 				EF0112021F283240006FFFFB /* test.cpp in Sources */,
 				EFBF28A11F3D14DC00935504 /* OCYaccTestLR1.cpp in Sources */,
+				EFF29F501F3D271D00024C76 /* OCYaccLR1.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

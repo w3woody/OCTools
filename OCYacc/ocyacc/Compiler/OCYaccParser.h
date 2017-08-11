@@ -56,6 +56,11 @@ class OCYaccParser
 			None, Left, Right, NonAssoc
 		};
 
+		struct Precedence {
+			uint16_t prec;
+			Assoc assoc;
+		};
+
 		/*
 		 *	SymbolInstance
 		 *
@@ -85,8 +90,9 @@ class OCYaccParser
 
 		// associativity list. Shows %left, %right, %nonassoc mapping if
 		// declared
-		std::map<std::string,Assoc> terminalSymbol;
+		std::map<std::string,Precedence> terminalSymbol;
 
+		// Type name for token final
 		std::map<std::string,std::string> symbolType;
 
 		// Code declaration section
