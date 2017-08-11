@@ -32,9 +32,6 @@ OCYaccParser::~OCYaccParser()
 {
 }
 
-
-#warning TODO: Update parser to track order of %left and %right tokens; the order we see these declarations determines precedence. See the documentation for YACC at section 6 at http://dinosaur.compilertools.net/yacc/index.html for more information.
-
 /************************************************************************/
 /*																		*/
 /*	Parse file															*/
@@ -151,6 +148,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						SkipToNextDeclaration(lex);
 						continue;
 					}
+
 					sym = lex.ReadToken();
 					if (sym != OCTOKEN_TOKEN) {
 						fprintf(stderr,"%s:%d Expect type declaration after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
@@ -158,6 +156,8 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						SkipToNextDeclaration(lex);
 						continue;
 					}
+					typeName = lex.fToken;
+
 					sym = lex.ReadToken();
 					if (sym != '>') {
 						fprintf(stderr,"%s:%d Unclosed type, missing '>' after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
@@ -185,20 +185,54 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 					/*
 					 *	Parse the association and track the precedence.
 					 *	Note that two or more tokens on the same %left or
-					 *	%right have the same precedence.
+					 *	%right have the same precedence. Note that we
+					 *	treat %token differently than YACC; %left implicitly
+					 *	defines %token, though it does not permit a type.
 					 */
 
 					Precedence a;
 					if (lex.fToken == "left") {
 						a.assoc = Left;
+						a.prec = ++precedence;
 					} else if (lex.fToken == "right") {
 						a.assoc = Right;
+						a.prec = ++precedence;
 					} else if (lex.fToken == "nonassoc") {
 						a.assoc = NonAssoc;
+						a.prec = ++precedence;
 					} else {
 						a.assoc = None;
+						a.prec = 0;		// no precedence defined.
 					}
-					a.prec = ++precedence;
+
+					/*
+					 *	Grab the optional type. Only valid on %token
+					 */
+
+					if (a.assoc == None) {
+						sym = lex.ReadToken();
+						if (sym == '<') {
+							sym = lex.ReadToken();
+							if (sym != OCTOKEN_TOKEN) {
+								fprintf(stderr,"%s:%d Expect type name after < in token declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+
+								SkipToNextDeclaration(lex);
+								continue;
+							}
+
+							a.type = lex.fToken;
+
+							sym = lex.ReadToken();
+							if (sym != '>') {
+								fprintf(stderr,"%s:%d Unclosed type, missing '>' after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
+
+								SkipToNextDeclaration(lex);
+								continue;
+							}
+						} else {
+							lex.PushBackToken();
+						}
+					}
 
 					/*
 					 *	Now grab tokens while we can
@@ -208,7 +242,27 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						sym = lex.ReadToken();
 						if (sym == OCTOKEN_TOKEN) {
 							// Store declaration
-							terminalSymbol[lex.fToken] = a;
+							std::map<std::string,Precedence>::iterator m;
+							m = terminalSymbol.find(lex.fToken);
+							if (m == terminalSymbol.end()) {
+								terminalSymbol[lex.fToken] = a;
+							} else {
+								// Verify we don't have a conflicting
+								// declaration, and update precedence if not
+								// currently set.
+								if (m->second.assoc == None) {
+									if (a.assoc == None) {
+										fprintf(stderr,"%s:%d Duplicate %%token %s\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+									} else {
+										m->second.assoc = a.assoc;
+										m->second.prec = a.prec;
+									}
+								} else {
+									if (a.assoc != None) {
+										fprintf(stderr,"%s:%d token %s precedence already set\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+									}
+								}
+							}
 						} else {
 							lex.PushBackToken();
 							break;

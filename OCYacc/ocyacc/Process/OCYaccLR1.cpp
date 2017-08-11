@@ -165,11 +165,16 @@ uint32_t OCYaccLR1::TokenForChar(std::string str)
 
 bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 {
+	bool valid = true;
+
 	// grammarMap maps a token or production string to its integer value.
 	std::map<std::string,uint32_t>	grammarMap;
 
 	// prods tracks which grammar symbols are productions
 	std::set<std::string> prods;
+
+	// Undefined terminals
+	std::set<std::string> undefined;
 
 	/*
 	 *	Reset
@@ -205,6 +210,11 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	std::map<std::string,OCYaccParser::SymbolDecl>::iterator miter;
 	for (miter = p.symbols.begin(); miter != p.symbols.end(); ++miter) {
 		prods.insert(miter->first);
+
+		if (p.terminalSymbol.find(miter->first) != p.terminalSymbol.end()) {
+			printf("Production %s is defined as a token\n",miter->first.c_str());
+			valid = false;
+		}
 	}
 
 	/*
@@ -259,14 +269,60 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 						} else {
 							/* We create a new entry for our token */
 							tokenList.push_back(*i);
-							grammarMap[*i] = index++;
+							grammarMap[*i] = index;
+
+							/* Insert token information */
+							TokenConstant tc;
+							tc.used = true;
+							tc.value = index;
+							tc.token = *i;
+							tokens.push_back(tc);
+
+							++index;
+
+							/*
+							 *	Determine if this item was defined in our lexer.
+							 *	If not, print a warning
+							 */
+
+							if (p.terminalSymbol.find(*i) == p.terminalSymbol.end()) {
+								if (undefined.find(*i) == undefined.end()) {
+									fprintf(stderr,"Found undefined symbol %s in grammar; assuming token.\n",i->c_str());
+									undefined.insert(*i);
+								}
+							}
 						}
 					}
-
 				}
 			}
 		}
 	}
+
+	/*
+	 *	Now iterate through all our declared tokens; that is, tokens
+	 *	declared in our parser in %token, %left, %right or %nonassoc. Note
+	 *	that because we scan our entire grammar, we assume any tokens
+	 *	not declared as a %token or a production is a token.
+	 */
+
+	std::map<std::string,OCYaccParser::Precedence>::iterator liter;
+	for (liter = p.terminalSymbol.begin(); liter != p.terminalSymbol.end(); ++liter) {
+		if (grammarMap.find(liter->first) == grammarMap.end()) {
+			// We have a token that was not defined
+			tokenList.push_back(liter->first);
+			grammarMap[liter->first] = index;
+
+			TokenConstant tc;
+			tc.used = false;
+			tc.value = index;
+			tc.token = liter->first;
+			tokens.push_back(tc);
+
+			++index;
+		}
+	}
+
+	maxToken = index;
 
 	/*
 	 *	Now set the max token value and iterate to assign values to our
@@ -279,7 +335,6 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	productionList.push_back("$accept");
 	grammarMap["$accept"] = index++;
 
-	maxToken = index;
 	for (miter = p.symbols.begin(); miter != p.symbols.end(); ++miter) {
 		const std::string &p = miter->first;
 		grammarMap[p] = index++;
@@ -329,7 +384,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 		}
 	}
 
-	return true;
+	return valid;
 }
 
 /************************************************************************/
@@ -613,6 +668,66 @@ void OCYaccLR1::BuildStateMachine()
 
 /************************************************************************/
 /*																		*/
+/*	Goto table construction												*/
+/*																		*/
+/************************************************************************/
+
+/*	OCYaccLR1::BuildGotoTable
+ *
+ *		Build the goto table. The goto table is a sparse table with the
+ *	colunns the productions in our state machine, and the rows the
+ *	states. Each entry represents a transition from one state to another
+ *	as we migrate through productions. We use the Compressed sparse row
+ *	format to compress the table; see:
+ *
+ *		https://en.wikipedia.org/wiki/Sparse_matrix
+ */
+
+void OCYaccLR1::BuildGotoTable()
+{
+	std::map<size_t,std::map<uint32_t,size_t>>::const_iterator i;
+	size_t s = 0;
+	size_t curState = 0;
+
+	gotoA.clear();
+	gotoI.clear();
+	gotoJ.clear();
+
+	/*
+	 *	Start populating IA. The first index is always zero. Note that our
+	 *	trans map may have gaps in states (this is typical), so we need
+	 *	to iterate through curState until we find the state we've
+	 *	iterated to
+	 */
+
+	gotoI.push_back(s);
+	for (i = trans.cbegin(); i != trans.cend(); ++i) {
+		while (curState++ < i->first) {
+			gotoI.push_back(s);
+		}
+
+		// Now process this row.
+		const std::map<uint32_t,size_t> &m = i->second;
+		std::map<uint32_t,size_t>::const_iterator j;
+		for (j = m.cbegin(); j != m.cend(); ++j) {
+			if (j->first >= maxToken) {
+				// j->first is a production.
+				gotoJ.push_back(j->first);
+				gotoA.push_back(j->second);
+				++s;
+			}
+		}
+		gotoI.push_back(s);
+	}
+
+	size_t len = itemSets.size();
+	while (curState++ < len) {
+		gotoI.push_back(s);
+	}
+}
+
+/************************************************************************/
+/*																		*/
 /*	Construction Entry Point											*/
 /*																		*/
 /************************************************************************/
@@ -636,6 +751,18 @@ bool OCYaccLR1::Construct(OCYaccParser &p)
 	 */
 
 	BuildStateMachine();
+
+	/*
+	 *	Step 3: Construct compressed goto table
+	 */
+
+	BuildGotoTable();
+
+	/*
+	 *	Step 4: Construct action table
+	 */
+
+
 
 	// TODO
 	return false;

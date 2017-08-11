@@ -38,6 +38,33 @@ class OCYaccLR1
 		// Construct LR1 tables; return false if error.
 		bool Construct(OCYaccParser &p);
 
+		/*
+		 *	This is the publicly available values after our construction
+		 *	process runs. These are the values we will eventually write out
+		 *	to our Objective-C file.
+		 */
+
+		// Compressed Action Table
+		std::vector<size_t> actionI;		// State index -> offset in J
+		std::vector<uint32_t> actionJ;		// token list to A
+		std::vector<size_t> actionA;		// new state in I
+
+		// Compressed GOTO table
+		std::vector<size_t> gotoI;			// State index -> offset in J
+		std::vector<uint32_t> gotoJ;		// production to A
+		std::vector<size_t> gotoA;			// new state in I
+
+		/*
+		 *	Token constants
+		 */
+
+		struct TokenConstant
+		{
+			bool used;						// set if used in grammar
+			uint32_t value;
+			std::string token;
+		};
+		std::vector<TokenConstant> tokens;	// Write these as #defines.
 
 	private:
 		/*
@@ -118,7 +145,7 @@ class OCYaccLR1
 
 		struct ItemSet
 		{
-			size_t index;
+			size_t index;			// == index in itemSets.
 			std::set<Item> items;
 
 			// For storing in map and set
@@ -160,11 +187,21 @@ class OCYaccLR1
 
 		/*
 		 *	itemSets: the states S of our LR(1) state machine.
-		 *	trans: the transitions T of our LR(1) state machine.
 		 */
 
 		std::vector<ItemSet> itemSets;		// Item sets
-		std::map<size_t,std::map<uint32_t,size_t>> trans; // src: term->dst
+
+		/*
+		 *	trans: the transitions T of our LR(1) state machine.
+		 *
+		 *	Note: trans[state_index][grammar symbol] -> new state index
+		 *
+		 *	Also note that our action and goto table construction algorithms
+		 *	rely on the fact that std::map sorts the order of the keys in
+		 *	ascending order.
+		 */
+
+		std::map<size_t,std::map<uint32_t,size_t>> trans;
 
 		/*
 		 *	State machine construction support
@@ -173,6 +210,12 @@ class OCYaccLR1
 		std::set<uint32_t> First(const std::vector<uint32_t> &gl) const;
 		void Closure(ItemSet &set) const;
 		void BuildStateMachine();
+
+		/*
+		 *	Goto/action table construction
+		 */
+
+		void BuildGotoTable();
 };
 
 #endif /* OCYaccLR1_h */

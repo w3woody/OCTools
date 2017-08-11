@@ -59,6 +59,7 @@ class OCYaccParser
 		struct Precedence {
 			uint16_t prec;
 			Assoc assoc;
+			std::string type;
 		};
 
 		/*
@@ -92,7 +93,7 @@ class OCYaccParser
 		// declared
 		std::map<std::string,Precedence> terminalSymbol;
 
-		// Type name for token final
+		// Type name for production
 		std::map<std::string,std::string> symbolType;
 
 		// Code declaration section
