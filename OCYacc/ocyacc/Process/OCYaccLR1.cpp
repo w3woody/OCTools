@@ -771,6 +771,9 @@ bool OCYaccLR1::BuildActionTable()
 			const Rule &r = grammar[iter->rule];
 
 #warning FINISH ME (determine reductions, warn shift/reduce and reduce/reduce conflicts that cannot be resolved via precedence.)
+
+#warning Change the action table format with a flag to differentiate between shift and reduce statements.
+
 		}
 
 
