@@ -440,6 +440,15 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 		}
 
 		/*
+		 *	Note the position of this rule
+		 */
+
+		FilePos pos;
+		pos.line = lex.fTokenLine;
+		pos.col = lex.fTokenColumn;
+		pos.file = lex.fFileName;
+
+		/*
 		 *	Parse requred ':'
 		 */
 
@@ -454,9 +463,12 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 		 */
 
 		SymbolDecl decl;
+		decl.pos = pos;
+
 		for (;;) {
 			SymbolInstance inst;
 			bool hasPrec = false;
+			bool hasFilePos = false;
 
 			for (;;) {
 				/*
@@ -472,6 +484,20 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 				}
 
 				inst.tokenlist.push_back(t);
+
+				/*
+				 *	Track the position of the first symbol in this rule instance
+				 */
+				
+				if (!hasFilePos) {
+					hasFilePos = true;
+
+					pos.line = lex.fTokenLine;
+					pos.col = lex.fTokenColumn;
+					pos.file = lex.fFileName;
+
+					inst.pos = pos;
+				}
 
 				/*
 				 *	Precedence is actually associated with rules. If we have

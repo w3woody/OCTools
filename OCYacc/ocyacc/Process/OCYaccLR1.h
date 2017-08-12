@@ -35,8 +35,30 @@ class OCYaccLR1
 		OCYaccLR1();
 		~OCYaccLR1();
 
-		// Construct LR1 tables; return false if error.
+		/*
+		 *	Construct LR1 tables and values below from our input 
+		 *	Returns false if there was an error.
+		 */
+
 		bool Construct(OCYaccParser &p);
+
+		/*
+		 *	Action encoding for our action table
+		 */
+
+		struct Action {
+			bool reduce;					// true if reduce, false if shift
+			size_t value;					// shift: state, reduce: rule
+		};
+
+		/*
+		 *	Reduction encoding
+		 */
+		
+		struct Reduction {
+			size_t reduce;					// Number of states to pop
+			std::string code;				// Code to execute (with $$,$n)
+		};
 
 		/*
 		 *	This is the publicly available values after our construction
@@ -47,12 +69,22 @@ class OCYaccLR1
 		// Compressed Action Table
 		std::vector<size_t> actionI;		// State index -> offset in J
 		std::vector<uint32_t> actionJ;		// token list to A
-		std::vector<size_t> actionA;		// new state in I
+		std::vector<Action> actionA;		// shift or reduce action
 
 		// Compressed GOTO table
 		std::vector<size_t> gotoI;			// State index -> offset in J
 		std::vector<uint32_t> gotoJ;		// production to A
 		std::vector<size_t> gotoA;			// new state in I
+
+		// Accept state
+		size_t accept;						// Accept state.
+
+		// Special token values
+		uint32_t eofTokenID;				// -1 turns into this for errors
+		uint32_t errorTokenID;				// This is for errors
+
+		// Rule reductions
+		std::vector<Reduction> reductions;	// How to reduce by rule N
 
 		/*
 		 *	Token constants
@@ -90,7 +122,8 @@ class OCYaccLR1
 		struct Rule {
 			uint32_t production;
 			std::vector<uint32_t> tokenlist;
-			std::string code;
+			std::string prodName;					// for error reporting
+			OCYaccParser::FilePos filePos;			// for error reporting
 			OCYaccParser::Precedence precedence;
 		};
 
@@ -217,7 +250,8 @@ class OCYaccLR1
 		 */
 
 		void BuildGotoTable();
-		bool BuildActionTable();
+		bool BuildActionTable(const OCYaccParser &parser);
+		void FindAcceptState();
 };
 
 #endif /* OCYaccLR1_h */

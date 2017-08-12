@@ -49,6 +49,17 @@ class OCYaccParser
 		std::string endCode;			// code section of .m
 
 		/*
+		 *	FilePos gives the position of certain declarations for 
+		 *	error reporting
+		 */
+
+		struct FilePos {
+			uint32_t line;
+			uint32_t col;
+			std::string file;
+		};
+
+		/*
 		 *	Associativity, if declared for terminal symbols
 		 */
 
@@ -73,6 +84,7 @@ class OCYaccParser
 			std::vector<std::string> tokenlist;
 			Precedence precedence;		// Precedence level of this fule
 			std::string code;
+			FilePos pos;			// position of first token in rule
 		};
 
 		/*
@@ -83,6 +95,7 @@ class OCYaccParser
 		 */
 
 		struct SymbolDecl {
+			FilePos pos;			// position of first token in rule
 			std::vector<SymbolInstance> declarations;
 		};
 

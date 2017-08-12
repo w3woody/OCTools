@@ -10,6 +10,9 @@
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 
+%nonassoc IFPREC
+%nonassoc ELSEPREC
+
 %start translation_unit
 %%
 
@@ -377,8 +380,8 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement
-	| IF '(' expression ')' statement ELSE statement
+	: IF '(' expression ')' statement %prec IFPREC
+	| IF '(' expression ')' statement ELSE statement %prec ELSEPREC
 	| SWITCH '(' expression ')' statement
 	;
 

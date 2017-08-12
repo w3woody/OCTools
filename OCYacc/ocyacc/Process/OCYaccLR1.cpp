@@ -7,6 +7,7 @@
 //
 
 #include "OCYaccLR1.h"
+#include <stdlib.h>
 
 /************************************************************************/
 /*																		*/
@@ -212,7 +213,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 		prods.insert(miter->first);
 
 		if (p.terminalSymbol.find(miter->first) != p.terminalSymbol.end()) {
-			printf("Production %s is defined as a token\n",miter->first.c_str());
+			fprintf(stderr,"%s:%d production %s is defined as a token\n",miter->second.pos.file.c_str(),miter->second.pos.line,miter->first.c_str());
 			valid = false;
 		}
 	}
@@ -226,10 +227,17 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	 *	it is used to test token values and productions below.
 	 */
 
-	tokenList.push_back("$end");
+	tokenList.push_back("$end");		// This is how $end is FIRSTTOKEN
 	grammarMap["$end"] = index++;
-	tokenList.push_back("error");
+	tokenList.push_back("error");		// And how error is FIRSTTOKEN+1
 	grammarMap["error"] = index++;
+
+	/*
+	 *	Populate the public facing values
+	 */
+
+	eofTokenID = FIRSTTOKEN;
+	errorTokenID = FIRSTTOKEN + 1;
 
 	/*
 	 *	Iterate all the rules, extracting tokens. Note that single quote
@@ -287,7 +295,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 
 							if (p.terminalSymbol.find(*i) == p.terminalSymbol.end()) {
 								if (undefined.find(*i) == undefined.end()) {
-									fprintf(stderr,"Found undefined symbol %s in grammar; assuming token.\n",i->c_str());
+									fprintf(stderr,"%s:%d found undefined symbol %s in grammar; assuming token.\n",viter->pos.file.c_str(),viter->pos.line,i->c_str());
 									undefined.insert(*i);
 								}
 							}
@@ -360,6 +368,10 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	r.tokenlist.push_back(FIRSTTOKEN);	// FIRSTTOKEN == $end by definition
 	grammar.push_back(r);
 
+	Reduction reduction;
+	reduction.reduce = 1;				// This will never be invoked.
+	reductions.push_back(reduction);	// This is basically a placeholder.
+
 	/*
 	 *	Iterate the rest of our symbols and declarations
 	 */
@@ -374,9 +386,11 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 		for (viter = miter->second.declarations.begin(); viter != miter->second.declarations.end(); ++viter) {
 			std::vector<std::string>::iterator i;
 
+			// Insert grammar into list of grammars
 			r.production = grammarMap[miter->first];
-			r.code = viter->code;
 			r.precedence = viter->precedence;
+			r.filePos = viter->pos;
+			r.prodName = miter->first;
 
 			r.tokenlist.clear();
 			for (i = viter->tokenlist.begin(); i != viter->tokenlist.end(); ++i) {
@@ -384,6 +398,11 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 			}
 
 			grammar.push_back(r);
+
+			// Insert reduction for rule N.
+			reduction.reduce = viter->tokenlist.size();
+			reduction.code = viter->code;
+			reductions.push_back(reduction);
 		}
 	}
 
@@ -735,16 +754,26 @@ void OCYaccLR1::BuildGotoTable()
  *	the reduction rules will be added.
  */
 
-bool OCYaccLR1::BuildActionTable()
+bool OCYaccLR1::BuildActionTable(const OCYaccParser &parser)
 {
+	bool retVal = true;
+
+	actionA.clear();
+	actionI.clear();
+	actionJ.clear();
+
+	actionI.push_back(0);
+
 	/*
 	 *	We iterate through all the states, since all of them will have either
-	 *	a goto or a reduce or both.
+	 *	a goto or a reduce or both. Note that entires in our action table contain
+	 *	both shift and reduce rules; we handle this case by using the LSB of
+	 *	the value to indicate shift (1) or reduce (1).
 	 */
 
 	size_t i, len = itemSets.size();
 	for (i = 0; i < len; ++i) {
-		std::map<uint32_t,size_t> row;
+		std::map<uint32_t,Action> row;
 
 		/*
 		 *	Insert goto transitions
@@ -755,7 +784,8 @@ bool OCYaccLR1::BuildActionTable()
 			std::map<uint32_t,size_t>::const_iterator iter;
 			for (iter = m.cbegin(); iter != m.cend(); ++iter) {
 				if (iter->first < maxToken) {
-					row[iter->first] = iter->second;
+					Action a = { false, iter->second };
+					row[iter->first] = a;
 				}
 			}
 		}
@@ -770,20 +800,169 @@ bool OCYaccLR1::BuildActionTable()
 		for (iter = iset.items.cbegin(); iter != iset.items.cend(); ++iter) {
 			const Rule &r = grammar[iter->rule];
 
-#warning FINISH ME (determine reductions, warn shift/reduce and reduce/reduce conflicts that cannot be resolved via precedence.)
+			if (r.tokenlist.size() == iter->pos) {
+				/*
+				 *	This rule has a reduction; the reduction happens on
+				 *	rule r (given by index iter->rule) for the token iter->follow
+				 */
 
-#warning Change the action table format with a flag to differentiate between shift and reduce statements.
+				if (row.find(iter->follow) == row.end()) {
+					/*
+					 *	No conflict. Add reduction
+					 */
 
+					Action a = { true, iter->rule };
+					row[iter->follow] = a;
+				} else {
+					/*
+					 *	We have a conflict. Try to resolve using precedence.
+					 *	This will only work if both rules have defined
+					 *	precedence; otherwise, we warn the user of the shift/
+					 *	reduce or reduce/reduce error.
+					 */
+
+					Action &oldA = row[iter->follow];
+
+					if (oldA.reduce) {
+						/*
+						 *	Resolve reduce/reduce conflict. We use the
+						 *	technique used in Bison of using the earlier rule
+						 *	in the list of rules. This is dangerous, so we
+						 *	always warn the user.
+						 */
+
+						const Rule &altR = grammar[oldA.value];
+
+						fprintf(stderr,"Warning: reduce/reduce conflict\n");
+						fprintf(stderr,"  Conflicting rules:\n");
+						fprintf(stderr,"  %s:%d Rule %s\n",altR.filePos.file.c_str(),altR.filePos.line,altR.prodName.c_str());
+						fprintf(stderr,"  %s:%d Rule %s\n",r.filePos.file.c_str(),r.filePos.line,r.prodName.c_str());
+
+						if (oldA.value > iter->rule) {
+							Action a = { true, iter->rule };
+							row[iter->follow] = a;
+						}
+
+					} else {
+						/*
+						 *	Resolve shift/reduce conflict. Determine the
+						 *	precedence of our rule and of our token we're
+						 *	shifting by to see if we shift or reduce. Note
+						 *	if either does not have precedence, we fail.
+						 */
+
+						std::string sym = tokenList[iter->follow - FIRSTTOKEN];
+						if ((r.precedence.prec == 0) || (parser.terminalSymbol.find(sym) == parser.terminalSymbol.cend())) {
+							/*
+							 *	Shift/reduce error; no precedence to resolve.
+							 *	We reduce by default.
+							 */
+
+							fprintf(stderr,"Warning shift/reduce conflict\n");
+							fprintf(stderr,"  %s:%d rule %s and token %s\n",r.filePos.file.c_str(),r.filePos.line,r.prodName.c_str(),sym.c_str());
+
+							Action a = { true, iter->rule };
+							row[iter->follow] = a;
+
+						} else {
+							const OCYaccParser::Precedence &shiftPrec = parser.terminalSymbol.at(sym);
+
+							if (shiftPrec.prec > r.precedence.prec) {
+								/*
+								 *	The symbol we're shifting by has lower
+								 *	precedence. (It was declared later in
+								 *	the file.) For example, we have a rule
+								 *	with a '*' and we're shifting by '+'.
+								 *	Elect to reduce.
+								 */
+
+								Action a = { true, iter->rule };
+								row[iter->follow] = a;
+							} else if (shiftPrec.prec == r.precedence.prec) {
+								/*
+								 *	We have the same precedence. This can only
+								 *	happen if both have the same %left, %right
+								 *	or %nonassoc values.
+								 */
+
+								if (shiftPrec.prec == OCYaccParser::Assoc::Left) {
+									/*
+									 *	Left: reduce first.
+									 */
+
+									Action a = { true, iter->rule };
+									row[iter->follow] = a;
+								} else if (shiftPrec.prec == OCYaccParser::Assoc::NonAssoc) {
+									/*
+									 *	Non-assoc; this means two tokens cannot
+									 *	be next to each other. (Example in
+									 *	FORTRAN: A .LT. B .LT. C is a syntax
+									 *	error.) If this happens, we clear the
+									 *	slot, which renders this state + token
+									 *	as an error.
+									 */
+
+									row.erase(iter->follow);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 
-
 		/*
-		 *	Get the goto table transitions
+		 *	Now we have a row which is a sorted map. Append to our
+		 *	action table values.
 		 */
 
-
+		std::map<uint32_t,Action>::iterator i;
+		for (i = row.begin(); i != row.end(); ++i) {
+			actionJ.push_back(i->first);
+			actionA.push_back(i->second);
+		}
+		actionI.push_back(actionJ.size());
 	}
-	return false;
+
+	return retVal;
+}
+
+/*	OCYaccLR1::FindAcceptState
+ *
+ *		Find the accept state by searching for the state that contains the
+ *	item S -> E$.
+ */
+
+void OCYaccLR1::FindAcceptState()
+{
+	accept = 0;
+	size_t i, len = itemSets.size();
+	for (i = 0; i < len; ++i) {
+		const ItemSet &iset = itemSets[i];
+		std::set<Item>::const_iterator iter;
+		for (iter = iset.items.cbegin(); iter != iset.items.cend(); ++iter) {
+			const Rule &r = grammar[iter->rule];
+
+			size_t len = r.tokenlist.size();
+			if (len == iter->pos) {
+				if (r.tokenlist[len-1] == FIRSTTOKEN) {
+					// Found $. This means we shifted through $, which means
+					// to reach this state we had to parse the EOF. This is
+					// our accept state.
+					accept = i;
+					return;
+				}
+			}
+		}
+	}
+
+	// We should never reach here. But if we do, well, life sucks.
+	// This can only theoretically happen if we don't create our 0th
+	// rule S->E$ otherwise we must have a shift production which shifts
+	// through the end of file, which means we must have a state that contains
+	// S->E$.
+	fprintf(stderr,"Assertion violation. Bug in code?\n");
+	exit(1);
 }
 
 /************************************************************************/
@@ -822,9 +1001,13 @@ bool OCYaccLR1::Construct(OCYaccParser &p)
 	 *	Step 4: Construct action table
 	 */
 
-	if (!BuildActionTable()) return false;
+	if (!BuildActionTable(p)) return false;
 
+	/*
+	 *	Step 5: Find the accept state
+	 */
 
-	// TODO
+	FindAcceptState();
+
 	return false;
 }
