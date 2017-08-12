@@ -91,6 +91,7 @@ class OCYaccLR1
 			uint32_t production;
 			std::vector<uint32_t> tokenlist;
 			std::string code;
+			OCYaccParser::Precedence precedence;
 		};
 
 		/*
@@ -216,6 +217,7 @@ class OCYaccLR1
 		 */
 
 		void BuildGotoTable();
+		bool BuildActionTable();
 };
 
 #endif /* OCYaccLR1_h */

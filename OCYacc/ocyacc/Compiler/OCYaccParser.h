@@ -71,6 +71,7 @@ class OCYaccParser
 
 		struct SymbolInstance {
 			std::vector<std::string> tokenlist;
+			Precedence precedence;		// Precedence level of this fule
 			std::string code;
 		};
 

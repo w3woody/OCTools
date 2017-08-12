@@ -307,6 +307,8 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 
 	std::map<std::string,OCYaccParser::Precedence>::iterator liter;
 	for (liter = p.terminalSymbol.begin(); liter != p.terminalSymbol.end(); ++liter) {
+		if (liter->first[0] == '\'') continue;	// skip characters
+
 		if (grammarMap.find(liter->first) == grammarMap.end()) {
 			// We have a token that was not defined
 			tokenList.push_back(liter->first);
@@ -365,7 +367,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	for (miter = p.symbols.begin(); miter != p.symbols.end(); ++miter) {
 
 		/*
-		 *	Iterate the declaration
+		 *	Iterate the declaration and create our rules
 		 */
 
 		std::vector<OCYaccParser::SymbolInstance>::iterator viter;
@@ -374,6 +376,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 
 			r.production = grammarMap[miter->first];
 			r.code = viter->code;
+			r.precedence = viter->precedence;
 
 			r.tokenlist.clear();
 			for (i = viter->tokenlist.begin(); i != viter->tokenlist.end(); ++i) {
@@ -726,6 +729,60 @@ void OCYaccLR1::BuildGotoTable()
 	}
 }
 
+/*	OCYaccLR1::BuildActionTable
+ *
+ *		Build the action table. This is done like the goto table, but also
+ *	the reduction rules will be added.
+ */
+
+bool OCYaccLR1::BuildActionTable()
+{
+	/*
+	 *	We iterate through all the states, since all of them will have either
+	 *	a goto or a reduce or both.
+	 */
+
+	size_t i, len = itemSets.size();
+	for (i = 0; i < len; ++i) {
+		std::map<uint32_t,size_t> row;
+
+		/*
+		 *	Insert goto transitions
+		 */
+
+		if (trans.find(i) != trans.end()) {
+			const std::map<uint32_t,size_t> &m = trans[i];
+			std::map<uint32_t,size_t>::const_iterator iter;
+			for (iter = m.cbegin(); iter != m.cend(); ++iter) {
+				if (iter->first < maxToken) {
+					row[iter->first] = iter->second;
+				}
+			}
+		}
+
+		/*
+		 *	Now walk the items in this item set looking for the
+		 *	reduction rules
+		 */
+
+		const ItemSet &iset = itemSets[i];
+		std::set<Item>::const_iterator iter;
+		for (iter = iset.items.cbegin(); iter != iset.items.cend(); ++iter) {
+			const Rule &r = grammar[iter->rule];
+
+#warning FINISH ME (determine reductions, warn shift/reduce and reduce/reduce conflicts that cannot be resolved via precedence.)
+		}
+
+
+		/*
+		 *	Get the goto table transitions
+		 */
+
+
+	}
+	return false;
+}
+
 /************************************************************************/
 /*																		*/
 /*	Construction Entry Point											*/
@@ -762,6 +819,7 @@ bool OCYaccLR1::Construct(OCYaccParser &p)
 	 *	Step 4: Construct action table
 	 */
 
+	if (!BuildActionTable()) return false;
 
 
 	// TODO

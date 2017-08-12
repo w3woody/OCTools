@@ -456,24 +456,75 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 		SymbolDecl decl;
 		for (;;) {
 			SymbolInstance inst;
+			bool hasPrec = false;
 
 			for (;;) {
 				/*
 				 *	We're parsing a list of tokens.
 				 */
 
+				std::string t;
 				sym = lex.ReadToken();
-				if (sym == OCTOKEN_TOKEN) {
-					inst.tokenlist.push_back(lex.fToken);
-				} else if (sym == OCTOKEN_CHAR) {
-					inst.tokenlist.push_back(lex.fToken);
+				if ((sym == OCTOKEN_TOKEN) || (sym == OCTOKEN_CHAR)) {
+					t = lex.fToken;
 				} else {
 					break;
+				}
+
+				inst.tokenlist.push_back(t);
+
+				/*
+				 *	Precedence is actually associated with rules. If we have
+				 *	rules with different precedence levels, warn the user
+				 */
+
+				if (terminalSymbol.find(t) != terminalSymbol.end()) {
+					Precedence p = terminalSymbol[t];
+
+					if (hasPrec && ((inst.precedence.prec != p.prec) || (inst.precedence.assoc != p.assoc))) {
+						fprintf(stderr,"%s:%d Rule declaration has multiple tokens with different precedence levels",lex.fFileName.c_str(),lex.fTokenLine);
+					} else {
+						hasPrec = true;
+						inst.precedence = p;
+					}
 				}
 			}
 
 			if (inst.tokenlist.size() == 0) {
 				fprintf(stderr,"%s:%d Symbol %s is empty. OCYacc does not support empty symbols\n",lex.fFileName.c_str(),lex.fTokenLine,symName.c_str());
+			}
+
+			/*
+			 *	See if we have a precedence assigned to this rule
+			 */
+
+			if (sym == '%') {
+				sym = lex.ReadToken();
+				if ((sym != OCTOKEN_TOKEN) || (lex.fToken != "prec")) {
+					fprintf(stderr,"%s:%d %% not followed by 'prec'\n",lex.fFileName.c_str(),lex.fTokenLine);
+					SkipToNextRule(lex);
+					return false;
+				}
+
+				sym = lex.ReadToken();
+				if ((sym != OCTOKEN_TOKEN) && (sym != OCTOKEN_CHAR)) {
+					fprintf(stderr,"%s:%d token or character expected after %%prec",lex.fFileName.c_str(),lex.fTokenLine);
+					SkipToNextRule(lex);
+					return false;
+				}
+
+				if (terminalSymbol.find(lex.fToken) == terminalSymbol.end()) {
+					fprintf(stderr,"%s:%d %s does not have precedence defined",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+					SkipToNextRule(lex);
+					return false;
+				}
+
+				/*
+				 *	This overrides precedence
+				 */
+
+				inst.precedence = terminalSymbol[lex.fToken];
+				sym = lex.ReadToken();
 			}
 
 			/*
