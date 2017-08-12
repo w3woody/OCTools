@@ -36,6 +36,21 @@ class OCYaccLR1
 		~OCYaccLR1();
 
 		/*
+		 *	Verbose information
+		 */
+
+		enum Verbose {
+			None,
+			Warning,
+			Information
+		};
+
+		void SetVerboseLevel(Verbose level)
+			{
+				verboseLevel = level;
+			}
+
+		/*
 		 *	Construct LR1 tables and values below from our input 
 		 *	Returns false if there was an error.
 		 */
@@ -54,7 +69,7 @@ class OCYaccLR1
 		/*
 		 *	Reduction encoding
 		 */
-		
+
 		struct Reduction {
 			size_t reduce;					// Number of states to pop
 			std::string code;				// Code to execute (with $$,$n)
@@ -99,6 +114,8 @@ class OCYaccLR1
 		std::vector<TokenConstant> tokens;	// Write these as #defines.
 
 	private:
+		Verbose verboseLevel = None;
+
 		/*
 		 *	Token/production map
 		 *

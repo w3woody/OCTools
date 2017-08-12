@@ -9,6 +9,51 @@
 #include "OCYaccLR1.h"
 #include <stdlib.h>
 
+/*
+ *	A quick note about the code below.
+ *
+ *		This isn't the most efficient code out there. If I were to write
+ *	my own map/set/vector classes using memory allocated directly in
+ *	prealllocated heaps, I could get much better performance out of this
+ *	code. (Certainly if I were to switch to O(1) heaps for maps and sets,
+ *	I could make things a lot better in some cases.)
+ *
+ *		However, the code below is "fast enough" in the sense that it
+ *	allows me to develop my own programming language and compile the
+ *	grammar within about 5 seconds or so on my platform.
+ *
+ *		So I went for clarity, even at the cost of efficiency. Which is
+ *	the sorded story of the entire computer industry, when you think
+ *	about it.
+ *
+ *		Optimizations I could make include:
+ *
+ *		Using C structures instead of C++ arrays and managing all of memory
+ *	using preallocated blocks of memory (without any delete operations
+ *	except at the end). This would also allow me to pass around items
+ *	and item sets by reference, and who cares if something leaks because
+ *	it'll all be freed at the very end.
+ *
+ *		Creating my own set and map operations. C++'s algorithms are very
+ *	fast, but by custom rolling our own code we can shave off cycles by
+ *	eliminating many of the copy operations that set insert/delete implies.
+ *
+ *		(In performance testing, the set insert operation in the Closure()
+ *	method below consumes 50% of the total cycles in this application when
+ *	run on a large language file, which suggests to me there are other
+ *	hotspots that a more efficient map/set operation would shave serious
+ *	time.)
+ *
+ *		Use a common pool for string allocation. (This would save memory
+ *	and speed up string compares as they become pointer compares.)
+ *
+ *		Parallize the code. (Note that Closure() consumes almost 80% of
+ *	the total running time. By invoking Closure() in multiple threads, we can
+ *	shave a tremendous amount of total time off the process. (Just consider
+ *	the queue in BuildStateMachine as a thread queue, with just the variables
+ *	itemSets and trans requiring single-threaded access.)
+ */
+
 /************************************************************************/
 /*																		*/
 /*	Constants															*/
@@ -983,17 +1028,29 @@ bool OCYaccLR1::Construct(OCYaccParser &p)
 	 *	Step 1: build token list, productions and rule set
 	 */
 
+	if (verboseLevel >= Verbose::Information) {
+		printf("- Starting LR1 Construction\n");
+	}
+
 	if (!BuildGrammar(p)) return false;
 
 	/*
 	 *	Step 2: Build the state machine
 	 */
 
+	if (verboseLevel >= Verbose::Information) {
+		printf("- Building State Machine\n");
+	}
+
 	BuildStateMachine();
 
 	/*
 	 *	Step 3: Construct compressed goto table
 	 */
+
+	if (verboseLevel >= Verbose::Information) {
+		printf("- Building Production Tables\n");
+	}
 
 	BuildGotoTable();
 
@@ -1008,6 +1065,10 @@ bool OCYaccLR1::Construct(OCYaccParser &p)
 	 */
 
 	FindAcceptState();
+
+	if (verboseLevel >= Verbose::Information) {
+		printf("- Finished LR1 Construction\n");
+	}
 
 	return false;
 }

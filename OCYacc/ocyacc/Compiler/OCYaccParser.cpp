@@ -488,7 +488,7 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 				/*
 				 *	Track the position of the first symbol in this rule instance
 				 */
-				
+
 				if (!hasFilePos) {
 					hasFilePos = true;
 
