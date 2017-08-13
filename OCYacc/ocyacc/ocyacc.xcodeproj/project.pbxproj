@@ -19,6 +19,8 @@
 		EFBF28A21F3D14DC00935504 /* OCYaccTestSLR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF289D1F3D14DC00935504 /* OCYaccTestSLR.cpp */; };
 		EFF29F4F1F3D271D00024C76 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */; };
 		EFF29F501F3D271D00024C76 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */; };
+		EFF29F531F407B8200024C76 /* OCYaccGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */; };
+		EFF29F541F407B8200024C76 /* OCYaccGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -67,6 +69,9 @@
 		EFBF289E1F3D14DC00935504 /* OCYaccTestSLR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestSLR.h; sourceTree = "<group>"; };
 		EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccLR1.cpp; sourceTree = "<group>"; };
 		EFF29F4E1F3D271D00024C76 /* OCYaccLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccLR1.h; sourceTree = "<group>"; };
+		EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccGenerator.cpp; sourceTree = "<group>"; };
+		EFF29F521F407B8200024C76 /* OCYaccGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccGenerator.h; sourceTree = "<group>"; };
+		EFF29F551F40E26A00024C76 /* test_c.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = test_c.y; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +159,7 @@
 				EF92A88C1F393ABF00E27361 /* test4.y */,
 				EF92A8951F3A246000E27361 /* test5.y */,
 				EFBF28951F3CA73800935504 /* test6.y */,
+				EFF29F551F40E26A00024C76 /* test_c.y */,
 			);
 			path = ocyacctest;
 			sourceTree = "<group>";
@@ -163,6 +169,8 @@
 			children = (
 				EFF29F4E1F3D271D00024C76 /* OCYaccLR1.h */,
 				EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */,
+				EFF29F521F407B8200024C76 /* OCYaccGenerator.h */,
+				EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */,
 			);
 			path = Process;
 			sourceTree = "<group>";
@@ -250,6 +258,7 @@
 			files = (
 				EFF29F4F1F3D271D00024C76 /* OCYaccLR1.cpp in Sources */,
 				EF0111FA1F281103006FFFFB /* OCYaccParser.cpp in Sources */,
+				EFF29F531F407B8200024C76 /* OCYaccGenerator.cpp in Sources */,
 				EF0111C21F263FBA006FFFFB /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,6 +269,7 @@
 			files = (
 				EFBF289F1F3D14DC00935504 /* OCYaccTestLALR.cpp in Sources */,
 				EF0112061F283265006FFFFB /* OCYaccParser.cpp in Sources */,
+				EFF29F541F407B8200024C76 /* OCYaccGenerator.cpp in Sources */,
 				EFBF28A01F3D14DC00935504 /* OCYaccTestLR0.cpp in Sources */,
 				EFBF28A21F3D14DC00935504 /* OCYaccTestSLR.cpp in Sources */,
 				EF0112021F283240006FFFFB /* test.cpp in Sources */,

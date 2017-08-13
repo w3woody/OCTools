@@ -730,9 +730,9 @@ void OCLexGenerator::WriteActions(FILE *f)
  *	class name.
  */
 
-void OCLexGenerator::WriteOCHeader(const char *className, FILE *f)
+void OCLexGenerator::WriteOCHeader(const char *className, const char *outName, FILE *f)
 {
-	fprintf(f,GHeader1,className);
+	fprintf(f,GHeader1,outName);
 
 	// Header declarations
 	fprintf(f,"%s\n\n",classHeader.c_str());
@@ -752,10 +752,10 @@ void OCLexGenerator::WriteOCHeader(const char *className, FILE *f)
  *	lex file
  */
 
-void OCLexGenerator::WriteOCFile(const char *className, FILE *f)
+void OCLexGenerator::WriteOCFile(const char *className, const char *outName, FILE *f)
 {
 	// Standard header
-	fprintf(f,GSource1,className,className);
+	fprintf(f,GSource1,outName,outName);
 
 	// Declarations
 	fprintf(f,"%s\n\n",declCode.c_str());

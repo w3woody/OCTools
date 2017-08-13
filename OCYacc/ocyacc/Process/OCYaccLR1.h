@@ -127,8 +127,7 @@ class OCYaccLR1
 		uint32_t	maxToken;		// tokens are < this value
 		uint32_t	maxProduction;	// maxToken <= productions are < this value
 
-		std::vector<std::string> tokenList;
-		std::vector<std::string> productionList;
+		std::map<uint32_t,std::string> tokenMap;
 
 		uint32_t	TokenForChar(std::string str);
 

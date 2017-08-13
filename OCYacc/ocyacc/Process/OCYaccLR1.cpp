@@ -272,9 +272,9 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	 *	it is used to test token values and productions below.
 	 */
 
-	tokenList.push_back("$end");		// This is how $end is FIRSTTOKEN
+	tokenMap[index] = "$end";
 	grammarMap["$end"] = index++;
-	tokenList.push_back("error");		// And how error is FIRSTTOKEN+1
+	tokenMap[index] = "error";
 	grammarMap["error"] = index++;
 
 	/*
@@ -318,10 +318,12 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 						if ((*i)[0] == '\'') {
 							/* A character is its unicode value */
 							/* We store in our map but not in our array */
-							grammarMap[*i] = TokenForChar(*i);
+							uint32_t tindex = TokenForChar(*i);
+							tokenMap[tindex] = *i;
+							grammarMap[*i] = tindex;
 						} else {
 							/* We create a new entry for our token */
-							tokenList.push_back(*i);
+							tokenMap[index] = *i;
 							grammarMap[*i] = index;
 
 							/* Insert token information */
@@ -364,7 +366,6 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 
 		if (grammarMap.find(liter->first) == grammarMap.end()) {
 			// We have a token that was not defined
-			tokenList.push_back(liter->first);
 			grammarMap[liter->first] = index;
 
 			TokenConstant tc;
@@ -387,7 +388,6 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	 *	We also add an "$accept" production before the rest.
 	 */
 
-	productionList.push_back("$accept");
 	grammarMap["$accept"] = index++;
 
 	for (miter = p.symbols.begin(); miter != p.symbols.end(); ++miter) {
@@ -896,7 +896,7 @@ bool OCYaccLR1::BuildActionTable(const OCYaccParser &parser)
 						 *	if either does not have precedence, we fail.
 						 */
 
-						std::string sym = tokenList[iter->follow - FIRSTTOKEN];
+						std::string sym = tokenMap[iter->follow];
 						if ((r.precedence.prec == 0) || (parser.terminalSymbol.find(sym) == parser.terminalSymbol.cend())) {
 							/*
 							 *	Shift/reduce error; no precedence to resolve.
@@ -1006,7 +1006,7 @@ void OCYaccLR1::FindAcceptState()
 	// rule S->E$ otherwise we must have a shift production which shifts
 	// through the end of file, which means we must have a state that contains
 	// S->E$.
-	fprintf(stderr,"Assertion violation. Bug in code?\n");
+	fprintf(stderr,"Assertion violation. Bug in generator code?\n");
 	exit(1);
 }
 

@@ -117,12 +117,13 @@ void OCYaccParser::SkipToNextDeclaration(OCLexer &lex)
 
 bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 {
+	bool retVal = true;
 	uint16_t precedence = 0;
 
 	for (;;) {
 		int32_t sym = lex.ReadToken();
 
-		if (sym == OCTOKEN_SECTION) return true;
+		if (sym == OCTOKEN_SECTION) return retVal;
 
 		if (sym == '%') {
 
@@ -132,8 +133,9 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 
 			sym = lex.ReadToken();
 			if (sym != OCTOKEN_TOKEN) {
-				fprintf(stderr,"%s:%d Syntax error in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
+				fprintf(stderr,"%s:%d Syntax error in grammar declarations section; %% not followed by operation name\n",lex.fFileName.c_str(),lex.fTokenLine);
 				SkipToNextDeclaration(lex);
+				retVal = false;
 			} else {
 				if (lex.fToken == "type") {
 					/*
@@ -154,6 +156,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						fprintf(stderr,"%s:%d Expect type declaration after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
 
 						SkipToNextDeclaration(lex);
+						retVal = false;
 						continue;
 					}
 					typeName = lex.fToken;
@@ -163,6 +166,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						fprintf(stderr,"%s:%d Unclosed type, missing '>' after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
 
 						SkipToNextDeclaration(lex);
+						retVal = false;
 						continue;
 					}
 
@@ -217,6 +221,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 								fprintf(stderr,"%s:%d Expect type name after < in token declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
 
 								SkipToNextDeclaration(lex);
+								retVal = false;
 								continue;
 							}
 
@@ -227,6 +232,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 								fprintf(stderr,"%s:%d Unclosed type, missing '>' after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
 
 								SkipToNextDeclaration(lex);
+								retVal = false;
 								continue;
 							}
 						} else {
@@ -240,7 +246,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 
 					for (;;) {
 						sym = lex.ReadToken();
-						if (sym == OCTOKEN_TOKEN) {
+						if ((sym == OCTOKEN_TOKEN) || (sym == OCTOKEN_CHAR)) {
 							// Store declaration
 							std::map<std::string,Precedence>::iterator m;
 							m = terminalSymbol.find(lex.fToken);
@@ -253,6 +259,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 								if (m->second.assoc == None) {
 									if (a.assoc == None) {
 										fprintf(stderr,"%s:%d Duplicate %%token %s\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+										retVal = false;
 									} else {
 										m->second.assoc = a.assoc;
 										m->second.prec = a.prec;
@@ -260,6 +267,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 								} else {
 									if (a.assoc != None) {
 										fprintf(stderr,"%s:%d token %s precedence already set\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+										retVal = false;
 									}
 								}
 							}
@@ -278,6 +286,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 					if (sym != OCTOKEN_TOKEN) {
 						fprintf(stderr,"%s:%d %%start must be followed by start symbol\n",lex.fFileName.c_str(),lex.fTokenLine);
 
+						retVal = false;
 						SkipToNextDeclaration(lex);
 					} else {
 						startSymbol = lex.fToken;
@@ -330,6 +339,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 					fprintf(stderr,"%s:%d Unknown declaration %s in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
 
 					SkipToNextDeclaration(lex);
+					retVal = false;
 				}
 			}
 		} else if (sym == OCTOKEN_OPENCODE) {
@@ -358,8 +368,9 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 			return false;
 
 		} else {
-			fprintf(stderr,"%s:%d Syntax error in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
+			fprintf(stderr,"%s:%d Syntax error in grammar declarations section: unknown token %s\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
 			SkipToNextDeclaration(lex);
+			retVal = false;
 		}
 	}
 }
@@ -506,12 +517,14 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 
 				if (terminalSymbol.find(t) != terminalSymbol.end()) {
 					Precedence p = terminalSymbol[t];
-
-					if (hasPrec && ((inst.precedence.prec != p.prec) || (inst.precedence.assoc != p.assoc))) {
-						fprintf(stderr,"%s:%d Rule declaration has multiple tokens with different precedence levels",lex.fFileName.c_str(),lex.fTokenLine);
-					} else {
-						hasPrec = true;
-						inst.precedence = p;
+					if (p.assoc != Assoc::None) {
+						if (hasPrec && ((inst.precedence.prec != p.prec) || (inst.precedence.assoc != p.assoc))) {
+							fprintf(stderr,"%s:%d Rule declaration has multiple tokens with different precedence levels\n",lex.fFileName.c_str(),lex.fTokenLine);
+							retVal = false;
+						} else {
+							hasPrec = true;
+							inst.precedence = p;
+						}
 					}
 				}
 			}

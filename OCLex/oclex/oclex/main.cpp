@@ -45,6 +45,7 @@ static const char *GHelp =
 /************************************************************************/
 
 static char GOutputFile[FILENAME_MAX];
+static char GOutputFileName[FILENAME_MAX];
 static char GInputFile[FILENAME_MAX];
 static char GClassName[FILENAME_MAX];
 
@@ -141,6 +142,8 @@ static void ParseArgs(int argc, const char *argv[])
 
 int main(int argc, const char * argv[])
 {
+	char *x, *y, *w;
+	size_t s;
 	char scratch[FILENAME_MAX];
 
 	/*
@@ -160,7 +163,7 @@ int main(int argc, const char * argv[])
 		 */
 
 		strncpy(GOutputFile,GInputFile,sizeof(GOutputFile)-1);
-		char *x,*y = NULL;
+		y = NULL;
 		for (x = GOutputFile; *x; ++x) {
 			if (*x == '/') y = NULL;
 			if (*x == '.') y = x;
@@ -170,29 +173,36 @@ int main(int argc, const char * argv[])
 	}
 
 	/*
+	 *	Find the output file name. This is just the name of the file, and
+	 *	is used when constructing the #include
+	 */
+
+	y = NULL;
+	w = GOutputFile;
+
+	for (x = GInputFile; *x; ++x) {
+		if (*x == '/') {
+			w = x+1;
+			y = NULL;
+		}
+		if (*x == '.') y = x;
+	}
+
+	if (y == NULL) {
+		strncpy(GOutputFileName,w,sizeof(GOutputFileName)-1);
+	} else {
+		s = y - w;
+		if (s > sizeof(GOutputFileName)-1) s = sizeof(GOutputFileName)-1;
+		memmove(GOutputFileName, w, s);
+		GOutputFileName[s] = 0;
+	}
+
+	/*
 	 *	Calculate the class name
 	 */
 
 	if (GClassName[0] == 0) {
-		char *x,*y = NULL, *w = GOutputFile;
-		size_t s;
-
-		for (x = GInputFile; *x; ++x) {
-			if (*x == '/') {
-				w = x+1;
-				y = NULL;
-			}
-			if (*x == '.') y = x;
-		}
-
-		if (y == NULL) {
-			strncpy(GClassName,w,sizeof(GClassName)-1);
-		} else {
-			s = y - w;
-			if (s > sizeof(GClassName)-1) s = sizeof(GClassName)-1;
-			memmove(GClassName, w, s);
-			GClassName[s] = 0;
-		}
+		strncpy(GClassName,GOutputFileName,sizeof(GClassName)-1);
 	}
 
 	/*
@@ -242,7 +252,7 @@ int main(int argc, const char * argv[])
 		printf("Unable to write to file %s\n\n",scratch);
 		PrintError(argc, argv);
 	}
-	generator.WriteOCHeader(GClassName, out);
+	generator.WriteOCHeader(GClassName, GOutputFileName, out);
 	fclose(out);
 
 	strncpy(scratch,GOutputFile,sizeof(scratch));
@@ -252,7 +262,7 @@ int main(int argc, const char * argv[])
 		printf("Unable to write to file %s\n\n",scratch);
 		PrintError(argc, argv);
 	}
-	generator.WriteOCFile(GClassName, out);
+	generator.WriteOCFile(GClassName, GOutputFileName, out);
 	fclose(out);
 
 	/*

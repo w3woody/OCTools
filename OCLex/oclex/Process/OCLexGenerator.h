@@ -39,8 +39,8 @@ class OCLexGenerator : public OCLexDFA
 		 *	Write the Objective C file, after the DFA is generated.
 		 */
 
-		void WriteOCHeader(const char *className, FILE *f);
-		void WriteOCFile(const char *className, FILE *f);
+		void WriteOCHeader(const char *className, const char *outputName, FILE *f);
+		void WriteOCFile(const char *className, const char *outputName, FILE *f);
 
 	private:
 		void WriteArray(FILE *f, uint32_t *list, size_t len);

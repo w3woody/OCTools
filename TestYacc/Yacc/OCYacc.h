@@ -24,7 +24,7 @@
 /*	OCLexInput
  *
  *		The protocol for our lex reader file that the lex stream must
- *	provide. This is the same as the protocol generated as part of the OCYacc
+ *	provide. This is the same as the protocol generated as part of the lex
  *	output, and allows us to glue the Lexer and Parser together.
  */
 
