@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "OCYacc.h"
+#import "OCYaccTest.h"
 
 /************************************************************************/
 /*                                                                      */
@@ -17,10 +17,10 @@
 
 
 static int GData[] = {
-	YACCTOKEN_ID, '*', YACCTOKEN_ID, '+', YACCTOKEN_ID
+	TOKEN, '=', NUMBER, '*', NUMBER, '+', NUMBER, ';'
 };
 static NSString *GTokens[] = {
-	@"3", @"*", @"4", @"+", @"5"
+	@"A", @"=", @"3", @"*", @"4", @"+", @"5", @";"
 };
 
 /*
@@ -68,15 +68,14 @@ static NSString *GTokens[] = {
 /*                                                                      */
 /************************************************************************/
 
-@interface OCError: NSObject<OCYaccError>
+@interface OCError: NSObject<OCYaccTestError>
 @end
 
 @implementation OCError
-- (void)errorFrom:(OCYacc *)yacc line:(NSInteger)line column:(NSInteger)column
-		filename:(NSString *)fname token:(NSString *)text
-		errorMessage:(NSString *)error
+- (void)errorFrom:(OCYaccTest *)yacc line:(NSInteger)line column:(NSInteger)column
+		filename:(NSString *)fname errorMessage:(NSString *)error
 {
-	NSLog(@"token %@: %@",text,error);
+	NSLog(@"%@",error);
 }
 @end
 
@@ -87,7 +86,7 @@ static NSString *GTokens[] = {
 int main(int argc, const char * argv[])
 {
 	@autoreleasepool {
-		OCYacc *y = [[OCYacc alloc] initWithLexer:[[OCLexTest alloc] init]];
+		OCYaccTest *y = [[OCYaccTest alloc] initWithLexer:[[OCLexTest alloc] init]];
 
 		[y parse];
 

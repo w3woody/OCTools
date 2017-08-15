@@ -189,6 +189,8 @@ uint32_t OCYaccLR1::TokenForChar(std::string str)
 				} else {
 					ch = ((ch2 & 0x03FF) << 10) | (ch & 0x03FF);
 				}
+
+				ch += 0x10000;
 			}
 			return ch;
 		}
@@ -278,11 +280,13 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	grammarMap["error"] = index++;
 
 	/*
-	 *	Populate the public facing values
+	 *	Populate the public facing values. We do that this way in case
+	 *	our algorithm changes and we have different values here.
 	 */
 
 	eofTokenID = FIRSTTOKEN;
 	errorTokenID = FIRSTTOKEN + 1;
+	firstTokenID = FIRSTTOKEN + 2;
 
 	/*
 	 *	Iterate all the rules, extracting tokens. Note that single quote
@@ -389,12 +393,11 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	 */
 
 	grammarMap["$accept"] = index++;
-
 	for (miter = p.symbols.begin(); miter != p.symbols.end(); ++miter) {
 		const std::string &p = miter->first;
 		grammarMap[p] = index++;
 	}
-	maxProduction = index;
+	maxSymbolID = index;
 
 	/*
 	 *	Now iterate and build our rules using the found indexes so we can
@@ -415,6 +418,10 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 
 	Reduction reduction;
 	reduction.reduce = 1;				// This will never be invoked.
+	reduction.production = maxToken;	// First production index
+	reduction.prodDebug = "$accept : ";
+	reduction.prodDebug += p.startSymbol;
+	reduction.prodDebug += " $end";
 	reductions.push_back(reduction);	// This is basically a placeholder.
 
 	/*
@@ -422,6 +429,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	 */
 
 	for (miter = p.symbols.begin(); miter != p.symbols.end(); ++miter) {
+		index = grammarMap[miter->first];
 
 		/*
 		 *	Iterate the declaration and create our rules
@@ -432,14 +440,20 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 			std::vector<std::string>::iterator i;
 
 			// Insert grammar into list of grammars
-			r.production = grammarMap[miter->first];
+			r.production = index;
 			r.precedence = viter->precedence;
 			r.filePos = viter->pos;
 			r.prodName = miter->first;
 
+			reduction.prodDebug = miter->first;
+			reduction.prodDebug += " : ";
+
 			r.tokenlist.clear();
 			for (i = viter->tokenlist.begin(); i != viter->tokenlist.end(); ++i) {
 				r.tokenlist.push_back(grammarMap[*i]);
+
+				reduction.prodDebug += *i;
+				reduction.prodDebug += " ";
 			}
 
 			grammar.push_back(r);
@@ -447,6 +461,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 			// Insert reduction for rule N.
 			reduction.reduce = viter->tokenlist.size();
 			reduction.code = viter->code;
+			reduction.production = index;
 			reductions.push_back(reduction);
 		}
 	}

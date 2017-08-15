@@ -72,6 +72,8 @@ class OCYaccLR1
 
 		struct Reduction {
 			size_t reduce;					// Number of states to pop
+			uint32_t production;			// Production code we reduce to
+			std::string prodDebug;			// For debugging
 			std::string code;				// Code to execute (with $$,$n)
 		};
 
@@ -97,6 +99,8 @@ class OCYaccLR1
 		// Special token values
 		uint32_t eofTokenID;				// -1 turns into this for errors
 		uint32_t errorTokenID;				// This is for errors
+		uint32_t firstTokenID;				// First non-Unicode printable token
+		uint32_t maxSymbolID;				// All tokens, prods < this value
 
 		// Rule reductions
 		std::vector<Reduction> reductions;	// How to reduce by rule N
@@ -124,8 +128,7 @@ class OCYaccLR1
 		 *	efficiency purposes.
 		 */
 
-		uint32_t	maxToken;		// tokens are < this value
-		uint32_t	maxProduction;	// maxToken <= productions are < this value
+		uint32_t	maxToken;		// tokens are < this value; productions >=
 
 		std::map<uint32_t,std::string> tokenMap;
 
