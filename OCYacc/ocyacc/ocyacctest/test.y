@@ -13,27 +13,26 @@
 %start statements
 
 %type <NSNumber> statement expression assignment
-%type <NSArray<NSNumber *>> statements
+%type <NSMutableArray<NSNumber *>> statements
 
 %%
 
-statements : statement					{ $$ = $1; }
-		   | statements statement		{ [$$ addObject:$1]; }
+statements : statement					{ $$ = [@[ $1 ] mutableCopy]; }
+		   | statements statement		{ [$1 addObject:$2]; $$ = $1; }
 		   ;
 
 statement  : assignment ';'				{ $$ = $1; }
-		   | error ';'					{ [self errorWithFormat:@"?"]; }
+		   | error ';'					{ $$ = @0; [self errorWithFormat:@"?"]; }
 		   ;
 
-assignment : TOKEN '=' expression		{ $$ = $1; }
-		   | TOKEN '=' assignment		{ $$ = $1; }
+assignment : TOKEN '=' expression		{ $$ = $3; }
+		   | TOKEN '=' assignment		{ $$ = $3; }
 		   ;
 
 expression : '(' expression ')'			{ $$ = $2; }
-		   | expression '+' expression	{ $$ = $1 + $3; }
-		   | expression '-' expression	{ $$ = $1 - $3; }
-		   | expression '*' expression	{ $$ = $1 * $3; }
-		   | expression '/' expression	{ $$ = $1 / $3; }
+		   | expression '+' expression	{ $$ = @($1.doubleValue + $3.doubleValue); }
+		   | expression '-' expression	{ $$ = @($1.doubleValue - $3.doubleValue); }
+		   | expression '*' expression	{ $$ = @($1.doubleValue * $3.doubleValue); }
+		   | expression '/' expression	{ $$ = @($1.doubleValue / $3.doubleValue); }
 		   | NUMBER						{ $$ = $1; }
-		   | TOKEN						{ $$ = $1; }
 		   ;

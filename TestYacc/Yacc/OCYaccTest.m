@@ -44,35 +44,18 @@
  *      Array of non-Unicode token values for error reporting
  */
 
-static NSString *TokenArray[] = {
+static const NSString *TokenArray[] = {
     @"TOKEN",
     @"NUMBER"
 };
-
-// Production rules
-// (110004) $accept : statements $end
-// (110005) assignment : TOKEN '=' expression 
-// (110005) assignment : TOKEN '=' assignment 
-// (110006) expression : '(' expression ')' 
-// (110006) expression : expression '+' expression 
-// (110006) expression : expression '-' expression 
-// (110006) expression : expression '*' expression 
-// (110006) expression : expression '/' expression 
-// (110006) expression : NUMBER 
-// (110006) expression : TOKEN 
-// (110007) statement : assignment ';' 
-// (110007) statement : error ';' 
-// (110008) statements : statement 
-// (110008) statements : statements statement 
-
 /*  RuleLength
  *
  *      The number of tokens a reduce action removes from the stack
  */
 
-static uint8_t RuleLength[14] = {
+static const uint8_t RuleLength[13] = {
      1,  3,  3,  3,  3,  3,  3,  3, 
-     1,  1,  2,  2,  1,  2
+     1,  2,  2,  1,  2
 };
 
 /*  RuleProduction
@@ -80,9 +63,9 @@ static uint8_t RuleLength[14] = {
  *      The prodution ID we reduce to
  */
 
-static uint32_t RuleProduction[14] = {
+static const uint32_t RuleProduction[13] = {
     0x110004, 0x110005, 0x110005, 0x110006, 0x110006, 0x110006, 0x110006, 0x110006, 
-    0x110006, 0x110006, 0x110007, 0x110007, 0x110008, 0x110008
+    0x110006, 0x110007, 0x110007, 0x110008, 0x110008
 };
 
 /*
@@ -95,58 +78,49 @@ static uint32_t RuleProduction[14] = {
  *      Compressed action index table.
  */
 
-static uint32_t ActionI[41] = {
+static const uint32_t ActionI[38] = {
          0,      2,      3,      4,      5,      8,     11,     12, 
-        15,     18,     21,     24,     30,     35,     36,     41, 
-        44,     47,     50,     53,     58,     63,     68,     73, 
-        78,     81,     86,     91,     96,    101,    104,    107, 
-       110,    113,    118,    123,    128,    133,    138,    143, 
-       146
+        15,     18,     21,     23,     28,     29,     34,     36, 
+        38,     40,     42,     47,     52,     57,     62,     64, 
+        69,     74,     79,     81,     83,     85,     87,     92, 
+        97,    102,    107,    112,    117,    120
 };
 
-static uint32_t ActionJ[146] = {
+static const uint32_t ActionJ[120] = {
     0x110001, 0x110002,      ';',      '=',      ';', 0x110000, 0x110001, 0x110002, 
     0x110000, 0x110001, 0x110002, 0x110000, 0x110000, 0x110001, 0x110002, 0x110000, 
-    0x110001, 0x110002,      '(', 0x110002, 0x110003,      '(', 0x110002, 0x110003, 
-         '*',      '+',      '-',      '/',      ';',      '=',      '*',      '+', 
-         '-',      '/',      ';',      ';',      '*',      '+',      '-',      '/', 
-         ';',      '(', 0x110002, 0x110003,      '(', 0x110002, 0x110003,      '(', 
-    0x110002, 0x110003,      '(', 0x110002, 0x110003,      '*',      '+',      '-', 
-         '/',      ';',      '*',      '+',      '-',      '/',      ';',      '*', 
+    0x110001, 0x110002,      '(', 0x110002, 0x110003,      '(', 0x110003,      '*', 
+         '+',      '-',      '/',      ';',      ';',      '*',      '+',      '-', 
+         '/',      ';',      '(', 0x110003,      '(', 0x110003,      '(', 0x110003, 
+         '(', 0x110003,      '*',      '+',      '-',      '/',      ';',      '*', 
          '+',      '-',      '/',      ';',      '*',      '+',      '-',      '/', 
-         ';',      '*',      '+',      '-',      '/',      ';',      '(', 0x110002, 
-    0x110003,      ')',      '*',      '+',      '-',      '/',      ')',      '*', 
-         '+',      '-',      '/',      ')',      '*',      '+',      '-',      '/', 
-         '*',      '+',      '-',      '/',      ';',      '(', 0x110002, 0x110003, 
-         '(', 0x110002, 0x110003,      '(', 0x110002, 0x110003,      '(', 0x110002, 
-    0x110003,      ')',      '*',      '+',      '-',      '/',      ')',      '*', 
-         '+',      '-',      '/',      ')',      '*',      '+',      '-',      '/', 
+         ';',      '*',      '+',      '-',      '/',      ';',      '(', 0x110003, 
          ')',      '*',      '+',      '-',      '/',      ')',      '*',      '+', 
-         '-',      '/',      ')',      '*',      '+',      '-',      '/', 0x110000, 
-    0x110001, 0x110002
+         '-',      '/',      '*',      '+',      '-',      '/',      ';',      '(', 
+    0x110003,      '(', 0x110003,      '(', 0x110003,      '(', 0x110003,      ')', 
+         '*',      '+',      '-',      '/',      ')',      '*',      '+',      '-', 
+         '/',      ')',      '*',      '+',      '-',      '/',      ')',      '*', 
+         '+',      '-',      '/',      ')',      '*',      '+',      '-',      '/', 
+         ')',      '*',      '+',      '-',      '/', 0x110000, 0x110001, 0x110002
 };
 
 // Note: < 0 -> reduce (rule = -a-1), >= 0 -> shift (state).
-static int16_t ActionA[146] = {
-         1,      2,     39,      9,      8,    -13,    -13,    -13, 
-         6,      1,      2,     -1,    -14,    -14,    -14,    -11, 
-       -11,    -11,     10,     11,     12,     24,     25,     26, 
-       -10,    -10,    -10,    -10,    -10,      9,     -9,     -9, 
-        -9,     -9,     -9,     -3,     15,     16,     17,     18, 
-        -2,     10,     19,     12,     10,     19,     12,     10, 
-        19,     12,     10,     19,     12,    -10,    -10,    -10, 
-       -10,    -10,     -8,     -8,     -8,     -8,     -8,     15, 
-        16,     17,     18,     -6,     15,     16,     17,     18, 
-        -5,     -7,     -7,     -7,     -7,     -7,     24,     25, 
-        26,    -10,    -10,    -10,    -10,    -10,     -9,     -9, 
-        -9,     -9,     -9,     28,     29,     30,     31,     32, 
-        -4,     -4,     -4,     -4,     -4,     24,     25,     26, 
-        24,     25,     26,     24,     25,     26,     24,     25, 
-        26,     -8,     -8,     -8,     -8,     -8,     -6,     29, 
-        30,     31,     32,     -5,     29,     30,     31,     32, 
-        -7,     -7,     -7,     -7,     -7,     38,     29,     30, 
-        31,     32,     -4,     -4,     -4,     -4,     -4,    -12, 
-       -12,    -12
+static const int16_t ActionA[120] = {
+         1,      2,     36,      9,      8,    -12,    -12,    -12, 
+         6,      1,      2,     -1,    -13,    -13,    -13,    -10, 
+       -10,    -10,     10,      2,     11,     22,     23,     -9, 
+        -9,     -9,     -9,     -9,     -3,     14,     15,     16, 
+        17,     -2,     10,     11,     10,     11,     10,     11, 
+        10,     11,     -8,     -8,     -8,     -8,     -8,     14, 
+        15,     16,     17,     -6,     14,     15,     16,     17, 
+        -5,     -7,     -7,     -7,     -7,     -7,     22,     23, 
+        -9,     -9,     -9,     -9,     -9,     25,     26,     27, 
+        28,     29,     -4,     -4,     -4,     -4,     -4,     22, 
+        23,     22,     23,     22,     23,     22,     23,     -8, 
+        -8,     -8,     -8,     -8,     -6,     26,     27,     28, 
+        29,     -5,     26,     27,     28,     29,     -7,     -7, 
+        -7,     -7,     -7,     35,     26,     27,     28,     29, 
+        -4,     -4,     -4,     -4,     -4,    -11,    -11,    -11
 };
 
 /*  GotoI, J, A
@@ -154,25 +128,24 @@ static int16_t ActionA[146] = {
  *      Compressed goto table.
  */
 
-static uint32_t GotoI[41] = {
+static const uint32_t GotoI[38] = {
          0,      3,      3,      3,      3,      3,      5,      5, 
-         5,      5,      7,      8,      8,      8,      8,      8, 
-         9,     10,     11,     12,     12,     12,     12,     12, 
-        12,     13,     13,     13,     13,     13,     14,     15, 
-        16,     17,     17,     17,     17,     17,     17,     17, 
-        17
+         5,      5,      7,      8,      8,      8,      8,      9, 
+        10,     11,     12,     12,     12,     12,     12,     13, 
+        13,     13,     13,     14,     15,     16,     17,     17, 
+        17,     17,     17,     17,     17,     17
 };
 
-static uint32_t GotoJ[17] = {
+static const uint32_t GotoJ[17] = {
     0x110005, 0x110007, 0x110008, 0x110005, 0x110007, 0x110005, 0x110006, 0x110006, 
     0x110006, 0x110006, 0x110006, 0x110006, 0x110006, 0x110006, 0x110006, 0x110006, 
     0x110006
 };
 
-static int16_t GotoA[17] = {
-         3,      4,      5,      3,      7,     13,     14,     27, 
-        23,     22,     21,     20,     37,     36,     35,     34, 
-        33
+static const int16_t GotoA[17] = {
+         3,      4,      5,      3,      7,     12,     13,     24, 
+        21,     20,     19,     18,     34,     33,     32,     31, 
+        30
 };
 
 /************************************************************************/
@@ -267,8 +240,73 @@ static int16_t GotoA[17] = {
 
 	@try {
 		switch (rule) {
-			case 0:
-				break;
+
+        // Production rules
+            // (110004) $accept : statements $end
+            case 0:
+                break;
+
+            // (110005) assignment : TOKEN '=' expression 
+            case 1:
+                s.value = ((NSNumber *)(self.stack[pos + 2])); 
+                break;
+
+            // (110005) assignment : TOKEN '=' assignment 
+            case 2:
+                s.value = ((NSNumber *)(self.stack[pos + 2])); 
+                break;
+
+            // (110006) expression : '(' expression ')' 
+            case 3:
+                s.value = ((NSNumber *)(self.stack[pos + 1])); 
+                break;
+
+            // (110006) expression : expression '+' expression 
+            case 4:
+                s.value = @(((NSNumber *)(self.stack[pos])).doubleValue + ((NSNumber *)(self.stack[pos + 2])).doubleValue); 
+                break;
+
+            // (110006) expression : expression '-' expression 
+            case 5:
+                s.value = @(((NSNumber *)(self.stack[pos])).doubleValue - ((NSNumber *)(self.stack[pos + 2])).doubleValue); 
+                break;
+
+            // (110006) expression : expression '*' expression 
+            case 6:
+                s.value = @(((NSNumber *)(self.stack[pos])).doubleValue * ((NSNumber *)(self.stack[pos + 2])).doubleValue); 
+                break;
+
+            // (110006) expression : expression '/' expression 
+            case 7:
+                s.value = @(((NSNumber *)(self.stack[pos])).doubleValue / ((NSNumber *)(self.stack[pos + 2])).doubleValue); 
+                break;
+
+            // (110006) expression : NUMBER 
+            case 8:
+                s.value = ((NSNumber *)(self.stack[pos])); 
+                break;
+
+            // (110007) statement : assignment ';' 
+            case 9:
+                s.value = ((NSNumber *)(self.stack[pos])); 
+                break;
+
+            // (110007) statement : error ';' 
+            case 10:
+                s.value = @0; [self errorWithFormat:@"?"]; 
+                break;
+
+            // (110008) statements : statement 
+            case 11:
+                s.value = [@[ ((NSNumber *)(self.stack[pos])) ] mutableCopy]; 
+                break;
+
+            // (110008) statements : statements statement 
+            case 12:
+                [((NSMutableArray<NSNumber *> *)(self.stack[pos])) addObject:((NSNumber *)(self.stack[pos + 1]))]; s.value = ((NSMutableArray<NSNumber *> *)(self.stack[pos])); 
+                break;
+
+
 			default:
 				break;
 		}
@@ -371,7 +409,7 @@ static int16_t GotoA[17] = {
 	self.errorCount = 0;
 }
 
-- (NSString *)tokenToString:(uint32_t)token
+- (const NSString *)tokenToString:(uint32_t)token
 {
 	if (token >= K_FIRSTTOKEN) {
 		return TokenArray[token - K_FIRSTTOKEN];
@@ -573,7 +611,7 @@ static int16_t GotoA[17] = {
 				 *	an error, and do a shift on the state with an empty value.
 				 */
 
-				NSString *tokenStr = [self tokenToString:ActionJ[actionVal]];
+				const NSString *tokenStr = [self tokenToString:ActionJ[actionVal]];
 				[self errorWithFormat:@"Missing %@ was inserted",tokenStr];
 
 				/*

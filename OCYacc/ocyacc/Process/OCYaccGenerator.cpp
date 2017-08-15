@@ -347,7 +347,7 @@ static const char *GSource6 = // 1
 	"\tself.errorCount = 0;\n"                                                \
 	"}\n"                                                                     \
 	"\n"                                                                      \
-	"- (NSString *)tokenToString:(uint32_t)token\n"                           \
+	"- (const NSString *)tokenToString:(uint32_t)token\n"                     \
 	"{\n"                                                                     \
 	"\tif (token >= K_FIRSTTOKEN) {\n"                                        \
 	"\t\treturn TokenArray[token - K_FIRSTTOKEN];\n"                          \
@@ -551,7 +551,7 @@ static const char *GSource7 = // 8
 	"\t\t\t\t *\tan error, and do a shift on the state with an empty value.\n" \
 	"\t\t\t\t */\n"                                                           \
 	"\n"                                                                      \
-	"\t\t\t\tNSString *tokenStr = [self tokenToString:ActionJ[actionVal]];\n" \
+	"\t\t\t\tconst NSString *tokenStr = [self tokenToString:ActionJ[actionVal]];\n" \
 	"\t\t\t\t[self errorWithFormat:@\"Missing %%@ was inserted\",tokenStr];\n" \
 	"\n"                                                                      \
 	"\t\t\t\t/*\n"                                                            \
@@ -742,9 +742,27 @@ void OCYaccGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 		// We're not in a string. Scan for $
 		if (c == '$') {
 			if (*ptr == '$') {
+				// $$; get type and prepend if not part of assignment
 				++ptr;
-				ret += "(s.value)";
+
+				const char *x = ptr;
+				while (isspace(*x)) ++x;
+				bool isAssign = (*x == '=');
+
+				if (isAssign) {
+					ret += "s.value";
+				} else {
+					if (rule.prodType.length() == 0) {
+						fprintf(stderr,"Warning: Production for rule %s has no type\n",rule.prodDebug.c_str());
+						ret += "(s.value)";
+					} else {
+						ret += "((";
+						ret += rule.prodType;
+						ret += " *)s.value)";
+					}
+				}
 			} else if (isdigit(*ptr)) {
+				// $n; extract number value and construct proper substitution
 				size_t value = 0;
 				while (isdigit(*ptr)) {
 					value = (value * 10) + *ptr++ - '0';
@@ -769,8 +787,12 @@ void OCYaccGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 					fprintf(stderr,"Warning: Rule %s, $%zu has no type\n",rule.prodDebug.c_str(),value);
 				}
 
-				sprintf(buffer,"(self.stack[pos + %zu])",value-1);
-				ret += buffer;
+				if (value == 1) {
+					ret += "(self.stack[pos])";
+				} else {
+					sprintf(buffer,"(self.stack[pos + %zu])",value-1);
+					ret += buffer;
+				}
 				if (hasType) {
 					ret.push_back(')');
 				}

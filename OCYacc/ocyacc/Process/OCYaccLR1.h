@@ -75,6 +75,7 @@ class OCYaccLR1
 			uint32_t production;			// Production code we reduce to
 			std::string prodDebug;			// For debugging
 			std::string code;				// Code to execute (with $$,$n)
+			std::string prodType;			// Production type
 			std::vector<std::string> types;	// Types of each symbol in rule
 		};
 

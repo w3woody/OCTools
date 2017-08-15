@@ -422,6 +422,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	reduction.prodDebug = "$accept : ";
 	reduction.prodDebug += p.startSymbol;
 	reduction.prodDebug += " $end";
+	reduction.prodType = "";
 
 	reduction.types.push_back(p.symbolType[p.startSymbol]);
 
@@ -474,6 +475,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 			grammar.push_back(r);
 
 			// Insert reduction for rule N.
+			reduction.prodType = p.symbolType[miter->first];
 			reduction.reduce = viter->tokenlist.size();
 			reduction.code = viter->code;
 			reduction.production = index;
