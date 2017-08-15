@@ -267,6 +267,8 @@ static int16_t GotoA[17] = {
 
 	@try {
 		switch (rule) {
+			case 0:
+				break;
 			default:
 				break;
 		}

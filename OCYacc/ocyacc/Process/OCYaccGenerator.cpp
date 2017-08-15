@@ -698,28 +698,93 @@ OCYaccGenerator::~OCYaccGenerator()
 
 /************************************************************************/
 /*																		*/
-/*	Write Files															*/
+/*	Support																*/
 /*																		*/
 /************************************************************************/
 
-/*	OCYaccGenerator::WriteOCFile
+/*	OCYaccGenerator::WriteRule
  *
- *		Write the header
+ *		Write rule, translating $$ and $n, unless it's within a string.
+ *	We detect strings by scanning for double quotes
  */
 
-void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName, FILE *f)
+void OCYaccGenerator::WriteRule(FILE *f, std::string ruleCode)
+{
+	char q = 0;
+	char buffer[256];
+	std::string ret;
+
+	const char *ptr = ruleCode.c_str();
+
+	while (*ptr) {
+		// Skip anything following a backslash.
+		char c = *ptr++;
+
+		if (c == '\\') {
+			ret.push_back(c);
+			if (*ptr) {
+				ret.push_back(*ptr++);
+			}
+			continue;
+		}
+
+		if ((c == '"') || (c == '\'')) {
+			if (q == c) q = 0;
+			else q = c;
+		}
+
+		// q is set if we're inside a string
+		if (q) {
+			ret.push_back(c);
+			continue;
+		}
+
+		// We're not in a string. Scan for $
+		if (c == '$') {
+			if (*ptr == '$') {
+				++ptr;
+				ret += "(s.value)";
+			} else if (isdigit(*ptr)) {
+				int value = 0;
+				while (isdigit(*ptr)) {
+					value = (value * 10) + *ptr++ - '0';
+				}
+
+#warning: Prepend type
+				ret.push_back('(');
+
+				// ### Insert (type *) if type is defined
+
+				sprintf(buffer,"(self.stack[pos + %d])",value-1);
+				ret += buffer;
+				
+			} else {
+				// ???
+				ret.push_back(c);
+			}
+		} else {
+			ret.push_back(c);
+		}
+	}
+
+	/*
+	 *	Print rule with 12 space prefix
+	 */
+
+	if (ret.length()) {
+		fprintf(f,"                %s\n",ret.c_str());
+	}
+}
+
+/*	OCYaccGenerator::WriteYTables
+ *
+ *		Write the files
+ */
+
+void OCYaccGenerator::WriteYTables(FILE *f)
 {
 	size_t i,len;
 	char buffer[64];
-
-	// Prefix
-	fprintf(f,GSource1,outputName,outputName);
-
-	// Header declarations
-	fprintf(f,"\n%s\n",parser.declCode.c_str());
-
-	// Print states, declarations and constants
-	fprintf(f,"%s",GSource2);
 
 	// Constants to print
 	fprintf(f,"// Various constants\n");
@@ -750,15 +815,8 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 	}
 	fprintf(f,"\n};\n");
 
-	// Print information about the rules we're reducing by
-	fprintf(f,"\n// Production rules\n");
-	len = state.reductions.size();
-	for (i = 0; i < len; ++i) {
-		fprintf(f,"// (%x) %s\n",state.reductions[i].production,state.reductions[i].prodDebug.c_str());
-	}
-	fprintf(f,"\n");
-
 	// Reduction table
+	len = state.reductions.size();
 	fprintf(f,"/*  RuleLength\n *\n *      The number of tokens a reduce action removes from the stack\n */\n\n");
 	fprintf(f,"static uint8_t RuleLength[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
@@ -895,6 +953,32 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 		fprintf(f,"%6d",val);
 	}
 	fprintf(f,"\n};\n\n");
+}
+
+/************************************************************************/
+/*																		*/
+/*	Write Files															*/
+/*																		*/
+/************************************************************************/
+
+/*	OCYaccGenerator::WriteOCFile
+ *
+ *		Write the header
+ */
+
+void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName, FILE *f)
+{
+	// Prefix
+	fprintf(f,GSource1,outputName,outputName);
+
+	// Header declarations
+	fprintf(f,"\n%s\n",parser.declCode.c_str());
+
+	// Print states, declarations and constants
+	fprintf(f,"%s",GSource2);
+
+	// Write the various tables
+	WriteYTables(f);
 
 	// Start generating the rest of the file
 	fprintf(f, GSource3, classname, classname, classname, classname);
@@ -911,7 +995,16 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 	// Production (to switch statement)
 	fprintf(f, GSource5, classname, classname, classname);
 
-#warning TODO: Finish inserting rules
+	// Print information about the rules we're reducing by
+	fprintf(f,"\n        // Production rules\n");
+	size_t i,len = state.reductions.size();
+	for (i = 0; i < len; ++i) {
+		fprintf(f,"            // (%x) %s\n",state.reductions[i].production,state.reductions[i].prodDebug.c_str());
+		fprintf(f,"            case %zu:\n",i);
+		WriteRule(f, state.reductions[i].code);
+		fprintf(f,"                break;\n\n");
+	}
+	fprintf(f,"\n");
 
 	// Close switch, finish writing the rest
 	fprintf(f, GSource6, classname);

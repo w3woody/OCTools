@@ -11,9 +11,11 @@
 
 %start statements
 
+%type <NSNumber> statement
+
 %%
 
-statements : statement
+statements : statement					{ $$ = $1; }
 		   | statements statement
 		   ;
 

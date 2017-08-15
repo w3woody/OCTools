@@ -35,6 +35,9 @@ class OCYaccGenerator
 	private:
 		const OCYaccParser &parser;
 		const OCYaccLR1 &state;
+
+		void WriteYTables(FILE *f);
+		void WriteRule(FILE *f,  std::string ruleCode);
 };
 
 #endif /* OCYaccGenerator_h */
