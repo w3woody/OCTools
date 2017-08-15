@@ -422,6 +422,9 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	reduction.prodDebug = "$accept : ";
 	reduction.prodDebug += p.startSymbol;
 	reduction.prodDebug += " $end";
+
+	reduction.types.push_back(p.symbolType[p.startSymbol]);
+
 	reductions.push_back(reduction);	// This is basically a placeholder.
 
 	/*
@@ -447,13 +450,25 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 
 			reduction.prodDebug = miter->first;
 			reduction.prodDebug += " : ";
+			reduction.types.clear();
 
 			r.tokenlist.clear();
 			for (i = viter->tokenlist.begin(); i != viter->tokenlist.end(); ++i) {
-				r.tokenlist.push_back(grammarMap[*i]);
+				uint32_t tokenID = grammarMap[*i];
+				r.tokenlist.push_back(tokenID);
 
 				reduction.prodDebug += *i;
 				reduction.prodDebug += " ";
+
+				if (tokenID < maxToken) {
+					if (p.terminalSymbol.find(*i) != p.terminalSymbol.end()) {
+						reduction.types.push_back(p.terminalSymbol[*i].type);
+					} else {
+						reduction.types.push_back("");
+					}
+				} else {
+					reduction.types.push_back(p.symbolType[*i]);
+				}
 			}
 
 			grammar.push_back(r);

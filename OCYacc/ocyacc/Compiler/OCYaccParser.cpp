@@ -110,6 +110,33 @@ void OCYaccParser::SkipToNextDeclaration(OCLexer &lex)
 	lex.PushBackToken();
 }
 
+/*	OCYaccParser::ReadType
+ *
+ *		Read the next type in the list. Assumes we've already read the '<'
+ */
+
+std::string OCYaccParser::ReadType(OCLexer &lex)
+{
+	int32_t token;
+	std::string ret;
+	int count = 1;
+
+	for (;;) {
+		token = lex.ReadToken(false);
+		if (token == -1) return ret;
+		else if (token == '<') {
+			++count;
+			ret += lex.fToken;
+		} else if (token == '>') {
+			--count;
+			if (count == 0) return ret;
+			ret += lex.fToken;
+		} else {
+			ret += lex.fToken;
+		}
+	}
+}
+
 /*	OCYaccParser::ParseDeclarations
  *
  *		Parse the declarations list. 
@@ -148,27 +175,11 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						fprintf(stderr,"%s:%d Expect < after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
 
 						SkipToNextDeclaration(lex);
-						continue;
-					}
-
-					sym = lex.ReadToken();
-					if (sym != OCTOKEN_TOKEN) {
-						fprintf(stderr,"%s:%d Expect type declaration after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
-
-						SkipToNextDeclaration(lex);
 						retVal = false;
 						continue;
 					}
-					typeName = lex.fToken;
 
-					sym = lex.ReadToken();
-					if (sym != '>') {
-						fprintf(stderr,"%s:%d Unclosed type, missing '>' after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
-
-						SkipToNextDeclaration(lex);
-						retVal = false;
-						continue;
-					}
+					typeName = ReadType(lex);
 
 					/*
 					 *	Now grab tokens while we can
@@ -178,6 +189,11 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						sym = lex.ReadToken();
 						if (sym == OCTOKEN_TOKEN) {
 							// Store declaration
+							if (symbolType.find(lex.fToken) != symbolType.end()) {
+								fprintf(stderr,"%s:%d Symbol type for %s already defined\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+								retVal = false;
+							}
+
 							symbolType[lex.fToken] = typeName;
 						} else {
 							lex.PushBackToken();
@@ -216,25 +232,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 					if (a.assoc == None) {
 						sym = lex.ReadToken();
 						if (sym == '<') {
-							sym = lex.ReadToken();
-							if (sym != OCTOKEN_TOKEN) {
-								fprintf(stderr,"%s:%d Expect type name after < in token declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
-
-								SkipToNextDeclaration(lex);
-								retVal = false;
-								continue;
-							}
-
-							a.type = lex.fToken;
-
-							sym = lex.ReadToken();
-							if (sym != '>') {
-								fprintf(stderr,"%s:%d Unclosed type, missing '>' after %%type\n",lex.fFileName.c_str(),lex.fTokenLine);
-
-								SkipToNextDeclaration(lex);
-								retVal = false;
-								continue;
-							}
+							a.type = ReadType(lex);
 						} else {
 							lex.PushBackToken();
 						}

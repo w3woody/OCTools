@@ -708,13 +708,13 @@ OCYaccGenerator::~OCYaccGenerator()
  *	We detect strings by scanning for double quotes
  */
 
-void OCYaccGenerator::WriteRule(FILE *f, std::string ruleCode)
+void OCYaccGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 {
 	char q = 0;
 	char buffer[256];
 	std::string ret;
 
-	const char *ptr = ruleCode.c_str();
+	const char *ptr = rule.code.c_str();
 
 	while (*ptr) {
 		// Skip anything following a backslash.
@@ -745,19 +745,36 @@ void OCYaccGenerator::WriteRule(FILE *f, std::string ruleCode)
 				++ptr;
 				ret += "(s.value)";
 			} else if (isdigit(*ptr)) {
-				int value = 0;
+				size_t value = 0;
 				while (isdigit(*ptr)) {
 					value = (value * 10) + *ptr++ - '0';
 				}
 
-#warning: Prepend type
-				ret.push_back('(');
+				bool hasType = false;
+				if ((value < 1) || (value > rule.types.size())) {
+					value = 1;
+
+					fprintf(stderr,"Warning: Rule %s has illegal '$' specifier\n",rule.prodDebug.c_str());
+					fprintf(stderr,"Code: %s\n",rule.code.c_str());
+				}
 
 				// ### Insert (type *) if type is defined
+				std::string valueType = rule.types[value-1];
+				if (valueType.size() > 0) {
+					ret += "((";
+					ret += valueType;
+					ret += " *)";
+					hasType = true;
+				} else {
+					fprintf(stderr,"Warning: Rule %s, $%zu has no type\n",rule.prodDebug.c_str(),value);
+				}
 
-				sprintf(buffer,"(self.stack[pos + %d])",value-1);
+				sprintf(buffer,"(self.stack[pos + %zu])",value-1);
 				ret += buffer;
-				
+				if (hasType) {
+					ret.push_back(')');
+				}
+
 			} else {
 				// ???
 				ret.push_back(c);
@@ -802,7 +819,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 	fprintf(f," */\n\n");
 
 	bool first = true;
-	fprintf(f,"static NSString *TokenArray[] = {\n");
+	fprintf(f,"static const NSString *TokenArray[] = {\n");
 	std::vector<OCYaccLR1::TokenConstant>::const_iterator tokIter;
 	for (tokIter = state.tokens.cbegin(); tokIter != state.tokens.cend(); ++tokIter) {
 		if (first) {
@@ -818,7 +835,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 	// Reduction table
 	len = state.reductions.size();
 	fprintf(f,"/*  RuleLength\n *\n *      The number of tokens a reduce action removes from the stack\n */\n\n");
-	fprintf(f,"static uint8_t RuleLength[%zu] = {\n",len);
+	fprintf(f,"static const uint8_t RuleLength[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
 		if (i) {
 			fprintf(f,", ");
@@ -833,7 +850,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 
 	len = state.reductions.size();
 	fprintf(f,"\n/*  RuleProduction\n *\n *      The prodution ID we reduce to\n */\n\n");
-	fprintf(f,"static uint32_t RuleProduction[%zu] = {\n",len);
+	fprintf(f,"static const uint32_t RuleProduction[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
 		if (i) {
 			fprintf(f,", ");
@@ -854,7 +871,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 
 	fprintf(f,"/*  ActionI, J, A\n *\n *      Compressed action index table.\n */\n\n");
 	len = state.actionI.size();
-	fprintf(f,"static uint32_t ActionI[%zu] = {\n",len);
+	fprintf(f,"static const uint32_t ActionI[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
 		if (i) {
 			fprintf(f,", ");
@@ -868,7 +885,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 	fprintf(f,"\n};\n\n");
 
 	len = state.actionJ.size();
-	fprintf(f,"static uint32_t ActionJ[%zu] = {\n",len);
+	fprintf(f,"static const uint32_t ActionJ[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
 		if (i) {
 			fprintf(f,", ");
@@ -889,7 +906,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 
 	len = state.actionA.size();
 	fprintf(f,"// Note: < 0 -> reduce (rule = -a-1), >= 0 -> shift (state).\n");
-	fprintf(f,"static int16_t ActionA[%zu] = {\n",len);
+	fprintf(f,"static const int16_t ActionA[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
 		if (i) {
 			fprintf(f,", ");
@@ -910,7 +927,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 	// Goto table
 	fprintf(f,"/*  GotoI, J, A\n *\n *      Compressed goto table.\n */\n\n");
 	len = state.actionI.size();
-	fprintf(f,"static uint32_t GotoI[%zu] = {\n",len);
+	fprintf(f,"static const uint32_t GotoI[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
 		if (i) {
 			fprintf(f,", ");
@@ -924,7 +941,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 	fprintf(f,"\n};\n\n");
 
 	len = state.gotoJ.size();
-	fprintf(f,"static uint32_t GotoJ[%zu] = {\n",len);
+	fprintf(f,"static const uint32_t GotoJ[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
 		if (i) {
 			fprintf(f,", ");
@@ -939,7 +956,7 @@ void OCYaccGenerator::WriteYTables(FILE *f)
 	fprintf(f,"\n};\n\n");
 
 	len = state.gotoA.size();
-	fprintf(f,"static int16_t GotoA[%zu] = {\n",len);
+	fprintf(f,"static const int16_t GotoA[%zu] = {\n",len);
 	for (i = 0; i < len; ++i) {
 		if (i) {
 			fprintf(f,", ");
@@ -1001,7 +1018,7 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 	for (i = 0; i < len; ++i) {
 		fprintf(f,"            // (%x) %s\n",state.reductions[i].production,state.reductions[i].prodDebug.c_str());
 		fprintf(f,"            case %zu:\n",i);
-		WriteRule(f, state.reductions[i].code);
+		WriteRule(f, state.reductions[i]);
 		fprintf(f,"                break;\n\n");
 	}
 	fprintf(f,"\n");

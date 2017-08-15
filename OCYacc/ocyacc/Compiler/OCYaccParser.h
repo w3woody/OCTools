@@ -117,6 +117,7 @@ class OCYaccParser
 		std::string startSymbol;
 
 	private:
+		std::string ReadType(OCLexer &lex);	// call after seeing '<'
 		void SkipToNextDeclaration(OCLexer &lex);
 		bool ParseDeclarations(OCLexer &lex);
 

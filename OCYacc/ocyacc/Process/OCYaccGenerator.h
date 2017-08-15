@@ -37,7 +37,7 @@ class OCYaccGenerator
 		const OCYaccLR1 &state;
 
 		void WriteYTables(FILE *f);
-		void WriteRule(FILE *f,  std::string ruleCode);
+		void WriteRule(FILE *f,  const OCYaccLR1::Reduction &rule);
 };
 
 #endif /* OCYaccGenerator_h */
