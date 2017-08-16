@@ -1102,5 +1102,5 @@ bool OCYaccLR1::Construct(OCYaccParser &p)
 		printf("- Finished LR1 Construction\n");
 	}
 
-	return false;
+	return true;
 }

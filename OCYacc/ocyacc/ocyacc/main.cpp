@@ -219,7 +219,7 @@ int main(int argc, const char * argv[])
 
 	OCYaccParser parser;
 	if (!parser.ParseFile(lexer)) {
-		exit(1);
+		return -1;
 	}
 
 	/*
@@ -227,7 +227,10 @@ int main(int argc, const char * argv[])
 	 */
 
 	OCYaccLR1 stateMachine;
-	stateMachine.Construct(parser);
+	if (!stateMachine.Construct(parser)) {
+		// Error during state machine construction
+		return -1;
+	}
 
 	/*
 	 *	Now generate the output file

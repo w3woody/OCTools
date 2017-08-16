@@ -217,7 +217,7 @@ int main(int argc, const char * argv[])
 
 	OCLexParser parser;
 	if (!parser.ParseFile(lexer)) {
-		exit(1);
+		return -1;
 	}
 
 	/*
@@ -241,7 +241,7 @@ int main(int argc, const char * argv[])
 	if (!generator.GenerateDFA()) {
 		// Should never happen.
 		printf("A problem happened while generating the final state machine.\n");
-		exit(1);
+		return -1;
 	}
 
 	// Now write the final output files

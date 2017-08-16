@@ -214,7 +214,7 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 
 	for (;;) {
 		std::string regex = lex.ReadRegEx();
-		if (regex == "%%") return true;
+		if ((regex == "%%") || (regex == "")) return true;  // empty string: EOF
 
 		int sym = lex.ReadToken();
 		if (sym == '{') {

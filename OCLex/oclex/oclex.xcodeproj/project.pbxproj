@@ -62,6 +62,7 @@
 		EF0112201F2CFAEB006FFFFB /* OCLexDFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexDFA.h; sourceTree = "<group>"; };
 		EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexGenerator.cpp; sourceTree = "<group>"; };
 		EF01123B1F2E47E7006FFFFB /* OCLexGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexGenerator.h; sourceTree = "<group>"; };
+		EF7369341F43DD11008CC168 /* test2.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = test2.l; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +138,7 @@
 			children = (
 				EF0111ED1F2789CD006FFFFB /* test.cpp */,
 				EF0111F51F278AB4006FFFFB /* test.l */,
+				EF7369341F43DD11008CC168 /* test2.l */,
 			);
 			path = oclextest;
 			sourceTree = "<group>";
@@ -420,6 +422,7 @@
 				EF0111F11F2789CD006FFFFB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
