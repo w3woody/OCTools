@@ -55,6 +55,7 @@
 		EF0112071F28327D006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = "../../../../Library/Developer/Xcode/DerivedData/OCTools-alzzkwttbjtlkwgzhjspyeulqhwq/Build/Products/Debug/liboccommon.a"; sourceTree = "<group>"; };
 		EF0112091F28D829006FFFFB /* test.y */ = {isa = PBXFileReference; explicitFileType = sourcecode.yacc; path = test.y; sourceTree = "<group>"; };
 		EF01127A1F364219006FFFFB /* test2.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = test2.y; sourceTree = "<group>"; };
+		EF7369391F449B2C008CC168 /* tests.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = tests.y; sourceTree = "<group>"; };
 		EF92A88B1F38FF6300E27361 /* test3.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = test3.y; sourceTree = "<group>"; };
 		EF92A88C1F393ABF00E27361 /* test4.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = test4.y; sourceTree = "<group>"; };
 		EF92A8951F3A246000E27361 /* test5.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = test5.y; sourceTree = "<group>"; };
@@ -160,6 +161,7 @@
 				EF92A8951F3A246000E27361 /* test5.y */,
 				EFBF28951F3CA73800935504 /* test6.y */,
 				EFF29F551F40E26A00024C76 /* test_c.y */,
+				EF7369391F449B2C008CC168 /* tests.y */,
 			);
 			path = ocyacctest;
 			sourceTree = "<group>";

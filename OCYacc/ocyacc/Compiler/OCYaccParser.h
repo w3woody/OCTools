@@ -12,6 +12,7 @@
 #include <OCLexer.h>
 
 #include <stdio.h>
+#include <set>
 #include <map>
 #include <list>
 #include <vector>
@@ -64,13 +65,13 @@ class OCYaccParser
 		 */
 
 		enum Assoc {
-			None, Left, Right, NonAssoc
+			Left, Right, NonAssoc
 		};
 
 		struct Precedence {
 			uint16_t prec;
 			Assoc assoc;
-			std::string type;
+//			std::string type;
 		};
 
 		/*
@@ -105,9 +106,12 @@ class OCYaccParser
 
 		// associativity list. Shows %left, %right, %nonassoc mapping if
 		// declared
-		std::map<std::string,Precedence> terminalSymbol;
+		std::map<std::string,Precedence> precedence;
 
-		// Type name for production
+		// List of tokens
+		std::set<std::string> tokens;
+
+		// Type name for production or token
 		std::map<std::string,std::string> symbolType;
 
 		// Code declaration section

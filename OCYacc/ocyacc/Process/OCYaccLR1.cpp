@@ -259,7 +259,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	for (miter = p.symbols.begin(); miter != p.symbols.end(); ++miter) {
 		prods.insert(miter->first);
 
-		if (p.terminalSymbol.find(miter->first) != p.terminalSymbol.end()) {
+		if (p.tokens.find(miter->first) != p.tokens.end()) {
 			fprintf(stderr,"%s:%d production %s is defined as a token\n",miter->second.pos.file.c_str(),miter->second.pos.line,miter->first.c_str());
 			valid = false;
 		}
@@ -344,7 +344,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 							 *	If not, print a warning
 							 */
 
-							if (p.terminalSymbol.find(*i) == p.terminalSymbol.end()) {
+							if (p.tokens.find(*i) == p.tokens.end()) {
 								if (undefined.find(*i) == undefined.end()) {
 									fprintf(stderr,"%s:%d found undefined symbol %s in grammar; assuming token.\n",viter->pos.file.c_str(),viter->pos.line,i->c_str());
 									undefined.insert(*i);
@@ -364,18 +364,18 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	 *	not declared as a %token or a production is a token.
 	 */
 
-	std::map<std::string,OCYaccParser::Precedence>::iterator liter;
-	for (liter = p.terminalSymbol.begin(); liter != p.terminalSymbol.end(); ++liter) {
-		if (liter->first[0] == '\'') continue;	// skip characters
+	std::set<std::string>::iterator liter;
+	for (liter = p.tokens.begin(); liter != p.tokens.end(); ++liter) {
+		if ((*liter)[0] == '\'') continue;	// skip characters
 
-		if (grammarMap.find(liter->first) == grammarMap.end()) {
+		if (grammarMap.find(*liter) == grammarMap.end()) {
 			// We have a token that was not defined
-			grammarMap[liter->first] = index;
+			grammarMap[*liter] = index;
 
 			TokenConstant tc;
 			tc.used = false;
 			tc.value = index;
-			tc.token = liter->first;
+			tc.token = *liter;
 			tokens.push_back(tc);
 
 			++index;
@@ -461,15 +461,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 				reduction.prodDebug += *i;
 				reduction.prodDebug += " ";
 
-				if (tokenID < maxToken) {
-					if (p.terminalSymbol.find(*i) != p.terminalSymbol.end()) {
-						reduction.types.push_back(p.terminalSymbol[*i].type);
-					} else {
-						reduction.types.push_back("");
-					}
-				} else {
-					reduction.types.push_back(p.symbolType[*i]);
-				}
+				reduction.types.push_back(p.symbolType[*i]);
 			}
 
 			grammar.push_back(r);
@@ -929,7 +921,8 @@ bool OCYaccLR1::BuildActionTable(const OCYaccParser &parser)
 						 */
 
 						std::string sym = tokenMap[iter->follow];
-						if ((r.precedence.prec == 0) || (parser.terminalSymbol.find(sym) == parser.terminalSymbol.cend())) {
+
+						if ((r.precedence.prec == 0) || (parser.precedence.find(sym) == parser.precedence.cend())) {
 							/*
 							 *	Shift/reduce error; no precedence to resolve.
 							 *	We reduce by default.
@@ -942,7 +935,7 @@ bool OCYaccLR1::BuildActionTable(const OCYaccParser &parser)
 							row[iter->follow] = a;
 
 						} else {
-							const OCYaccParser::Precedence &shiftPrec = parser.terminalSymbol.at(sym);
+							const OCYaccParser::Precedence &shiftPrec = parser.precedence.at(sym);
 
 							if (shiftPrec.prec > r.precedence.prec) {
 								/*

@@ -145,7 +145,7 @@ std::string OCYaccParser::ReadType(OCLexer &lex)
 bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 {
 	bool retVal = true;
-	uint16_t precedence = 0;
+	uint16_t precIndex = 0;
 
 	for (;;) {
 		int32_t sym = lex.ReadToken();
@@ -201,7 +201,45 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						}
 					}
 
-				} else if ((lex.fToken == "left") || (lex.fToken == "right") || (lex.fToken == "nonassoc") || (lex.fToken == "token")) {
+				} else if (lex.fToken == "token") {
+					/*
+					 *	Define the token. First, get the type.
+					 */
+
+					sym = lex.ReadToken();
+					std::string type;
+					bool hasType = false;
+
+					if (sym == '<') {
+						hasType = true;
+						type = ReadType(lex);
+					} else {
+						lex.PushBackToken();
+					}
+
+					/*
+					 *	Now define the tokens, updating the symbol name if
+					 *	the token is present
+					 */
+
+					for (;;) {
+						sym = lex.ReadToken();
+						if (sym == OCTOKEN_TOKEN) {
+							tokens.insert(lex.fToken);
+							if (hasType) {
+								if (symbolType.find(lex.fToken) != symbolType.end()) {
+									fprintf(stderr,"%s:%d Symbol type for %s already defined\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+									retVal = false;
+								}
+								symbolType[lex.fToken] = type;
+							}
+						} else {
+							lex.PushBackToken();
+							break;
+						}
+					}
+
+				} else if ((lex.fToken == "left") || (lex.fToken == "right") || (lex.fToken == "nonassoc")) {
 					/*
 					 *	Parse the association and track the precedence.
 					 *	Note that two or more tokens on the same %left or
@@ -213,29 +251,28 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 					Precedence a;
 					if (lex.fToken == "left") {
 						a.assoc = Left;
-						a.prec = ++precedence;
+						a.prec = ++precIndex;
 					} else if (lex.fToken == "right") {
 						a.assoc = Right;
-						a.prec = ++precedence;
-					} else if (lex.fToken == "nonassoc") {
-						a.assoc = NonAssoc;
-						a.prec = ++precedence;
+						a.prec = ++precIndex;
 					} else {
-						a.assoc = None;
-						a.prec = 0;		// no precedence defined.
+						a.assoc = NonAssoc;
+						a.prec = ++precIndex;
 					}
 
 					/*
 					 *	Grab the optional type. Only valid on %token
 					 */
 
-					if (a.assoc == None) {
-						sym = lex.ReadToken();
-						if (sym == '<') {
-							a.type = ReadType(lex);
-						} else {
-							lex.PushBackToken();
-						}
+					std::string type;
+					bool hasType = false;
+
+					sym = lex.ReadToken();
+					if (sym == '<') {
+						hasType = true;
+						type = ReadType(lex);
+					} else {
+						lex.PushBackToken();
 					}
 
 					/*
@@ -246,28 +283,27 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						sym = lex.ReadToken();
 						if ((sym == OCTOKEN_TOKEN) || (sym == OCTOKEN_CHAR)) {
 							// Store declaration
-							std::map<std::string,Precedence>::iterator m;
-							m = terminalSymbol.find(lex.fToken);
-							if (m == terminalSymbol.end()) {
-								terminalSymbol[lex.fToken] = a;
-							} else {
-								// Verify we don't have a conflicting
-								// declaration, and update precedence if not
-								// currently set.
-								if (m->second.assoc == None) {
-									if (a.assoc == None) {
-										fprintf(stderr,"%s:%d Duplicate %%token %s\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
-										retVal = false;
-									} else {
-										m->second.assoc = a.assoc;
-										m->second.prec = a.prec;
-									}
-								} else {
-									if (a.assoc != None) {
-										fprintf(stderr,"%s:%d token %s precedence already set\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
-										retVal = false;
-									}
+							if (sym == OCTOKEN_TOKEN) {
+								tokens.insert(lex.fToken);
+							}
+
+							// Store symbol type
+							if (hasType) {
+								if (symbolType.find(lex.fToken) != symbolType.end()) {
+									fprintf(stderr,"%s:%d Symbol type for %s already defined\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+									retVal = false;
 								}
+								symbolType[lex.fToken] = type;
+							}
+
+							// Store precedence
+							std::map<std::string,Precedence>::iterator m;
+							m = precedence.find(lex.fToken);
+							if (m == precedence.end()) {
+								precedence[lex.fToken] = a;
+							} else {
+								fprintf(stderr,"%s:%d token %s precedence already set\n",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
+								retVal = false;
 							}
 						} else {
 							lex.PushBackToken();
@@ -479,6 +515,12 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 			bool hasPrec = false;
 			bool hasFilePos = false;
 
+			/*
+			 *	Clear rule precedence
+			 */
+			
+			inst.precedence.prec = 0;
+
 			for (;;) {
 				/*
 				 *	We're parsing a list of tokens.
@@ -513,16 +555,15 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 				 *	rules with different precedence levels, warn the user
 				 */
 
-				if (terminalSymbol.find(t) != terminalSymbol.end()) {
-					Precedence p = terminalSymbol[t];
-					if (p.assoc != Assoc::None) {
-						if (hasPrec && ((inst.precedence.prec != p.prec) || (inst.precedence.assoc != p.assoc))) {
-							fprintf(stderr,"%s:%d Rule declaration has multiple tokens with different precedence levels\n",lex.fFileName.c_str(),lex.fTokenLine);
-							retVal = false;
-						} else {
-							hasPrec = true;
-							inst.precedence = p;
-						}
+				if (precedence.find(t) != precedence.end()) {
+					Precedence p = precedence[t];
+
+					if (hasPrec && ((inst.precedence.prec != p.prec) || (inst.precedence.assoc != p.assoc))) {
+						fprintf(stderr,"%s:%d Rule declaration has multiple tokens with different precedence levels\n",lex.fFileName.c_str(),lex.fTokenLine);
+						retVal = false;
+					} else {
+						hasPrec = true;
+						inst.precedence = p;
 					}
 				}
 			}
@@ -550,7 +591,7 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 					return false;
 				}
 
-				if (terminalSymbol.find(lex.fToken) == terminalSymbol.end()) {
+				if (precedence.find(lex.fToken) == precedence.end()) {
 					fprintf(stderr,"%s:%d %s does not have precedence defined",lex.fFileName.c_str(),lex.fTokenLine,lex.fToken.c_str());
 					SkipToNextRule(lex);
 					return false;
@@ -560,7 +601,7 @@ bool OCYaccParser::ParseRules(OCLexer &lex)
 				 *	This overrides precedence
 				 */
 
-				inst.precedence = terminalSymbol[lex.fToken];
+				inst.precedence = precedence[lex.fToken];
 				sym = lex.ReadToken();
 			}
 
