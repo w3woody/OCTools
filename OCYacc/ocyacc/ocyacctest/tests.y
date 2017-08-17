@@ -4,11 +4,17 @@
  *	operates like Basic but uses C style expression syntax.
  */
 
+%{
+#import "ExpressionNode.h"
+%}
+
 /*
  *	Token declarations
  */
 
-%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
+%token <NSString> IDENTIFIER CONSTANT STRING_LITERAL
+
+%token SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -56,6 +62,11 @@
  *	Statement values
  */
 
+%type <ExpressionNode> primary_expression postfix_expression
+		argument_expression_list unary_expression cast_expression
+		binary_expression conditional_expression assignment_expression
+		expression constant_expression
+
 /*
  *	Start: statements list
  */
@@ -76,15 +87,27 @@
 
 primary_expression
 	: IDENTIFIER
+			{
+				$$ = [[ExpressionNode alloc] initWithIdentifier:$$];
+			}
 	| CONSTANT
+			{
+				$$ = [[ExpressionNode alloc] initWithConstant:$$];
+			}
 	| STRING_LITERAL
+			{
+				$$ = [[ExpressionNode alloc] initWithStringLiteral:$$];
+			}
 	| '(' expression ')'
+			{
+				$$ = $2;
+			}
 	;
 
 postfix_expression
 	: primary_expression
-	| postfix_expression '(' ')'
-	| postfix_expression '(' argument_expression_list ')'
+	| IDENTIFIER '(' ')'
+	| IDENTIFIER '(' argument_expression_list ')'
 	| postfix_expression INC_OP
 	| postfix_expression DEC_OP
 	;

@@ -550,6 +550,7 @@ static uint16_t StateMachineA[23] = {
 		 */
 
 		self.text = [[NSString alloc] initWithBytes:textBuffer length:textSize encoding:NSUTF8StringEncoding];
+		self.value = self.text;
 
 		/*
 		 *	Execute action

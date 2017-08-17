@@ -509,6 +509,7 @@ static const char *GSource4 =
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
 	"\t\tself.text = [[NSString alloc] initWithBytes:textBuffer length:textSize encoding:NSUTF8StringEncoding];\n" \
+	"\t\tself.value = self.text;\n"                                           \
 	"\n"                                                                      \
 	"\t\t/*\n"                                                                \
 	"\t\t *\tExecute action\n"                                                \
