@@ -937,10 +937,10 @@ bool OCYaccLR1::BuildActionTable(const OCYaccParser &parser)
 						} else {
 							const OCYaccParser::Precedence &shiftPrec = parser.precedence.at(sym);
 
-							if (shiftPrec.prec > r.precedence.prec) {
+							if (shiftPrec.prec < r.precedence.prec) {
 								/*
 								 *	The symbol we're shifting by has lower
-								 *	precedence. (It was declared later in
+								 *	precedence. (It was declared earlier in
 								 *	the file.) For example, we have a rule
 								 *	with a '*' and we're shifting by '+'.
 								 *	Elect to reduce.

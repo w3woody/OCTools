@@ -88,15 +88,15 @@
 primary_expression
 	: IDENTIFIER
 			{
-				$$ = [[ExpressionNode alloc] initWithIdentifier:$$];
+				$$ = [[ExpressionNode alloc] initWithIdentifier:$1];
 			}
 	| CONSTANT
 			{
-				$$ = [[ExpressionNode alloc] initWithConstant:$$];
+				$$ = [[ExpressionNode alloc] initWithConstant:$1];
 			}
 	| STRING_LITERAL
 			{
-				$$ = [[ExpressionNode alloc] initWithStringLiteral:$$];
+				$$ = [[ExpressionNode alloc] initWithStringLiteral:$1];
 			}
 	| '(' expression ')'
 			{
