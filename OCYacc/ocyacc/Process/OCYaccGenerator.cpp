@@ -788,9 +788,9 @@ void OCYaccGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 				}
 
 				if (value == 1) {
-					ret += "(self.stack[pos])";
+					ret += "(self.stack[pos].value)";
 				} else {
-					sprintf(buffer,"(self.stack[pos + %zu])",value-1);
+					sprintf(buffer,"(self.stack[pos + %zu].value)",value-1);
 					ret += buffer;
 				}
 				if (hasType) {

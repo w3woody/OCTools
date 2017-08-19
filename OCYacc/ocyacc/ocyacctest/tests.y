@@ -35,21 +35,21 @@
  *	but they're listed here for completeness.
  */
 
-%left POSTINC POSTDEC FUNCCALL SUBSCRIPT
-%right PREINC PREDEC PREFIXOP
-%left '*' '/' '%'
-%left '+' '-'
-%left LEFT_OP RIGHT_OP
-%left '<' '>' LE_OP GE_OP			// Compare operators
-%left EQ_OP NE_OP
-%left '&'
-%left '^'
-%left '|'
-%left AND_OP
-%left OR_OP
+%left ','
 %right TERNOP '=' LEFT_ASSIGN RIGHT_ASSIGN ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN
 	   DIV_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
-%left ','
+%left OR_OP
+%left AND_OP
+%left '|'
+%left '^'
+%left '&'
+%left EQ_OP NE_OP
+%left '<' '>' LE_OP GE_OP			// Compare operators
+%left LEFT_OP RIGHT_OP
+%left '+' '-'
+%left '*' '/' '%'
+%right PREINC PREDEC PREFIXOP
+%left POSTINC POSTDEC FUNCCALL SUBSCRIPT
 
 /*
  *	To handle the if/else conflict
@@ -106,60 +106,168 @@ primary_expression
 
 postfix_expression
 	: primary_expression
+			{
+				$$ = $1;
+			}
 	| IDENTIFIER '(' ')'
+			{
+				$$ = [[ExpressionNode alloc] initWithFunction:$1 expression:nil];
+			}
 	| IDENTIFIER '(' argument_expression_list ')'
+			{
+				$$ = [[ExpressionNode alloc] initWithFunction:$1 expression:$3];
+			}
 	| postfix_expression INC_OP
+			{
+				$$ = [[ExpressionNode alloc] initWithUnaryOp:OP_POSTINC expression:$1];
+			}
 	| postfix_expression DEC_OP
+			{
+				$$ = [[ExpressionNode alloc] initWithUnaryOp:OP_POSTDEC expression:$1];
+			}
 	;
 
 argument_expression_list
 	: assignment_expression
+			{
+				$$ = $1;
+			}
 	| argument_expression_list ',' assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:',' left:$1 right:$3];
+			}
 	;
 
 unary_expression
 	: postfix_expression
+			{
+				$$ = $1;
+			}
 	| INC_OP unary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithUnaryOp:OP_PREINC expression:$2];
+			}
 	| DEC_OP unary_expression
-	| '&' cast_expression
-	| '*' cast_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithUnaryOp:OP_PREDEC expression:$2];
+			}
 	| '+' cast_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithUnaryOp:'+' expression:$2];
+			}
 	| '-' cast_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithUnaryOp:'-' expression:$2];
+			}
 	| '~' cast_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithUnaryOp:'~' expression:$2];
+			}
 	| '!' cast_expression
-	| SIZEOF unary_expression
-	| SIZEOF '(' type_name ')'
+			{
+				$$ = [[ExpressionNode alloc] initWithUnaryOp:'!' expression:$2];
+			}
 	;
 
 cast_expression
 	: unary_expression
+			{
+				$$ = $1;
+			}
 	| '(' type_name ')' cast_expression
+			{
+				$$ = $4;		// ### TODO: Hook up casting of expressions
+			}
 	;
 
 binary_expression
 	: cast_expression
+			{
+				$$ = $1;
+			}
 	| binary_expression '*' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'*' left:$1 right:$3];
+			}
 	| binary_expression '/' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'/' left:$1 right:$3];
+			}
 	| binary_expression '%' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'%' left:$1 right:$3];
+			}
 	| binary_expression '+' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'+' left:$1 right:$3];
+			}
 	| binary_expression '-' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'-' left:$1 right:$3];
+			}
 	| binary_expression LEFT_OP binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_LEFTSHIFT left:$1 right:$3];
+			}
+	| binary_expression RIGHT_OP binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_RIGHTSHIFT left:$1 right:$3];
+			}
 	| binary_expression '<' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'<' left:$1 right:$3];
+			}
 	| binary_expression '>' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'>' left:$1 right:$3];
+			}
 	| binary_expression LE_OP binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_LEQ left:$1 right:$3];
+			}
 	| binary_expression GE_OP binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_GEQ left:$1 right:$3];
+			}
 	| binary_expression EQ_OP binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_EQ left:$1 right:$3];
+			}
 	| binary_expression NE_OP binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_NEQ left:$1 right:$3];
+			}
 	| binary_expression '&' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'&' left:$1 right:$3];
+			}
 	| binary_expression '^' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'^' left:$1 right:$3];
+			}
 	| binary_expression '|' binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:'|' left:$1 right:$3];
+			}
 	| binary_expression AND_OP binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_AND left:$1 right:$3];
+			}
 	| binary_expression OR_OP binary_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OR_OP left:$1 right:$3];
+			}
 	;
 
 conditional_expression
 	: binary_expression
+			{
+				$$ = $1;
+			}
 	| binary_expression '?' expression ':' conditional_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithConditional:$1 left:$3 right:$5];
+			}
 	;
 
 /*
@@ -168,17 +276,53 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression
+			{
+				$$ = $1;
+			}
 	| unary_expression '=' assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_ASSIGN left:$1 right:$3];
+			}
 	| unary_expression MUL_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_MULEQ left:$1 right:$3];
+			}
 	| unary_expression DIV_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_DIVEQ left:$1 right:$3];
+			}
 	| unary_expression MOD_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_MODEQ left:$1 right:$3];
+			}
 	| unary_expression ADD_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_ADDEQ left:$1 right:$3];
+			}
 	| unary_expression SUB_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_SUBEQ left:$1 right:$3];
+			}
 	| unary_expression LEFT_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_LEFTEQ left:$1 right:$3];
+			}
 	| unary_expression RIGHT_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_RIGHTEQ left:$1 right:$3];
+			}
 	| unary_expression AND_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_ANDEQ left:$1 right:$3];
+			}
 	| unary_expression XOR_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_XOREQ left:$1 right:$3];
+			}
 	| unary_expression OR_ASSIGN assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_OREQ left:$1 right:$3];
+			}
 	;
 
 /*
