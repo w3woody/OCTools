@@ -63,9 +63,11 @@
  */
 
 %type <ExpressionNode> primary_expression postfix_expression
-		argument_expression_list unary_expression cast_expression
-		binary_expression conditional_expression assignment_expression
-		expression constant_expression
+		unary_expression cast_expression binary_expression
+		conditional_expression assignment_expression expression
+		constant_expression
+
+%type <NSMutableArray<ExpressionNode *>> argument_expression_list;
 
 /*
  *	Start: statements list
@@ -331,7 +333,13 @@ assignment_expression
 
 expression
 	: assignment_expression
+			{
+				$$ = $1;
+			}
 	| expression ',' assignment_expression
+			{
+				$$ = [[ExpressionNode alloc] initWithBinaryOp:',' left:$1 right:$3];
+			}
 	;
 
 /*
