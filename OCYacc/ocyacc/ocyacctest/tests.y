@@ -6,13 +6,27 @@
 
 %{
 #import "ExpressionNode.h"
+#import "ValueNode.h"
+#import "FunctionNode.h"
+#import "UnaryNode.h"
+#import "BinaryNode.h"
+#import "ConditionalNode.h"
+#import "TypeNameNode.h"
+#import "TypecastNode.h"
+#import "InitDeclarationNode.h"
+#import "StatementNode.h"
+#import "DeclarationNode.h"
+#import "SimpleStatement.h"
+#import "ExpressionStatement.h"
+#import "LabelStatement.h"
+#import "CaseStatement.h"
 %}
 
 /*
  *	Token declarations
  */
 
-%token <NSString> IDENTIFIER CONSTANT STRING_LITERAL
+%token <NSString> IDENTIFIER CONSTANT STRING_LITERAL INTEGER_CONSTANT
 
 %token SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
@@ -67,7 +81,17 @@
 		conditional_expression assignment_expression expression
 		constant_expression
 
-%type <NSMutableArray<ExpressionNode *>> argument_expression_list;
+%type <NSMutableArray<ExpressionNode *>> argument_expression_list
+
+%type <TypeNameNode> type_name
+
+%type <InitDeclarationNode> init_declarator
+%type <NSMutableArray<InitDeclarationNode *>> init_declarator_list
+%type <DeclarationNode> declaration
+
+%type <StatementNode> statement expression_statement labeled_statement
+		selection_statement iteration_statement jump_statement
+		switch_label
 
 /*
  *	Start: statements list
@@ -90,15 +114,19 @@
 primary_expression
 	: IDENTIFIER
 			{
-				$$ = [[ExpressionNode alloc] initWithIdentifier:$1];
+				$$ = [[ValueNode alloc] initWithIdentifier:$1];
 			}
 	| CONSTANT
 			{
-				$$ = [[ExpressionNode alloc] initWithConstant:$1];
+				$$ = [[ValueNode alloc] initWithConstant:$1];
+			}
+	| INTEGER_CONSTANT
+			{
+				$$ = [[ValueNode alloc] initWithIntegerConstant:$1];
 			}
 	| STRING_LITERAL
 			{
-				$$ = [[ExpressionNode alloc] initWithStringLiteral:$1];
+				$$ = [[ValueNode alloc] initWithStringLiteral:$1];
 			}
 	| '(' expression ')'
 			{
@@ -113,30 +141,31 @@ postfix_expression
 			}
 	| IDENTIFIER '(' ')'
 			{
-				$$ = [[ExpressionNode alloc] initWithFunction:$1 expression:nil];
+				$$ = [[FunctionNode alloc] initWithFunction:$1 expression:nil];
 			}
 	| IDENTIFIER '(' argument_expression_list ')'
 			{
-				$$ = [[ExpressionNode alloc] initWithFunction:$1 expression:$3];
+				$$ = [[FunctionNode alloc] initWithFunction:$1 expression:$3];
 			}
 	| postfix_expression INC_OP
 			{
-				$$ = [[ExpressionNode alloc] initWithUnaryOp:OP_POSTINC expression:$1];
+				$$ = [[UnaryNode alloc] initWithUnaryOp:OP_POSTINC expression:$1];
 			}
 	| postfix_expression DEC_OP
 			{
-				$$ = [[ExpressionNode alloc] initWithUnaryOp:OP_POSTDEC expression:$1];
+				$$ = [[UnaryNode alloc] initWithUnaryOp:OP_POSTDEC expression:$1];
 			}
 	;
 
 argument_expression_list
 	: assignment_expression
 			{
-				$$ = $1;
+				$$ = [NSMutableArray arrayWithObject:$1];
 			}
 	| argument_expression_list ',' assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:',' left:$1 right:$3];
+				$$ = $1;
+				[$$ addObject:$3];
 			}
 	;
 
@@ -147,27 +176,27 @@ unary_expression
 			}
 	| INC_OP unary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithUnaryOp:OP_PREINC expression:$2];
+				$$ = [[UnaryNode alloc] initWithUnaryOp:OP_PREINC expression:$2];
 			}
 	| DEC_OP unary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithUnaryOp:OP_PREDEC expression:$2];
+				$$ = [[UnaryNode alloc] initWithUnaryOp:OP_PREDEC expression:$2];
 			}
 	| '+' cast_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithUnaryOp:'+' expression:$2];
+				$$ = [[UnaryNode alloc] initWithUnaryOp:'+' expression:$2];
 			}
 	| '-' cast_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithUnaryOp:'-' expression:$2];
+				$$ = [[UnaryNode alloc] initWithUnaryOp:'-' expression:$2];
 			}
 	| '~' cast_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithUnaryOp:'~' expression:$2];
+				$$ = [[UnaryNode alloc] initWithUnaryOp:'~' expression:$2];
 			}
 	| '!' cast_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithUnaryOp:'!' expression:$2];
+				$$ = [[UnaryNode alloc] initWithUnaryOp:'!' expression:$2];
 			}
 	;
 
@@ -178,7 +207,7 @@ cast_expression
 			}
 	| '(' type_name ')' cast_expression
 			{
-				$$ = $4;		// ### TODO: Hook up casting of expressions
+				$$ = [[TypecastNode alloc] initWithType:$2 expression:$4];
 			}
 	;
 
@@ -189,75 +218,75 @@ binary_expression
 			}
 	| binary_expression '*' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'*' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'*' left:$1 right:$3];
 			}
 	| binary_expression '/' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'/' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'/' left:$1 right:$3];
 			}
 	| binary_expression '%' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'%' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'%' left:$1 right:$3];
 			}
 	| binary_expression '+' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'+' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'+' left:$1 right:$3];
 			}
 	| binary_expression '-' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'-' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'-' left:$1 right:$3];
 			}
 	| binary_expression LEFT_OP binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_LEFTSHIFT left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_LEFTSHIFT left:$1 right:$3];
 			}
 	| binary_expression RIGHT_OP binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_RIGHTSHIFT left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_RIGHTSHIFT left:$1 right:$3];
 			}
 	| binary_expression '<' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'<' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'<' left:$1 right:$3];
 			}
 	| binary_expression '>' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'>' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'>' left:$1 right:$3];
 			}
 	| binary_expression LE_OP binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_LEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_LEQ left:$1 right:$3];
 			}
 	| binary_expression GE_OP binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_GEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_GEQ left:$1 right:$3];
 			}
 	| binary_expression EQ_OP binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_EQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_EQ left:$1 right:$3];
 			}
 	| binary_expression NE_OP binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_NEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_NEQ left:$1 right:$3];
 			}
 	| binary_expression '&' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'&' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'&' left:$1 right:$3];
 			}
 	| binary_expression '^' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'^' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'^' left:$1 right:$3];
 			}
 	| binary_expression '|' binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:'|' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:'|' left:$1 right:$3];
 			}
 	| binary_expression AND_OP binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_AND left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_AND left:$1 right:$3];
 			}
 	| binary_expression OR_OP binary_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OR_OP left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_OR left:$1 right:$3];
 			}
 	;
 
@@ -268,7 +297,7 @@ conditional_expression
 			}
 	| binary_expression '?' expression ':' conditional_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithConditional:$1 left:$3 right:$5];
+				$$ = [[ConditionalNode alloc] initWithConditional:$1 left:$3 right:$5];
 			}
 	;
 
@@ -283,47 +312,47 @@ assignment_expression
 			}
 	| unary_expression '=' assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_ASSIGN left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_ASSIGN left:$1 right:$3];
 			}
 	| unary_expression MUL_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_MULEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_MULEQ left:$1 right:$3];
 			}
 	| unary_expression DIV_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_DIVEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_DIVEQ left:$1 right:$3];
 			}
 	| unary_expression MOD_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_MODEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_MODEQ left:$1 right:$3];
 			}
 	| unary_expression ADD_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_ADDEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_ADDEQ left:$1 right:$3];
 			}
 	| unary_expression SUB_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_SUBEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_SUBEQ left:$1 right:$3];
 			}
 	| unary_expression LEFT_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_LEFTEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_LEFTEQ left:$1 right:$3];
 			}
 	| unary_expression RIGHT_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_RIGHTEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_RIGHTEQ left:$1 right:$3];
 			}
 	| unary_expression AND_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_ANDEQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_ANDEQ left:$1 right:$3];
 			}
 	| unary_expression XOR_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_XOREQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_XOREQ left:$1 right:$3];
 			}
 	| unary_expression OR_ASSIGN assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:OP_OREQ left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_OREQ left:$1 right:$3];
 			}
 	;
 
@@ -338,7 +367,7 @@ expression
 			}
 	| expression ',' assignment_expression
 			{
-				$$ = [[ExpressionNode alloc] initWithBinaryOp:',' left:$1 right:$3];
+				$$ = [[BinaryNode alloc] initWithBinaryOp:',' left:$1 right:$3];
 			}
 	;
 
@@ -354,6 +383,9 @@ expression
 
 constant_expression
 	: conditional_expression
+			{
+				$$ = $1;
+			}
 	;
 
 /*
@@ -366,26 +398,63 @@ constant_expression
 
 type_name
 	: CHAR
+		{
+			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_CHAR];
+		}
 	| SHORT
+		{
+			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_SHORT];
+		}
 	| INT
+		{
+			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_INT];
+		}
 	| LONG
+		{
+			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_LONG];
+		}
 	| FLOAT
+		{
+			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_FLOAT];
+		}
 	| DOUBLE
+		{
+			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_DOUBLE];
+		}
 	| STRING
+		{
+			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_STRING];
+		}
 	;
 
 init_declarator
 	: IDENTIFIER
+		{
+			$$ = [[InitDeclarationNode alloc] initWithName:$1 expression:nil];
+		}
 	| IDENTIFIER '=' assignment_expression
+		{
+			$$ = [[InitDeclarationNode alloc] initWithName:$1 expression:$3];
+		}
 	;
 
 init_declarator_list
 	: init_declarator
+		{
+			$$ = [NSMutableArray arrayWithObject:$1];
+		}
 	| init_declarator_list ',' init_declarator
+		{
+			$$ = $1;
+			[$1 addObject:$3];
+		}
 	;
 
 declaration
 	: type_name init_declarator_list ';'
+		{
+			$$ = [[DeclarationNode alloc] initWithType:$1 declarations:$2];
+		}
 	;
 
 
@@ -402,16 +471,38 @@ declaration
 
 expression_statement
 	: expression ';'
+		{
+			$$ = [[ExpressionStatement alloc] initWithExpression:$1];
+		}
 	| ';'
+		{
+			$$ = [[ExpressionStatement alloc] initWithExpression:nil];
+		}
 	;
 
 labeled_statement				// Note: we call out case/default elsewhere
-	: IDENTIFIER ':' statement
+	: IDENTIFIER ':'
+		{
+			$$ = [[LabelStatement alloc] initWithType:TYPE_LABEL label:$1];
+		}
+	;
+
+switch_label
+	: CASE constant_expression ':'
+		{
+			$$ = [[CaseStatement alloc] initWithExpression:$2];
+			if (!$2.isValid) {
+				[self errorWithFormat:@"case statement constant must be an integer"];
+			}
+		}
+	| DEFAULT ':'
+		{
+			$$ = [[SimpleStatement alloc] initWithType:TYPE_DEFAULT];
+		}
 	;
 
 switch_statement
-	: CASE constant_expression ':' statement
-	| DEFAULT ':' statement
+	: switch_label
 	| statement
 	;
 
@@ -423,7 +514,7 @@ switch_statements
 selection_statement
 	: IF '(' expression ')' statement %prec IFSTATEMENT
 	| IF '(' expression ')' statement ELSE statement
-	| SWITCH '(' expression ')' '{' switch_statements '}'
+	| SWITCH '(' expression ')' '{' switch_label switch_statements '}'
 	;
 
 iteration_statement
@@ -435,19 +526,52 @@ iteration_statement
 
 jump_statement
 	: GOTO IDENTIFIER ';'
+		{
+			$$ = [[LabelStatement alloc] initWithType:TYPE_GOTO label:$2];
+		}
 	| GOSUB IDENTIFIER ';'		// new gosub; return resumes execution
+		{
+			$$ = [[LabelStatement alloc] initWithType:TYPE_GOSUB label:$2];
+		}
 	| CONTINUE ';'
+		{
+			$$ = [[SimpleStatement alloc] initWithType:TYPE_CONTINUE];
+		}
 	| BREAK ';'
+		{
+			$$ = [[SimpleStatement alloc] initWithType:TYPE_BREAK];
+		}
 	| RETURN ';'
+		{
+			$$ = [[SimpleStatement alloc] initWithType:TYPE_RETURN];
+		}
 	;
 
 statement
 	: declaration				// allow embedded declarations
+		{
+			$$ = $1;
+		}
 	| labeled_statement
+		{
+			$$ = $1;
+		}
 	| expression_statement
+		{
+			$$ = $1;
+		}
 	| selection_statement
+		{
+			$$ = $1;
+		}
 	| iteration_statement
+		{
+			$$ = $1;
+		}
 	| jump_statement
+		{
+			$$ = $1;
+		}
 	;
 
 
