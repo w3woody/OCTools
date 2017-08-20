@@ -520,12 +520,6 @@ static uint16_t StateMachineA[23] = {
 		}
 
 		/*
-		 *	When we reach here we read a character that is illegal.
-		 *	This means we rewind to the last successfully read character,
-		 *	and execute the
-		 */
-
-		/*
 		 *	If no action is set, we simply abort after setting an internal
 		 *	error state. This should never happen in a well designed lexer
 		 */

@@ -479,12 +479,6 @@ static const char *GSource4 =
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
 	"\t\t/*\n"                                                                \
-	"\t\t *\tWhen we reach here we read a character that is illegal.\n"       \
-	"\t\t *\tThis means we rewind to the last successfully read character,\n" \
-	"\t\t *\tand execute the\n"                                               \
-	"\t\t */\n"                                                               \
-	"\n"                                                                      \
-	"\t\t/*\n"                                                                \
 	"\t\t *\tIf no action is set, we simply abort after setting an internal\n" \
 	"\t\t *\terror state. This should never happen in a well designed lexer\n" \
 	"\t\t */\n"                                                               \
