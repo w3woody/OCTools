@@ -23,6 +23,19 @@
 #define TOKEN                                         0x00110002
 #define NUMBER                                        0x00110003
 
+/*
+ *	Predefined error codes
+ */
+
+// Indicates a warning; set if msg should not halt parsing or return error
+#define ERRORMASK_WARNING		0x8000
+
+#define ERROR_SYNTAX			0x0001
+#define ERROR_MISSINGTOKEN		0x0002	// { @"token": string of token missing }
+#define ERROR_MISSINGTOKENS		0x0003	// { @"tokens": array of token strings }
+#define ERROR_STARTERRORID		0x0100	// Your errors should start with this
+
+
 /*	OCLexInput
  *
  *		The protocol for our lex reader file that the lex stream must
@@ -55,8 +68,10 @@
  */
 
 @protocol OCYaccTestError <NSObject>
-- (void)errorFrom:(OCYaccTest *)yacc line:(NSInteger)line column:(NSInteger)column
-		filename:(NSString *)fname errorMessage:(NSString *)error;
+- (void)errorFrom:(OCYaccTest *)yacc line:(NSInteger)line
+		column:(NSInteger)column filename:(NSString *)fname
+		errorCode:(NSInteger)errorCode
+		data:(NSDictionary<NSString *, id<NSObject>> *)data;
 @end
 
 

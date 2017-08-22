@@ -39,6 +39,19 @@ static const char *GHeader2 =
 	"\n";
 
 static const char *GHeader3 =
+	"\n"																	  \
+	"/*\n"                                                                    \
+	" *\tPredefined error codes\n"                                            \
+	" */\n"                                                                   \
+	"\n"                                                                      \
+	"// Indicates a warning; set if msg should not halt parsing or return error\n" \
+	"#define ERRORMASK_WARNING\t\t0x8000\n"                                   \
+	"\n"                                                                      \
+	"#define ERROR_SYNTAX\t\t\t0x0001\n"                                      \
+	"#define ERROR_MISSINGTOKEN\t\t0x0002\t// { @\"token\": string of token missing }\n" \
+	"#define ERROR_MISSINGTOKENS\t\t0x0003\t// { @\"tokens\": array of token strings }\n" \
+	"#define ERROR_STARTERRORID\t\t0x0100\t// Your errors should start with this\n" \
+	"\n"
 	"\n"                                                                      \
 	"/*\tOCLexInput\n"                                                        \
 	" *\n"                                                                    \
@@ -72,8 +85,10 @@ static const char *GHeader3 =
 	" */\n"                                                                   \
 	"\n"                                                                      \
 	"@protocol %sError <NSObject>\n"                                          \
-	"- (void)errorFrom:(%s *)yacc line:(NSInteger)line column:(NSInteger)column\n" \
-	"\t\tfilename:(NSString *)fname errorMessage:(NSString *)error;\n"        \
+	"- (void)errorFrom:(%s *)yacc line:(NSInteger)line\n"					  \
+	"\t\tcolumn:(NSInteger)column filename:(NSString *)fname\n"               \
+	"\t\terrorCode:(NSInteger)errorCode\n"                                    \
+	"\t\tdata:(NSDictionary<NSString *, id<NSObject>> *)data;\n"
 	"@end\n"                                                                  \
 	"\n"                                                                      \
 	"\n"                                                                      \
@@ -159,7 +174,7 @@ static const char *GSource3 = // 4
 	" *\tInternal parser stack\n"                                             \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"@interface %sStack: NSObject\t\t\t// ###TODO Rename according to class name\n" \
+	"@interface %sStack: NSObject" \
 	"@property (assign) uint16_t state;\n"                                    \
 	"\n"                                                                      \
 	"/* Represent the intermediate values for reduction rule values */\n"     \
@@ -187,6 +202,7 @@ static const char *GSource3 = // 4
 	"@property (assign) NSInteger line;\n"                                    \
 	"@property (assign) NSInteger column;\n"                                  \
 	"@property (copy) NSString *filename;\n"                                  \
+	"@property (assign) BOOL success;\n"									  \
 	"\n"                                                                      \
 	"@property (assign) NSInteger errorCount;\n"                              \
 	"\n"                                                                      \
@@ -295,7 +311,7 @@ static const char *GSource6 = // 1
 	" *\tIn teory I guess we could combine these two tables (as productions and\n" \
 	" *\ttokens do not overlap).\n"                                           \
 	" */\n"                                                                   \
-	"\n"																	  \
+	"\n"                                                                      \
 	"- (NSInteger)gotoForState:(NSInteger)state production:(NSInteger)token\n" \
 	"{\n"                                                                     \
 	"\tsize_t min,max,mid;\n"                                                 \
@@ -323,24 +339,26 @@ static const char *GSource6 = // 1
 	" *\tErrors. This formats and prints the specified error\n"               \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (void)errorWithFormat:(NSString *)format,...\n"                        \
+	"- (void)errorWithCode:(NSInteger)code data:(NSDictionary<NSString *, id<NSObject>> *)data\n" \
 	"{\n"                                                                     \
 	"\tif (self.errorDelegate == nil) return;\t// No error handling, ignore.\n" \
 	"\n"                                                                      \
 	"\tif (self.errorCount > 0) return;\t\t// skip until synced on 3 shifts\n" \
 	"\n"                                                                      \
-	"\t// Format string\n"                                                    \
-	"\tva_list vlist;\n"                                                      \
-	"\tva_start(vlist, format);\n"                                            \
-	"\tNSString *msg = [[NSString alloc] initWithFormat:format arguments:vlist];\n" \
-	"\tva_end(vlist);\n"                                                      \
-	"\n"                                                                      \
 	"\t// Call delegate with current token position\n"                        \
-	"\t[self.errorDelegate errorFrom:self line:self.line column:self.column filename:self.filename errorMessage:msg];\n" \
+	"\t[self.errorDelegate errorFrom:self line:self.line column:self.column filename:self.filename errorCode:code data:data];\n" \
 	"\n"                                                                      \
 	"\t// And now skip the next 3 token shifts so we don\'t spew garbage.\n"  \
-	"\tself.errorCount = 3;\n"                                                \
+	"\tif (0 == (code & ERRORMASK_WARNING)) {\n"                              \
+	"\t\tself.success = NO;\n"                                                \
+	"\t\tself.errorCount = 3;\n"                                              \
+	"\t}\n"                                                                   \
 	"}\n"                                                                     \
+	"\n"                                                                      \
+	"- (void)errorWithCode:(NSInteger)code\n"                                 \
+	"{\n"                                                                     \
+	"\t[self errorWithCode:code data:nil];\n"                                 \
+	"}\n"
 	"\n"                                                                      \
 	"- (void)errorOK\n"                                                       \
 	"{\n"                                                                     \
@@ -352,7 +370,7 @@ static const char *GSource6 = // 1
 	"\tif (token >= K_FIRSTTOKEN) {\n"                                        \
 	"\t\treturn TokenArray[token - K_FIRSTTOKEN];\n"                          \
 	"\t} else if (token <= 0xFFFF) {\n"                                       \
-	"\t\treturn [NSString stringWithFormat:@\"%%C\",(unichar)token];\n"       \
+	"\t\treturn [NSString stringWithFormat:@\"%%C\",(unichar)token];\n"        \
 	"\t} else {\n"                                                            \
 	"\t\t// Extended UTF-32 character.\n"                                     \
 	"\t\tunichar c[2];\n"                                                     \
@@ -377,7 +395,7 @@ static const char *GSource6 = // 1
 	"\tif (newState == NSIntegerMax) return NO;\n"                            \
 	"\n"                                                                      \
 	"\t// Process production rule, which generates the new state\n"           \
-	"\t%sStack *state = [self processReduction:action];\n"                    \
+	"\t%sStack *state = [self processReduction:action];\n"					  \
 	"\n"                                                                      \
 	"\t// Update state\n"                                                     \
 	"\tstate.state = newState;\n"                                             \
@@ -390,10 +408,10 @@ static const char *GSource6 = // 1
 	"\n"                                                                      \
 	"\t// Done.\n"                                                            \
 	"\treturn YES;\n"                                                         \
-	"}\n"                                                                     \
-	"\n";
+	"}\n";
 
 static const char *GSource7 = // 8
+	"\n"																	  \
 	"/*\n"                                                                    \
 	" *\tParser engine. Returns NO if there was an error during processing. Note\n" \
 	" *\tthat as we uncover errors we call our delegate for error handling. This\n" \
@@ -402,7 +420,6 @@ static const char *GSource7 = // 8
 	"\n"                                                                      \
 	"- (BOOL)parse\n"                                                         \
 	"{\n"                                                                     \
-	"\tBOOL success = YES;\n"                                                 \
 	"\t%sStack *s;\t\t\t\t// state\n"                                         \
 	"\tNSInteger a;\t\t\t\t// lex symbol\n"                                   \
 	"\n"                                                                      \
@@ -410,6 +427,7 @@ static const char *GSource7 = // 8
 	"\t *\tStep 1: reset and push the empty state.\n"                         \
 	"\t */\n"                                                                 \
 	"\n"                                                                      \
+	"\tself.success = YES;\n"                                                 \
 	"\t[self.stack removeAllObjects];\n"                                      \
 	"\n"                                                                      \
 	"\ts = [[%sStack alloc] init];\n"                                         \
@@ -433,7 +451,7 @@ static const char *GSource7 = // 8
 	"\n"                                                                      \
 	"\t\tif (s.state == K_ACCEPTSTATE) {\n"                                   \
 	"\t\t\t[self.stack removeAllObjects];\n"                                  \
-	"\t\t\treturn success;\n"                                                 \
+	"\t\t\treturn self.success;\n"                                            \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
 	"\t\t/*\n"                                                                \
@@ -449,7 +467,7 @@ static const char *GSource7 = // 8
 	"\t\t\t *\tsymbol on which our error took place.\n"                       \
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
-	"\t\t\tsuccess = NO;\t\t// regardless, we will always fail.\n"            \
+	"\t\t\tself.success = NO;\t\t// regardless, we will always fail.\n"       \
 	"\t\t\tself.filename = self.lex.filename;\n"                              \
 	"\t\t\tself.line = self.lex.line;\n"                                      \
 	"\t\t\tself.column = self.lex.column;\n"                                  \
@@ -509,7 +527,7 @@ static const char *GSource7 = // 8
 	"\t\t\t\t\t\t\t *\twe can do is print an error and force quit.\n"         \
 	"\t\t\t\t\t\t\t */\n"                                                     \
 	"\n"                                                                      \
-	"\t\t\t\t\t\t\t[self errorWithFormat:@\"Unrecoverable syntax error.\"];\n" \
+	"\t\t\t\t\t\t\t[self errorWithCode:ERROR_SYNTAX];\n"                      \
 	"\t\t\t\t\t\t\t[self.stack removeAllObjects];\n"                          \
 	"\n"                                                                      \
 	"\t\t\t\t\t\t\treturn false;\n"                                           \
@@ -552,7 +570,7 @@ static const char *GSource7 = // 8
 	"\t\t\t\t */\n"                                                           \
 	"\n"                                                                      \
 	"\t\t\t\tconst NSString *tokenStr = [self tokenToString:ActionJ[actionVal]];\n" \
-	"\t\t\t\t[self errorWithFormat:@\"Missing %%@ was inserted\",tokenStr];\n" \
+	"\t\t\t\t[self errorWithCode:ERROR_MISSINGTOKEN data:@{ @\"token\": tokenStr} ];\n" \
 	"\n"                                                                      \
 	"\t\t\t\t/*\n"                                                            \
 	"\t\t\t\t *\tPerform a shift but do not pull a new token\n"               \
@@ -604,12 +622,12 @@ static const char *GSource7 = // 8
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\tif (actionMax - actionMin <= 5) {\n"                               \
-	"\t\t\t\tNSMutableString *list = [[NSMutableString alloc] init];\n"       \
+	"\t\t\t\tNSMutableArray<const NSString *> *list = [[NSMutableArray alloc] init];\n" \
 	"\t\t\t\tfor (NSInteger ix = actionMin; ix < actionMax; ++ix) {\n"        \
-	"\t\t\t\t\t[list appendFormat:@\" %%@\",[self tokenToString:ActionJ[ix]]];\n" \
+	"\t\t\t\t\t[list addObject:[self tokenToString:ActionJ[ix]]];\n"          \
 	"\t\t\t\t}\n"                                                             \
 	"\n"                                                                      \
-	"\t\t\t\t[self errorWithFormat:@\"Expected one of%%@\",list];\n"           \
+	"\t\t\t\t[self errorWithCode:ERROR_MISSINGTOKENS data:@{ @\"tokens\": list }];\n" \
 	"\n"                                                                      \
 	"\t\t\t\t/*\n"                                                            \
 	"\t\t\t\t *\tNow we artificially insert the first of the list of\n"       \
@@ -625,7 +643,7 @@ static const char *GSource7 = // 8
 	"\t\t\t *\tskip a token, print syntax error and move on\n"                \
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
-	"\t\t\t[self errorWithFormat:@\"Syntax error; skipping next symbol\"];\n" \
+	"\t\t\t[self errorWithCode:ERROR_SYNTAX];\n"                              \
 	"\t\t\ta = [self.lex lex];\n"                                             \
 	"\n"                                                                      \
 	"\t\t} else if (action >= 0) {\n"                                         \
@@ -660,8 +678,7 @@ static const char *GSource7 = // 8
 	"\t\t\tif (![self reduceByAction:action]) {\n"                            \
 	"\t\t\t\t// If there is an error, this handles the error.\n"              \
 	"\t\t\t\t// (This should not happen in practice).\n"                      \
-	"\t\t\t\tsuccess = NO;\n"                                                 \
-	"\t\t\t\t[self errorWithFormat:@\"Illegal token; skipping\"];\n"          \
+	"\t\t\t\t[self errorWithCode:ERROR_SYNTAX];\n"                            \
 	"\n"                                                                      \
 	"\t\t\t\t// Advance to next token.\n"                                     \
 	"\t\t\t\ta = [self.lex lex];\n"                                           \
@@ -1078,7 +1095,7 @@ void OCYaccGenerator::WriteOCHeader(const char *classname, const char *outputNam
 	}
 
 	// Bulk of declarations
-	fprintf(f,GHeader3,classname,classname,classname,classname,classname,classname);
+	fprintf(f,GHeader3,classname,classname,classname,classname,classname,classname,classname);
 
 	// Class globals
 	fprintf(f,"\n%s\n",parser.classGlobal.c_str());

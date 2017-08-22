@@ -22,7 +22,7 @@ statements : statement					{ $$ = [@[ $1 ] mutableCopy]; }
 		   ;
 
 statement  : assignment ';'				{ $$ = $1; }
-		   | error ';'					{ $$ = @0; [self errorWithFormat:@"?"]; }
+		   | error ';'					{ $$ = @0; [self errorWithCode:ERROR_SYNTAX]; }
 		   ;
 
 assignment : TOKEN '=' expression		{ $$ = $3; }

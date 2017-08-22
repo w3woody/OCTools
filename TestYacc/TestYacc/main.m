@@ -73,9 +73,10 @@ static NSString *GTokens[] = {
 
 @implementation OCError
 - (void)errorFrom:(OCYaccTest *)yacc line:(NSInteger)line column:(NSInteger)column
-		filename:(NSString *)fname errorMessage:(NSString *)error
+		filename:(NSString *)fname errorCode:(NSInteger)errorCode
+		data:(NSDictionary<NSString *, id<NSObject>> *)data
 {
-	NSLog(@"%@",error);
+	NSLog(@"Error ID: %ld",(long)errorCode);
 }
 @end
 

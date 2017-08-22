@@ -81,45 +81,43 @@ static const uint32_t RuleProduction[13] = {
 static const uint32_t ActionI[38] = {
          0,      2,      3,      4,      5,      8,     11,     12, 
         15,     18,     21,     23,     28,     29,     34,     36, 
-        38,     40,     42,     47,     52,     57,     62,     64, 
-        69,     74,     79,     81,     83,     85,     87,     92, 
-        97,    102,    107,    112,    117,    120
+        38,     40,     42,     47,     50,     53,     58,     60, 
+        65,     70,     75,     77,     79,     81,     83,     88, 
+        91,     94,     99,    104,    109,    112
 };
 
-static const uint32_t ActionJ[120] = {
+static const uint32_t ActionJ[112] = {
     0x110001, 0x110002,      ';',      '=',      ';', 0x110000, 0x110001, 0x110002, 
     0x110000, 0x110001, 0x110002, 0x110000, 0x110000, 0x110001, 0x110002, 0x110000, 
     0x110001, 0x110002,      '(', 0x110002, 0x110003,      '(', 0x110003,      '*', 
          '+',      '-',      '/',      ';',      ';',      '*',      '+',      '-', 
          '/',      ';',      '(', 0x110003,      '(', 0x110003,      '(', 0x110003, 
          '(', 0x110003,      '*',      '+',      '-',      '/',      ';',      '*', 
-         '+',      '-',      '/',      ';',      '*',      '+',      '-',      '/', 
-         ';',      '*',      '+',      '-',      '/',      ';',      '(', 0x110003, 
-         ')',      '*',      '+',      '-',      '/',      ')',      '*',      '+', 
-         '-',      '/',      '*',      '+',      '-',      '/',      ';',      '(', 
-    0x110003,      '(', 0x110003,      '(', 0x110003,      '(', 0x110003,      ')', 
-         '*',      '+',      '-',      '/',      ')',      '*',      '+',      '-', 
-         '/',      ')',      '*',      '+',      '-',      '/',      ')',      '*', 
+         '/',      ';',      '*',      '/',      ';',      '*',      '+',      '-', 
+         '/',      ';',      '(', 0x110003,      ')',      '*',      '+',      '-', 
+         '/',      ')',      '*',      '+',      '-',      '/',      '*',      '+', 
+         '-',      '/',      ';',      '(', 0x110003,      '(', 0x110003,      '(', 
+    0x110003,      '(', 0x110003,      ')',      '*',      '+',      '-',      '/', 
+         ')',      '*',      '/',      ')',      '*',      '/',      ')',      '*', 
          '+',      '-',      '/',      ')',      '*',      '+',      '-',      '/', 
          ')',      '*',      '+',      '-',      '/', 0x110000, 0x110001, 0x110002
 };
 
 // Note: < 0 -> reduce (rule = -a-1), >= 0 -> shift (state).
-static const int16_t ActionA[120] = {
+static const int16_t ActionA[112] = {
          1,      2,     36,      9,      8,    -12,    -12,    -12, 
          6,      1,      2,     -1,    -13,    -13,    -13,    -10, 
        -10,    -10,     10,      2,     11,     22,     23,     -9, 
         -9,     -9,     -9,     -9,     -3,     14,     15,     16, 
         17,     -2,     10,     11,     10,     11,     10,     11, 
-        10,     11,     -8,     -8,     -8,     -8,     -8,     14, 
-        15,     16,     17,     -6,     14,     15,     16,     17, 
-        -5,     -7,     -7,     -7,     -7,     -7,     22,     23, 
-        -9,     -9,     -9,     -9,     -9,     25,     26,     27, 
-        28,     29,     -4,     -4,     -4,     -4,     -4,     22, 
-        23,     22,     23,     22,     23,     22,     23,     -8, 
-        -8,     -8,     -8,     -8,     -6,     26,     27,     28, 
-        29,     -5,     26,     27,     28,     29,     -7,     -7, 
-        -7,     -7,     -7,     35,     26,     27,     28,     29, 
+        10,     11,     14,     15,     16,     17,     -8,     -6, 
+        -6,     -6,     -5,     -5,     -5,     14,     15,     16, 
+        17,     -7,     22,     23,     -9,     -9,     -9,     -9, 
+        -9,     25,     26,     27,     28,     29,     -4,     -4, 
+        -4,     -4,     -4,     22,     23,     22,     23,     22, 
+        23,     22,     23,     -8,     26,     27,     28,     29, 
+        -6,     -6,     -6,     -5,     -5,     -5,     -7,     26, 
+        27,     28,     29,     35,     26,     27,     28,     29, 
         -4,     -4,     -4,     -4,     -4,    -11,    -11,    -11
 };
 
@@ -158,8 +156,7 @@ static const int16_t GotoA[17] = {
  *	Internal parser stack
  */
 
-@interface OCYaccTestStack: NSObject			// ###TODO Rename according to class name
-@property (assign) uint16_t state;
+@interface OCYaccTestStack: NSObject@property (assign) uint16_t state;
 
 /* Represent the intermediate values for reduction rule values */
 @property (strong) id<NSObject> value;
@@ -186,6 +183,7 @@ static const int16_t GotoA[17] = {
 @property (assign) NSInteger line;
 @property (assign) NSInteger column;
 @property (copy) NSString *filename;
+@property (assign) BOOL success;
 
 @property (assign) NSInteger errorCount;
 
@@ -248,62 +246,62 @@ static const int16_t GotoA[17] = {
 
             // (110005) assignment : TOKEN '=' expression 
             case 1:
-                s.value = ((NSNumber *)(self.stack[pos + 2])); 
+                s.value = ((NSNumber *)(self.stack[pos + 2].value)); 
                 break;
 
             // (110005) assignment : TOKEN '=' assignment 
             case 2:
-                s.value = ((NSNumber *)(self.stack[pos + 2])); 
+                s.value = ((NSNumber *)(self.stack[pos + 2].value)); 
                 break;
 
             // (110006) expression : '(' expression ')' 
             case 3:
-                s.value = ((NSNumber *)(self.stack[pos + 1])); 
+                s.value = ((NSNumber *)(self.stack[pos + 1].value)); 
                 break;
 
             // (110006) expression : expression '+' expression 
             case 4:
-                s.value = @(((NSNumber *)(self.stack[pos])).doubleValue + ((NSNumber *)(self.stack[pos + 2])).doubleValue); 
+                s.value = @(((NSNumber *)(self.stack[pos].value)).doubleValue + ((NSNumber *)(self.stack[pos + 2].value)).doubleValue); 
                 break;
 
             // (110006) expression : expression '-' expression 
             case 5:
-                s.value = @(((NSNumber *)(self.stack[pos])).doubleValue - ((NSNumber *)(self.stack[pos + 2])).doubleValue); 
+                s.value = @(((NSNumber *)(self.stack[pos].value)).doubleValue - ((NSNumber *)(self.stack[pos + 2].value)).doubleValue); 
                 break;
 
             // (110006) expression : expression '*' expression 
             case 6:
-                s.value = @(((NSNumber *)(self.stack[pos])).doubleValue * ((NSNumber *)(self.stack[pos + 2])).doubleValue); 
+                s.value = @(((NSNumber *)(self.stack[pos].value)).doubleValue * ((NSNumber *)(self.stack[pos + 2].value)).doubleValue); 
                 break;
 
             // (110006) expression : expression '/' expression 
             case 7:
-                s.value = @(((NSNumber *)(self.stack[pos])).doubleValue / ((NSNumber *)(self.stack[pos + 2])).doubleValue); 
+                s.value = @(((NSNumber *)(self.stack[pos].value)).doubleValue / ((NSNumber *)(self.stack[pos + 2].value)).doubleValue); 
                 break;
 
             // (110006) expression : NUMBER 
             case 8:
-                s.value = ((NSNumber *)(self.stack[pos])); 
+                s.value = ((NSNumber *)(self.stack[pos].value)); 
                 break;
 
             // (110007) statement : assignment ';' 
             case 9:
-                s.value = ((NSNumber *)(self.stack[pos])); 
+                s.value = ((NSNumber *)(self.stack[pos].value)); 
                 break;
 
             // (110007) statement : error ';' 
             case 10:
-                s.value = @0; [self errorWithFormat:@"?"]; 
+                s.value = @0; [self errorWithCode:ERROR_SYNTAX]; 
                 break;
 
             // (110008) statements : statement 
             case 11:
-                s.value = [@[ ((NSNumber *)(self.stack[pos])) ] mutableCopy]; 
+                s.value = [@[ ((NSNumber *)(self.stack[pos].value)) ] mutableCopy]; 
                 break;
 
             // (110008) statements : statements statement 
             case 12:
-                [((NSMutableArray<NSNumber *> *)(self.stack[pos])) addObject:((NSNumber *)(self.stack[pos + 1]))]; s.value = ((NSMutableArray<NSNumber *> *)(self.stack[pos])); 
+                [((NSMutableArray<NSNumber *> *)(self.stack[pos].value)) addObject:((NSNumber *)(self.stack[pos + 1].value))]; s.value = ((NSMutableArray<NSNumber *> *)(self.stack[pos].value)); 
                 break;
 
 
@@ -385,23 +383,25 @@ static const int16_t GotoA[17] = {
  *	Errors. This formats and prints the specified error
  */
 
-- (void)errorWithFormat:(NSString *)format,...
+- (void)errorWithCode:(NSInteger)code data:(NSDictionary<NSString *, id<NSObject>> *)data
 {
 	if (self.errorDelegate == nil) return;	// No error handling, ignore.
 
 	if (self.errorCount > 0) return;		// skip until synced on 3 shifts
 
-	// Format string
-	va_list vlist;
-	va_start(vlist, format);
-	NSString *msg = [[NSString alloc] initWithFormat:format arguments:vlist];
-	va_end(vlist);
-
 	// Call delegate with current token position
-	[self.errorDelegate errorFrom:self line:self.line column:self.column filename:self.filename errorMessage:msg];
+	[self.errorDelegate errorFrom:self line:self.line column:self.column filename:self.filename errorCode:code data:data];
 
 	// And now skip the next 3 token shifts so we don't spew garbage.
-	self.errorCount = 3;
+	if (0 == (code & ERRORMASK_WARNING)) {
+		self.success = NO;
+		self.errorCount = 3;
+	}
+}
+
+- (void)errorWithCode:(NSInteger)code
+{
+	[self errorWithCode:code data:nil];
 }
 
 - (void)errorOK
@@ -462,7 +462,6 @@ static const int16_t GotoA[17] = {
 
 - (BOOL)parse
 {
-	BOOL success = YES;
 	OCYaccTestStack *s;				// state
 	NSInteger a;				// lex symbol
 
@@ -470,6 +469,7 @@ static const int16_t GotoA[17] = {
 	 *	Step 1: reset and push the empty state.
 	 */
 
+	self.success = YES;
 	[self.stack removeAllObjects];
 
 	s = [[OCYaccTestStack alloc] init];
@@ -493,7 +493,7 @@ static const int16_t GotoA[17] = {
 
 		if (s.state == K_ACCEPTSTATE) {
 			[self.stack removeAllObjects];
-			return success;
+			return self.success;
 		}
 
 		/*
@@ -509,7 +509,7 @@ static const int16_t GotoA[17] = {
 			 *	symbol on which our error took place.
 			 */
 
-			success = NO;		// regardless, we will always fail.
+			self.success = NO;		// regardless, we will always fail.
 			self.filename = self.lex.filename;
 			self.line = self.lex.line;
 			self.column = self.lex.column;
@@ -569,7 +569,7 @@ static const int16_t GotoA[17] = {
 							 *	we can do is print an error and force quit.
 							 */
 
-							[self errorWithFormat:@"Unrecoverable syntax error."];
+							[self errorWithCode:ERROR_SYNTAX];
 							[self.stack removeAllObjects];
 
 							return false;
@@ -612,7 +612,7 @@ static const int16_t GotoA[17] = {
 				 */
 
 				const NSString *tokenStr = [self tokenToString:ActionJ[actionVal]];
-				[self errorWithFormat:@"Missing %@ was inserted",tokenStr];
+				[self errorWithCode:ERROR_MISSINGTOKEN data:@{ @"token": tokenStr} ];
 
 				/*
 				 *	Perform a shift but do not pull a new token
@@ -664,12 +664,12 @@ static const int16_t GotoA[17] = {
 			 */
 
 			if (actionMax - actionMin <= 5) {
-				NSMutableString *list = [[NSMutableString alloc] init];
+				NSMutableArray<const NSString *> *list = [[NSMutableArray alloc] init];
 				for (NSInteger ix = actionMin; ix < actionMax; ++ix) {
-					[list appendFormat:@" %@",[self tokenToString:ActionJ[ix]]];
+					[list addObject:[self tokenToString:ActionJ[ix]]];
 				}
 
-				[self errorWithFormat:@"Expected one of%@",list];
+				[self errorWithCode:ERROR_MISSINGTOKENS data:@{ @"tokens": list }];
 
 				/*
 				 *	Now we artificially insert the first of the list of
@@ -685,7 +685,7 @@ static const int16_t GotoA[17] = {
 			 *	skip a token, print syntax error and move on
 			 */
 
-			[self errorWithFormat:@"Syntax error; skipping next symbol"];
+			[self errorWithCode:ERROR_SYNTAX];
 			a = [self.lex lex];
 
 		} else if (action >= 0) {
@@ -720,8 +720,7 @@ static const int16_t GotoA[17] = {
 			if (![self reduceByAction:action]) {
 				// If there is an error, this handles the error.
 				// (This should not happen in practice).
-				success = NO;
-				[self errorWithFormat:@"Illegal token; skipping"];
+				[self errorWithCode:ERROR_SYNTAX];
 
 				// Advance to next token.
 				a = [self.lex lex];
