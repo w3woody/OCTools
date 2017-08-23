@@ -326,7 +326,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						startSymbol = lex.fToken;
 					}
 
-				} else if ((lex.fToken == "global") || (lex.fToken == "local") || (lex.fToken == "header")) {
+				} else if ((lex.fToken == "global") || (lex.fToken == "local") || (lex.fToken == "header") || (lex.fToken == "init")) {
 					/*
 					 *	Parse the stream of tokens for code storage
 					 */
@@ -361,6 +361,8 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 
 						if (codeType == "header") {
 							classHeader = code;
+						} else if (codeType == "init") {
+							classInit = code;
 						} else if (codeType == "local") {
 							classLocal = code;
 						} else {

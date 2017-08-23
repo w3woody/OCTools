@@ -228,6 +228,7 @@ int main(int argc, const char * argv[])
 	generator.declCode = parser.declCode;
 	generator.classGlobal = parser.classGlobal;
 	generator.classLocal = parser.classLocal;
+	generator.classInit = parser.classInit;
 	generator.classHeader = parser.classHeader;
 	generator.endCode = parser.endCode;
 

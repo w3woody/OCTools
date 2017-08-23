@@ -183,7 +183,10 @@ static const char *GSource3 =
 	"\t\ttextMarkSize = 0;\n"                                                 \
 	"\t\ttextSize = 0;\n"                                                     \
 	"\t\ttextAlloc = 256;\n"                                                  \
-	"\t\ttextBuffer = (unsigned char *)malloc(textAlloc);\n"                  \
+	"\t\ttextBuffer = (unsigned char *)malloc(textAlloc);\n";
+
+
+static const char *GSource4 =
 	"\t}\n"                                                                   \
 	"\treturn self;\n"                                                        \
 	"}\n"                                                                     \
@@ -397,7 +400,7 @@ static const char *GSource3 =
 	" *\tInternal methods declared within the Lex file\n"                     \
 	" */\n";
 
-static const char *GSource4 =
+static const char *GSource5 =
 	"/*\n"                                                                    \
 	" *\tLex interpreter. This runs the state machine until we find something\n" \
 	" */\n"                                                                   \
@@ -511,7 +514,7 @@ static const char *GSource4 =
 	"\n"                                                                      \
 	"\t\tswitch (action) {\n";
 
-static const char *GSource5 =
+static const char *GSource6 =
 	"\t\t\tdefault:\n"                                                        \
 	"\t\t\t\tbreak;\n"                                                        \
 	"\t\t}\n"                                                                 \
@@ -762,20 +765,24 @@ void OCLexGenerator::WriteOCFile(const char *className, const char *outName, FIL
 	fprintf(f,GSource2,className);
 
 	// Insert class variables
-	fprintf(f,"%s\n\n",classLocal.c_str());
+	fprintf(f,"%s\n",classLocal.c_str());
 
 	// Start class
 	fprintf(f,GSource3,className);
+
+	fprintf(f,"%s\n",classInit.c_str());
+
+	fprintf(f,GSource4,className);
 
 	// Post class declarations. We embed in our class
 	fprintf(f,"%s\n\n",endCode.c_str());
 
 	// Lexer engine
-	fprintf(f,"%s",GSource4);
+	fprintf(f,"%s",GSource5);
 
 	// Action states
 	WriteActions(f);
 
 	// And the rest of the stuff
-	fprintf(f,"%s",GSource5);
+	fprintf(f,"%s",GSource6);
 }

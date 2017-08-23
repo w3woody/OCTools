@@ -146,7 +146,7 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 			sym = lex.ReadToken();
 			if ((sym != OCTOKEN_TOKEN) ||
 					((lex.fToken != "global") && (lex.fToken != "local") &&
-					(lex.fToken != "header"))) {
+					(lex.fToken != "header") && (lex.fToken != "init"))) {
 				fprintf(stderr,"%s:%d Syntax error in declarations\n",lex.fFileName.c_str(),lex.fTokenLine);
 			} else {
 				std::string codeType = lex.fToken;
@@ -182,6 +182,8 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 
 					if (codeType == "header") {
 						classHeader = code;
+					} else if (codeType == "init") {
+						classInit = code;
 					} else if (codeType == "local") {
 						classLocal = code;
 					} else {

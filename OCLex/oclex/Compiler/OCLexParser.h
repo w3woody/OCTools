@@ -49,6 +49,7 @@ class OCLexParser
 		std::string classHeader;	// code in .h header section
 		std::string classLocal;		// code in .m code declarations
 		std::string classGlobal;	// code in .h code declaratiokns
+		std::string classInit;		// code in .m init... code
 
 		// definitions
 		std::map<std::string,std::string> definitions;

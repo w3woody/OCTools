@@ -230,13 +230,15 @@ static const char *GSource4 = // 1
 	"\t\t *\tAlloc stack\n"                                                   \
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
-	"\t\tself.stack = [[NSMutableArray alloc] init];\n"                       \
+	"\t\tself.stack = [[NSMutableArray alloc] init];\n";
+
+static const char *GSource5 = // 0
 	"\t}\n"                                                                   \
 	"\treturn self;\n"                                                        \
 	"}\n"                                                                     \
 	"\n";
 
-static const char *GSource5 = // 3
+static const char *GSource6 = // 3
 	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tProcess production rule. This processes the production rule and creates\n" \
@@ -260,7 +262,7 @@ static const char *GSource5 = // 3
 	"\t@try {\n"                                                              \
 	"\t\tswitch (rule) {\n";
 
-static const char *GSource6 = // 1
+static const char *GSource7 = // 1
 	"\t\t\tdefault:\n"                                                        \
 	"\t\t\t\tbreak;\n"                                                        \
 	"\t\t}\n"                                                                 \
@@ -410,7 +412,7 @@ static const char *GSource6 = // 1
 	"\treturn YES;\n"                                                         \
 	"}\n";
 
-static const char *GSource7 = // 8
+static const char *GSource8 = // 8
 	"\n"																	  \
 	"/*\n"                                                                    \
 	" *\tParser engine. Returns NO if there was an error during processing. Note\n" \
@@ -1045,11 +1047,15 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 	// Close class internal, start class
 	fprintf(f, GSource4, classname);
 
+	fprintf(f, "%s\n", parser.classInit.c_str());
+
+	fprintf(f, "%s", GSource5);
+
 	// Class code
 	fprintf(f, "%s\n", parser.endCode.c_str());
 
 	// Production (to switch statement)
-	fprintf(f, GSource5, classname, classname, classname);
+	fprintf(f, GSource6, classname, classname, classname);
 
 	// Print information about the rules we're reducing by
 	fprintf(f,"\n        // Production rules\n");
@@ -1063,8 +1069,8 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 	fprintf(f,"\n");
 
 	// Close switch, finish writing the rest
-	fprintf(f, GSource6, classname);
-	fprintf(f, GSource7, classname, classname, classname, classname, classname, classname, classname, classname);
+	fprintf(f, GSource7, classname);
+	fprintf(f, GSource8, classname, classname, classname, classname, classname, classname, classname, classname);
 }
 
 /*	OCYaccGenerator::WriteOCHeader
