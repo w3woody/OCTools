@@ -174,8 +174,11 @@ static const char *GSource3 = // 4
 	" *\tInternal parser stack\n"                                             \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"@interface %sStack: NSObject" \
+	"@interface %sStack: NSObject\n"                                          \
 	"@property (assign) uint16_t state;\n"                                    \
+	"@property (assign) NSInteger line;\n"                                    \
+	"@property (assign) NSInteger column;\n"                                  \
+	"@property (copy) NSString *filename;\n"                                  \
 	"\n"                                                                      \
 	"/* Represent the intermediate values for reduction rule values */\n"     \
 	"@property (strong) id<NSObject> value;\n"                                \

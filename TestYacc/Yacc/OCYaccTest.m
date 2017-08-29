@@ -156,7 +156,11 @@ static const int16_t GotoA[17] = {
  *	Internal parser stack
  */
 
-@interface OCYaccTestStack: NSObject@property (assign) uint16_t state;
+@interface OCYaccTestStack: NSObject
+@property (assign) uint16_t state;
+@property (assign) NSInteger line;
+@property (assign) NSInteger column;
+@property (copy) NSString *filename;
 
 /* Represent the intermediate values for reduction rule values */
 @property (strong) id<NSObject> value;
