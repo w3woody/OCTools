@@ -184,9 +184,6 @@ static const int16_t GotoA[17] = {
 @property (strong) id<OCLexInput> lex;
 
 // Error support
-@property (assign) NSInteger line;
-@property (assign) NSInteger column;
-@property (copy) NSString *filename;
 @property (assign) BOOL success;
 
 @property (assign) NSInteger errorCount;
@@ -215,10 +212,10 @@ static const int16_t GotoA[17] = {
 		 */
 
 		self.stack = [[NSMutableArray alloc] init];
+
 	}
 	return self;
 }
-
 
 
 /*
@@ -233,6 +230,12 @@ static const int16_t GotoA[17] = {
 
 	// Set up initial state.
 	OCYaccTestStack *s = [[OCYaccTestStack alloc] init];
+
+	// File position of reduced rule is first token of the symbols reduced
+	OCYaccTestStack *fs = self.stack[pos];
+	s.filename = fs.filename;
+	s.line = fs.line;
+	s.column = fs.column;
 
 	// Now process production.
 	//
@@ -394,7 +397,9 @@ static const int16_t GotoA[17] = {
 	if (self.errorCount > 0) return;		// skip until synced on 3 shifts
 
 	// Call delegate with current token position
-	[self.errorDelegate errorFrom:self line:self.line column:self.column filename:self.filename errorCode:code data:data];
+	// Token position is the topmost symbol
+	OCYaccTestStack *top = self.stack.lastObject;
+	[self.errorDelegate errorFrom:self line:top.line column:top.column filename:top.filename errorCode:code data:data];
 
 	// And now skip the next 3 token shifts so we don't spew garbage.
 	if (0 == (code & ERRORMASK_WARNING)) {
@@ -478,6 +483,11 @@ static const int16_t GotoA[17] = {
 
 	s = [[OCYaccTestStack alloc] init];
 	s.state = K_STARTSTATE;
+
+	s.filename = self.lex.filename;
+	s.line = self.lex.line;
+	s.column = self.lex.column;
+
 	[self.stack addObject:s];
 
 	/*
@@ -514,9 +524,6 @@ static const int16_t GotoA[17] = {
 			 */
 
 			self.success = NO;		// regardless, we will always fail.
-			self.filename = self.lex.filename;
-			self.line = self.lex.line;
-			self.column = self.lex.column;
 
 			/*
 			 *	First, scan backwards from the current state, looking for one
@@ -548,6 +555,11 @@ static const int16_t GotoA[17] = {
 					s = [[OCYaccTestStack alloc] init];
 					s.state = action;
 					s.value = self.lex.value;
+
+					s.filename = self.lex.filename;
+					s.line = self.lex.line;
+					s.column = self.lex.column;
+
 					[self.stack addObject:s];
 
 					/*
@@ -622,9 +634,15 @@ static const int16_t GotoA[17] = {
 				 *	Perform a shift but do not pull a new token
 				 */
 
+				OCYaccTestStack *top = self.stack.lastObject;
+
 				OCYaccTestStack *stack = [[OCYaccTestStack alloc] init];
 				stack.state = actionState;
 				stack.value = self.lex.value;
+
+				stack.filename = top.filename;
+				stack.line = top.line;
+				stack.column = top.column;
 
 				[self.stack addObject:stack];
 				continue;
@@ -701,6 +719,10 @@ static const int16_t GotoA[17] = {
 			OCYaccTestStack *stack = [[OCYaccTestStack alloc] init];
 			stack.state = action;
 			stack.value = self.lex.value;
+
+			stack.filename = self.lex.filename;
+			stack.line = self.lex.line;
+			stack.column = self.lex.column;
 
 			[self.stack addObject:stack];
 

@@ -1684,7 +1684,6 @@ static uint16_t StateMachineA[5681] = {
 
 @property (strong) id<OCFileInput> file;
 
-
 @end
 
 /*
@@ -1716,6 +1715,7 @@ static uint16_t StateMachineA[5681] = {
 		textSize = 0;
 		textAlloc = 256;
 		textBuffer = (unsigned char *)malloc(textAlloc);
+
 	}
 	return self;
 }
