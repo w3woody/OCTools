@@ -203,7 +203,38 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 	}
 }
 
+static bool RuleStartsLine(std::string const &r)
+{
+	const char *str = r.c_str();
+	if (*str == '^') return true;
+	return false;
+}
 
+static bool RuleEndsLine(std::string const &r)
+{
+	// ### TODO
+	const char *str = r.c_str();
+	if (str[r.size()-1] != '$') return false;
+
+	// Determine if '$' is not escaped. This requires scanning the string from
+	// the front.
+	bool endFlag = false;
+	const char *ptr = str;
+	while (*ptr != 0) {
+		if ((*ptr == '$') && (ptr[1] == 0)) {
+			endFlag = true;
+			break;
+		}
+		if (*ptr == '\\') {
+			++ptr;
+			if (*ptr) ++ptr;
+		} else {
+			++ptr;
+		}
+	}
+
+	return endFlag;
+}
 
 /*	OCLexParser::ParseRules
  *
@@ -213,10 +244,19 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 bool OCLexParser::ParseRules(OCLexer &lex)
 {
 	bool inError = false;
+	bool atStart,atEnd;
 
 	for (;;) {
 		std::string regex = lex.ReadRegEx();
 		if ((regex == "%%") || (regex == "")) return true;  // empty string: EOF
+
+		// Examine regex to determine if it starts with a '^' or end
+		// with a '$'. If so, mark the rule appropriately
+		atStart = RuleStartsLine(regex);
+		if (atStart) regex.erase(0,1);	// delete '^' from start
+
+		atEnd = RuleEndsLine(regex);
+		if (atEnd) regex.erase(regex.size()-1,1);
 
 		int sym = lex.ReadToken();
 		if (sym == '{') {
@@ -247,8 +287,12 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 				sym = lex.ReadToken(false);
 			}
 
-			std::pair<std::string,std::string> p(regex,code);
-			rules.push_back(p);
+			OCLexParser::Rule r;
+			r.regex = regex;
+			r.code = code;
+			r.atStart = atStart;
+			r.atEnd = atEnd;
+			rules.push_back(r);
 
 		} else {
 			if (!inError) {

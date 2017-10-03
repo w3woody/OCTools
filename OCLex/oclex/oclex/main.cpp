@@ -233,9 +233,10 @@ int main(int argc, const char * argv[])
 	generator.endCode = parser.endCode;
 
 	// Add rules and generate NFA
-	std::list<std::pair<std::string,std::string>>::iterator i;
+	std::list<OCLexParser::Rule>::iterator i;
+	// ### TODO: Update with at start/end
 	for (i = parser.rules.begin(); i != parser.rules.end(); ++i) {
-		generator.AddRuleSet(i->first, i->second);	// first==regex, second==code
+		generator.AddRuleSet(i->regex, i->code);	// first==regex, second==code
 	}
 
 	// Generate DFA

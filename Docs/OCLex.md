@@ -578,6 +578,8 @@ The oclex file handles the following regular expression types. Note this is
 only a subset of what is processed by lex or flex. In the future this list may
 be expanded.
 
+    ^        (if used at the start) matches the start of the line
+    $        (if used at the end) matched the end of the line
     x        the character "x"
     "x"      an "x", even if x is an operator.
     \x       an "x", even if x is an operator.

@@ -42,6 +42,13 @@ class OCLexParser
 		 *	Definitions
 		 */
 
+		struct Rule {
+			std::string regex;
+			std::string code;
+			bool atStart;			// start with '^'
+			bool atEnd;				// end with '$'
+		};
+
 		// Declaration code
 		std::string declCode;		// code in the declaration section
 
@@ -55,7 +62,7 @@ class OCLexParser
 		std::map<std::string,std::string> definitions;
 
 		// Rules: contains the rules to match against
-		std::list<std::pair<std::string,std::string>> rules;
+		std::list<Rule> rules;
 
 		// End code block
 		std::string endCode;

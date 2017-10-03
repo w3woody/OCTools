@@ -98,6 +98,12 @@ We continue reading until we hit an error, and when we do, we perform a reset op
 
 You can see an example of scanning for this rule in the method *FindEndRule* in the class **OCLexDFA**.
 
+## Handling '\^' and '$' for start and end of line matching
+
+In order to handle an end of line match ('$'), we add an additional flag to each rule indicating if the rule matches only if we are at the end of the line. This flag is stored as part of the associated rule.
+
+The start of line matching is more interesting. Because we need to determine if the rules should be reduced before reading any tokens, we actually generate two state machines using the algorithms above; one which includes rules that start with the start of line matching token, and one which does not. We then select the appropriate state machine depending if we are at the start of the line or not.
+
 ## Generating the output files
 
 There are a number of optimizations that are performed during processing. First, instead of building a transition table with 256 columns, the Lex parser determines groups of common characters which are shared in certain transitions. For example, if your regular expressions treat the characters '0' through '9' in the same way, the lex scanner creates a new character class.
