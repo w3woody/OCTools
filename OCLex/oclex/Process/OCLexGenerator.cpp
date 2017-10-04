@@ -66,7 +66,7 @@ static const char *GHeader2 =
 	"- (id<NSObject>)value;\n"                                                \
 	"@end\n"                                                                  \
 	"\n"                                                                      \
-	"#endif\n"
+	"#endif\n"																  \
 	"\n"                                                                      \
 	"/*\t%s\n"                                                                \
 	" *\n"                                                                    \
@@ -451,7 +451,7 @@ static const char *GSource5 =
 	"\t\ttextSize = 0;\n"                                                     \
 	"\t\t\n"                                                                  \
 	"\t\tself.line = self.curLine;\n"                                         \
-	"\t\tself.column = self.curColumn;\n"
+	"\t\tself.column = self.curColumn;\n"									  \
 	"\n"                                                                      \
 	"\t\tfor (;;) {\n"                                                        \
 	"\t\t\tint ch = [self input];\n"                                          \
