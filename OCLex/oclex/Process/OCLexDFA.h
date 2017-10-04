@@ -73,6 +73,7 @@ class OCLexDFA: public OCLexNFA
 
 		struct CodeRule {
 			std::string code;
+			bool atStart;
 			bool atEnd;
 		};
 

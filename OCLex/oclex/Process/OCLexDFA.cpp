@@ -29,6 +29,7 @@ void OCLexDFA::AddRuleSet(std::string regex, std::string code, bool atStart, boo
 
 	CodeRule c;
 	c.code = code;
+	c.atStart = atStart;
 	c.atEnd = atEnd;
 
 	uint32_t ruleIndex = (uint32_t)codeRules.size();

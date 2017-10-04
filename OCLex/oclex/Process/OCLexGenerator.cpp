@@ -379,9 +379,14 @@ static const char *GSource4 =
 	"\t} else {\n"                                                            \
 	"\t\tch = [self.file peekByte];\n"                                        \
 	"\t}\n"                                                                   \
-	"\t\n"                                                                    \
+	"\n"                                                                      \
 	"\tif ((ch == -1) || (ch == \'\\n\')) return YES;\n"                      \
 	"\treturn NO;\n"                                                          \
+	"}\n"																	  \
+	"\n"                                                                      \
+	"- (BOOL)atSOL\n"                                                         \
+	"{\n"                                                                     \
+	"\treturn self.column == 0;\n"                                            \
 	"}\n"																	  \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
@@ -444,6 +449,9 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t\tstate = 0;\n"                                                        \
 	"\t\ttextSize = 0;\n"                                                     \
+	"\t\t\n"                                                                  \
+	"\t\tself.line = self.curLine;\n"                                         \
+	"\t\tself.column = self.curColumn;\n"
 	"\n"                                                                      \
 	"\t\tfor (;;) {\n"                                                        \
 	"\t\t\tint ch = [self input];\n"                                          \
@@ -495,9 +503,11 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t\t\tuint16_t newAction = StateActions[state];\n"                       \
 	"\t\t\tif (newAction != MAXACTIONS) {\n"                                  \
-	"\t\t\t\tif (!StateEndFlag[newAction] || [self atEOL]) {\n"               \
-	"\t\t\t\t\taction = newAction;\t\t\t/* Note action */\n"                  \
-	"\t\t\t\t\t[self mark];\t\t\t\t/* Mark location for rewind */\n"          \
+	"\t\t\t\tif (!(StateFlag[newAction] & 1) || [self atEOL]) {\n"            \
+	"\t\t\t\t\tif (!(StateFlag[newAction] & 2) || [self atSOL]) {\n"          \
+	"\t\t\t\t\t\taction = newAction;\t\t\t/* Note action */\n"                \
+	"\t\t\t\t\t\t[self mark];\t\t\t\t/* Mark location for rewind */\n"        \
+	"\t\t\t\t\t}\n"                                                           \
 	"\t\t\t\t}\n"                                                             \
 	"\t\t\t}\n"																  \
 	"\t\t}\n"                                                                 \
@@ -662,19 +672,20 @@ void OCLexGenerator::WriteStates(FILE *f)
 	 *	End states
 	 */
 
-	fprintf(f,"/*  StateEndFlag\n");
+	fprintf(f,"/*  StateFlag\n");
 	fprintf(f," *\n");
-	fprintf(f," *      True if this state ends with '$', that is, can only work at\n");
-	fprintf(f," *  the end of line.\n");
+	fprintf(f," *      True if this state starts with ^ or ends with $. Used to\n");
+	fprintf(f," *  screen rules in these cases.\n");
 	fprintf(f," */\n\n");
 
 	alen = codeRules.size();
 	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
 	for (i = 0; i < alen; ++i) {
 		scratch[i] = codeRules[i].atEnd ? 1 : 0;
+		if (codeRules[i].atStart) scratch[i] |= 2;
 	}
 
-	fprintf(f,"static uint8_t StateEndFlag[%zu] = {\n",alen);
+	fprintf(f,"static uint8_t StateFlag[%zu] = {\n",alen);
 	WriteArray(f,scratch,alen);
 	fprintf(f,"};\n\n");
 	free(scratch);

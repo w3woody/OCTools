@@ -12,6 +12,7 @@ IS						(u|U|l|L)*
 %%
 "/*"					{ [self skipComment]; }
 "//".*$					{ [self skipComment]; }
+^#						{ return 1; }
 
 "auto"					{ return AUTO; }
 "break"					{ return BREAK; }
