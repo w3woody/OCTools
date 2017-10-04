@@ -114,7 +114,7 @@ void PrintDFA(const OCLexDFA &dfa)
 		}
 
 		if (s.end) {
-			printf("%u endrule %s\n",i,dfa.codeRules[s.endRule].c_str());
+			printf("%u endrule %s\n",i,dfa.codeRules[s.endRule].code.c_str());
 		}
 	}
 }
@@ -126,17 +126,17 @@ void Test4()
 
 	OCLexGenerator dfa(definitions);
 
-	dfa.AddRuleSet("{D}+", "return 0x10001;");
-	dfa.AddRuleSet("[A-Za-z][A-Za-z0-9]*", "return 0x10002;");
-	dfa.AddRuleSet("0x[A-Fa-f0-9]+", "return 0x10003;");
-	dfa.AddRuleSet(".","return textBuffer[0];");
+	dfa.AddRuleSet("{D}+", "return 0x10001;",false,false);
+	dfa.AddRuleSet("[A-Za-z][A-Za-z0-9]*", "return 0x10002;",false,false);
+	dfa.AddRuleSet("0x[A-Fa-f0-9]+", "return 0x10003;",false,true);
+	dfa.AddRuleSet(".","return textBuffer[0];",false,false);
 
 	dfa.GenerateDFA();
 
 	PrintDFA(dfa);
 
 	printf("\n\n\n");
-	dfa.WriteOCFile("OCTest",stdout);
+	dfa.WriteOCFile("OCTest","OCTest.m",stdout);
 }
 
 int main(int argc, const char * argv[])

@@ -21,15 +21,18 @@
  *		Add rule set
  */
 
-void OCLexDFA::AddRuleSet(std::string regex, std::string code)
+void OCLexDFA::AddRuleSet(std::string regex, std::string code, bool atStart, bool atEnd)
 {
 	/*
 	 *	Get the current code segment and the index to the code rule
 	 */
 
+	CodeRule c;
+	c.code = code;
+	c.atEnd = atEnd;
 
 	uint32_t ruleIndex = (uint32_t)codeRules.size();
-	codeRules.push_back(code);
+	codeRules.push_back(c);
 
 	/*
 	 *	Generate the NFA for this regular expression

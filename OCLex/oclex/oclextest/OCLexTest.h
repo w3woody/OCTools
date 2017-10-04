@@ -22,6 +22,7 @@
 
 @protocol OCFileInput <NSObject>
 - (int)readByte;
+- (int)peekByte;
 @end
 
 #endif

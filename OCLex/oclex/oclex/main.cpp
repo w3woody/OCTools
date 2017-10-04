@@ -236,7 +236,7 @@ int main(int argc, const char * argv[])
 	std::list<OCLexParser::Rule>::iterator i;
 	// ### TODO: Update with at start/end
 	for (i = parser.rules.begin(); i != parser.rules.end(); ++i) {
-		generator.AddRuleSet(i->regex, i->code);	// first==regex, second==code
+		generator.AddRuleSet(i->regex, i->code, i->atStart, i->atEnd);	// first==regex, second==code
 	}
 
 	// Generate DFA

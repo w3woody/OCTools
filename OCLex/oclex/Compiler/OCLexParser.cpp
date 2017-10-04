@@ -212,7 +212,6 @@ static bool RuleStartsLine(std::string const &r)
 
 static bool RuleEndsLine(std::string const &r)
 {
-	// ### TODO
 	const char *str = r.c_str();
 	if (str[r.size()-1] != '$') return false;
 

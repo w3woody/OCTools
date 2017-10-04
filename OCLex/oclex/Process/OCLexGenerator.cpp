@@ -39,6 +39,7 @@ static const char *GHeader2 =
 	"\n"                                                                      \
 	"@protocol OCFileInput <NSObject>\n"                                      \
 	"- (int)readByte;\n"                                                      \
+	"- (int)peekByte;\n"                                                      \
 	"@end\n"                                                                  \
 	"\n"                                                                      \
 	"#endif\n"                                                                \
@@ -366,6 +367,24 @@ static const char *GSource4 =
 	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
+	" *\tRead ahead to determine if we\'re at the EOL\n"                      \
+	" */\n"                                                                   \
+	"\n"                                                                      \
+	"- (BOOL)atEOL\n"                                                         \
+	"{\n"                                                                     \
+	"\tint ch;\n"                                                             \
+	"\n"                                                                      \
+	"\tif (readPos < readSize) {\n"                                           \
+	"\t\tch = readBuffer[readPos];\n"                                         \
+	"\t} else {\n"                                                            \
+	"\t\tch = [self.file peekByte];\n"                                        \
+	"\t}\n"                                                                   \
+	"\t\n"                                                                    \
+	"\tif ((ch == -1) || (ch == \'\\n\')) return YES;\n"                      \
+	"\treturn NO;\n"                                                          \
+	"}\n"																	  \
+	"\n"                                                                      \
+	"/*\n"                                                                    \
 	" *\tRead the state for the class/state combination. Decodes the sparce \n" \
 	" *\tmatrix that is compressed in StateMachineIA/JA/A above. If the\n"    \
 	" *\tentry is not found, returns MAXSTATES. This is the same as the lookup\n" \
@@ -416,7 +435,7 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t/*\n"                                                                  \
 	"\t *\tRun until we hit EOF or a production rule triggers a return\n"     \
-	"\t */\n"
+	"\t */\n"																  \
 	"\n"                                                                      \
 	"\tfor (;;) {\n"                                                          \
 	"\t\t/*\n"                                                                \
@@ -476,9 +495,11 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t\t\tuint16_t newAction = StateActions[state];\n"                       \
 	"\t\t\tif (newAction != MAXACTIONS) {\n"                                  \
-	"\t\t\t\taction = newAction;\t\t\t/* Note action */\n"                    \
-	"\t\t\t\t[self mark];\t\t\t\t/* Mark location for rewind */\n"            \
-	"\t\t\t}\n"                                                               \
+	"\t\t\t\tif (!StateEndFlag[newAction] || [self atEOL]) {\n"               \
+	"\t\t\t\t\taction = newAction;\t\t\t/* Note action */\n"                  \
+	"\t\t\t\t\t[self mark];\t\t\t\t/* Mark location for rewind */\n"          \
+	"\t\t\t\t}\n"                                                             \
+	"\t\t\t}\n"																  \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
 	"\t\t/*\n"                                                                \
@@ -635,6 +656,28 @@ void OCLexGenerator::WriteStates(FILE *f)
 	fprintf(f,"static uint16_t StateActions[%zu] = {\n",len);
 	WriteArray(f,scratch,len);
 	fprintf(f,"};\n\n");
+	free(scratch);
+
+	/*
+	 *	End states
+	 */
+
+	fprintf(f,"/*  StateEndFlag\n");
+	fprintf(f," *\n");
+	fprintf(f," *      True if this state ends with '$', that is, can only work at\n");
+	fprintf(f," *  the end of line.\n");
+	fprintf(f," */\n\n");
+
+	alen = codeRules.size();
+	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
+	for (i = 0; i < alen; ++i) {
+		scratch[i] = codeRules[i].atEnd ? 1 : 0;
+	}
+
+	fprintf(f,"static uint8_t StateEndFlag[%zu] = {\n",alen);
+	WriteArray(f,scratch,alen);
+	fprintf(f,"};\n\n");
+	free(scratch);
 
 	/*
 	 *	Generate the DFA state transitions
@@ -711,7 +754,7 @@ void OCLexGenerator::WriteActions(FILE *f)
 	size_t i,len = codeRules.size();
 	for (i = 0; i < len; ++i) {
 		fprintf(f,"            case %zu:\n",i);
-		fprintf(f,"                %s\n",codeRules[i].c_str());
+		fprintf(f,"                %s\n",codeRules[i].code.c_str());
 		fprintf(f,"                break;\n\n");
 	}
 }
