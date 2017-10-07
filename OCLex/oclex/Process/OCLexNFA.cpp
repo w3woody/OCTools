@@ -21,7 +21,7 @@ http://dinosaur.compilertools.net/lex/index.html
                [^x]     any character but x.
                .        any character but newline.
                ^x       an x at the beginning of a line.
- ns            <y>x     an x when Lex is in start condition y.
+               <y>x     an x when Lex is in start condition y.
                x$       an x at the end of a line.
                x?       an optional x.
                x*       0,1,2, ... instances of x.
