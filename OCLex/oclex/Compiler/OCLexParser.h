@@ -47,6 +47,7 @@ class OCLexParser
 			std::string code;
 			bool atStart;			// start with '^'
 			bool atEnd;				// end with '$'
+			std::string state;		// if non-empty, contains state
 		};
 
 		// Declaration code
@@ -60,6 +61,9 @@ class OCLexParser
 
 		// definitions
 		std::map<std::string,std::string> definitions;
+
+		// states declaration
+		std::list<std::string> ruleStates;
 
 		// Rules: contains the rules to match against
 		std::list<Rule> rules;

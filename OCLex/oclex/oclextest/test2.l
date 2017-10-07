@@ -9,10 +9,12 @@ IS						(u|U|l|L)*
 #import "Simple.h"
 %}
 
+%state I
+
 %%
 "/*"					{ [self skipComment]; }
 "//".*$					{ [self skipComment]; }
-^#						{ return 1; }
+<I>^#					{ return 1; }
 
 "auto"					{ return AUTO; }
 "break"					{ return BREAK; }

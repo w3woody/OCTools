@@ -2018,8 +2018,8 @@ static uint16_t StateMachineA[5756] = {
 		state = 0;
 		textSize = 0;
 		
-		self.line = self.curLine;
-		self.column = self.curColumn;
+		self.line = curLine;
+		self.column = curColumn;
 
 		for (;;) {
 			int ch = [self input];
