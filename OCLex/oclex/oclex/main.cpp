@@ -231,12 +231,13 @@ int main(int argc, const char * argv[])
 	generator.classInit = parser.classInit;
 	generator.classHeader = parser.classHeader;
 	generator.endCode = parser.endCode;
+	generator.ruleStates = parser.ruleStates;
 
 	// Add rules and generate NFA
 	std::list<OCLexParser::Rule>::iterator i;
 	// ### TODO: Update with at start/end
 	for (i = parser.rules.begin(); i != parser.rules.end(); ++i) {
-		generator.AddRuleSet(i->regex, i->code, i->atStart, i->atEnd);	// first==regex, second==code
+		generator.AddRuleSet(i->regex, i->code, i->state, i->atStart, i->atEnd);	// first==regex, second==code
 	}
 
 	// Generate DFA

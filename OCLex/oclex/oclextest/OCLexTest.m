@@ -195,6 +195,26 @@ static uint8_t StateFlag[92] = {
       0,   0,   0,   0
 };
 
+/*  StateCond
+ *
+ *      Index of conditional flag (or 0 if unconditional).
+ */
+
+static uint8_t StateCond[92] = {
+      0,   0,   1,   2,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0,   0,   0, 
+      0,   0,   0,   0
+};
+
 /*  StateMachineIA, StateMachineJA, StateMachineA
  *
  *      Lex state machine in compressed sparce row storage format. We do this
@@ -1720,6 +1740,9 @@ static uint16_t StateMachineA[5756] = {
 	NSInteger textMarkSize;
 	NSInteger textSize;
 	NSInteger textAlloc;
+	
+	// State flags
+	uint64_t  states;
 }
 
 @property (strong) id<OCFileInput> file;
@@ -1755,6 +1778,8 @@ static uint16_t StateMachineA[5756] = {
 		textSize = 0;
 		textAlloc = 256;
 		textBuffer = (unsigned char *)malloc(textAlloc);
+		
+		states = 0;
 
 	}
 	return self;
@@ -2073,8 +2098,10 @@ static uint16_t StateMachineA[5756] = {
 			if (newAction != MAXACTIONS) {
 				if (!(StateFlag[newAction] & 1) || [self atEOL]) {
 					if (!(StateFlag[newAction] & 2) || [self atSOL]) {
-						action = newAction;			/* Note action */
-						[self mark];				/* Mark location for rewind */
+						if ((StateCond[newAction] == 0) || (0 != (state & (1L << (StateCond[newAction]-1))))) {
+							action = newAction;			/* Note action */
+							[self mark];				/* Mark location for rewind */
+						}
 					}
 				}
 			}
@@ -2125,7 +2152,7 @@ static uint16_t StateMachineA[5756] = {
                 break;
 
             case 3:
-                return AUTO; 
+                states |= 1; return AUTO; 
                 break;
 
             case 4:
@@ -2137,11 +2164,11 @@ static uint16_t StateMachineA[5756] = {
                 break;
 
             case 6:
-                return CHAR; 
+                states &= ~2; return CHAR; 
                 break;
 
             case 7:
-                return CONST; 
+                states = 0; return CONST; 
                 break;
 
             case 8:

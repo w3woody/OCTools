@@ -73,6 +73,7 @@ class OCLexDFA: public OCLexNFA
 
 		struct CodeRule {
 			std::string code;
+			std::string state;
 			bool atStart;
 			bool atEnd;
 		};
@@ -81,7 +82,7 @@ class OCLexDFA: public OCLexNFA
 		 *	Add rules with rule states and code
 		 */
 
-		void AddRuleSet(std::string regex, std::string code, bool atStart, bool atEnd);
+		void AddRuleSet(std::string regex, std::string code, std::string state, bool atStart, bool atEnd);
 
 		/*
 		 *	Generate DFA

@@ -110,6 +110,7 @@ class OCLexNFA
 			}
 
 		std::vector<OCLexNFAState> states;
+		std::list<std::string> ruleStates;
 
 	private:
 		uint32_t stateIndex;

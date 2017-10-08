@@ -21,7 +21,7 @@
  *		Add rule set
  */
 
-void OCLexDFA::AddRuleSet(std::string regex, std::string code, bool atStart, bool atEnd)
+void OCLexDFA::AddRuleSet(std::string regex, std::string code, std::string ruleState, bool atStart, bool atEnd)
 {
 	/*
 	 *	Get the current code segment and the index to the code rule
@@ -31,6 +31,7 @@ void OCLexDFA::AddRuleSet(std::string regex, std::string code, bool atStart, boo
 	c.code = code;
 	c.atStart = atStart;
 	c.atEnd = atEnd;
+	c.state = ruleState;
 
 	uint32_t ruleIndex = (uint32_t)codeRules.size();
 	codeRules.push_back(c);

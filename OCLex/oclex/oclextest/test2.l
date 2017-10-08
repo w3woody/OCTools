@@ -9,18 +9,18 @@ IS						(u|U|l|L)*
 #import "Simple.h"
 %}
 
-%state I
+%state IS ES
 
 %%
 "/*"					{ [self skipComment]; }
 "//".*$					{ [self skipComment]; }
-<I>^#					{ return 1; }
+<IS>^#					{ return 1; }
 
-"auto"					{ return AUTO; }
+<ES>"auto"				{ BEGIN IS; return AUTO; }
 "break"					{ return BREAK; }
 "case"					{ return CASE; }
-"char"					{ return CHAR; }
-"const"					{ return CONST; }
+"char"					{ END ES; return CHAR; }
+"const"					{ BEGIN 0; return CONST; }
 "continue"				{ return CONTINUE; }
 "default"				{ return DEFAULT; }
 "do"					{ return DO; }

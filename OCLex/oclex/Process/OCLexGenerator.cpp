@@ -149,6 +149,9 @@ static const char *GSource2 =
 	"\tNSInteger textMarkSize;\n"                                             \
 	"\tNSInteger textSize;\n"                                                 \
 	"\tNSInteger textAlloc;\n"                                                \
+	"\t\n"                                                                    \
+	"\t// State flags\n"                                                      \
+	"\tuint64_t  states;\n"                                                   \
 	"}\n"                                                                     \
 	"\n"                                                                      \
 	"@property (strong) id<OCFileInput> file;\n";
@@ -184,7 +187,9 @@ static const char *GSource3 =
 	"\t\ttextMarkSize = 0;\n"                                                 \
 	"\t\ttextSize = 0;\n"                                                     \
 	"\t\ttextAlloc = 256;\n"                                                  \
-	"\t\ttextBuffer = (unsigned char *)malloc(textAlloc);\n";
+	"\t\ttextBuffer = (unsigned char *)malloc(textAlloc);\n"                  \
+	"\t\t\n"                                                                  \
+	"\t\tstates = 0;\n";
 
 
 static const char *GSource4 =
@@ -505,8 +510,10 @@ static const char *GSource5 =
 	"\t\t\tif (newAction != MAXACTIONS) {\n"                                  \
 	"\t\t\t\tif (!(StateFlag[newAction] & 1) || [self atEOL]) {\n"            \
 	"\t\t\t\t\tif (!(StateFlag[newAction] & 2) || [self atSOL]) {\n"          \
-	"\t\t\t\t\t\taction = newAction;\t\t\t/* Note action */\n"                \
-	"\t\t\t\t\t\t[self mark];\t\t\t\t/* Mark location for rewind */\n"        \
+	"\t\t\t\t\t\tif ((StateCond[newAction] == 0) || (0 != (state & (1L << (StateCond[newAction]-1))))) {\n" \
+	"\t\t\t\t\t\t\taction = newAction;\t\t\t/* Note action */\n"              \
+	"\t\t\t\t\t\t\t[self mark];\t\t\t\t/* Mark location for rewind */\n"      \
+	"\t\t\t\t\t\t}\n"                                                         \
 	"\t\t\t\t\t}\n"                                                           \
 	"\t\t\t\t}\n"                                                             \
 	"\t\t\t}\n"																  \
@@ -686,6 +693,32 @@ void OCLexGenerator::WriteStates(FILE *f)
 	}
 
 	fprintf(f,"static uint8_t StateFlag[%zu] = {\n",alen);
+	WriteArray(f,scratch,alen);
+	fprintf(f,"};\n\n");
+
+	fprintf(f,"/*  StateCond\n");
+	fprintf(f," *\n");
+	fprintf(f," *      Index of conditional flag (or 0 if unconditional).\n");
+	fprintf(f," */\n\n");
+
+	alen = codeRules.size();
+	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
+	for (i = 0; i < alen; ++i) {
+		std::string rstate = codeRules[i].state;
+		uint32_t ix = 0;
+		if (!rstate.empty()) {
+			std::list<std::string>::iterator siter;
+			for (siter = ruleStates.begin(); siter != ruleStates.end(); ++siter) {
+				++ix;
+				if (*siter == rstate) {
+					break;
+				}
+			}
+		}
+		scratch[i] = ix;
+	}
+
+	fprintf(f,"static uint8_t StateCond[%zu] = {\n",alen);
 	WriteArray(f,scratch,alen);
 	fprintf(f,"};\n\n");
 	free(scratch);

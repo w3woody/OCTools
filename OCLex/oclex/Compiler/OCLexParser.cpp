@@ -341,6 +341,83 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 					--cdepth;
 					if (cdepth <= 0) break;
 					code += lex.fToken;
+				} else if (lex.fToken == "BEGIN") {
+					/*
+					 *	BEGIN state; or BEGIN 0;
+					 *
+					 *		Translate into executable code appropriate for this
+					 *	state transition
+					 */
+
+					sym = lex.ReadToken();
+					if (sym == -1) {
+						fprintf(stderr,"%s:%d Unexpected end of file reached in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
+						return false;
+					} else {
+						if (lex.fToken == "0") {
+							// insert code to clear state
+							code += "states = 0;";
+						} else {
+							// Find bitmask
+							uint32_t index = 1;
+							bool found = false;
+							std::list<std::string>::iterator riter;
+							for (riter = ruleStates.begin(); riter != ruleStates.end(); riter++) {
+								if (*riter == lex.fToken) {
+									found = true;
+									break;
+								}
+								index <<= 1;
+							}
+
+							if (found) {
+								char buffer[64];
+								sprintf(buffer,"states |= %u;",index);
+								code += buffer;
+							} else {
+								fprintf(stderr,"%s:%d Illegal state after BEGIN declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+							}
+						}
+						if (';' != lex.ReadToken()) {
+							fprintf(stderr,"%s:%d Expect ';' after BEGIN declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+						}
+					}
+				} else if (lex.fToken == "END") {
+					/*
+					 *	END state;
+					 *
+					 *		Translate into executable code appropriate for this
+					 *	state transition
+					 */
+
+					sym = lex.ReadToken();
+					if (sym == -1) {
+						fprintf(stderr,"%s:%d Unexpected end of file reached in grammar declarations section\n",lex.fFileName.c_str(),lex.fTokenLine);
+						return false;
+					} else {
+						// Find bitmask
+						uint32_t index = 1;
+						bool found = false;
+						std::list<std::string>::iterator riter;
+						for (riter = ruleStates.begin(); riter != ruleStates.end(); riter++) {
+							if (*riter == lex.fToken) {
+								found = true;
+								break;
+							}
+							index <<= 1;
+						}
+
+						if (found) {
+							char buffer[64];
+							sprintf(buffer,"states &= ~%u;",index);
+							code += buffer;
+						} else {
+							fprintf(stderr,"%s:%d Illegal state after END declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+						}
+						if (';' != lex.ReadToken()) {
+							fprintf(stderr,"%s:%d Expect ';' after END declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+						}
+					}
 				} else {
 					code += lex.fToken;
 				}
