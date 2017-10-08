@@ -195,7 +195,7 @@ std::string OCLexer::ReadRegEx()
 
 	int32_t ch;
 
-	while (isspace(ch = ReadRawChar())) ;	// skip white space
+	while (isspace(ch = ReadChar())) ;		// skip white space, comments
 
 	fTokenLine = fLine;
 	fTokenColumn = fColumn;

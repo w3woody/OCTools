@@ -16,6 +16,8 @@ IS						(u|U|l|L)*
 "//".*$					{ [self skipComment]; }
 <IS>^#					{ return 1; }
 
+// Test comment
+
 <ES>"auto"				{ BEGIN IS; return AUTO; }
 "break"					{ return BREAK; }
 "case"					{ return CASE; }
@@ -29,6 +31,11 @@ IS						(u|U|l|L)*
 "enum"					{ return ENUM; }
 "extern"				{ return EXTERN; }
 "float"					{ return FLOAT; }
+
+/*
+ *	Another test comment
+ */
+
 "for"					{ return FOR; }
 "goto"					{ return GOTO; }
 "if"					{ return IF; }
@@ -48,6 +55,8 @@ IS						(u|U|l|L)*
 "void"					{ return VOID; }
 "volatile"				{ return VOLATILE; }
 "while"					{ return WHILE; }
+
+/* Another comment */
 
 {L}({L}|{D})*			{ return [self checkType]; }
 
