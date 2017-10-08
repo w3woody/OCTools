@@ -100,9 +100,11 @@ You can see an example of scanning for this rule in the method *FindEndRule* in 
 
 ## Handling '\^' and '$' for start and end of line matching
 
-In order to handle an end of line match ('$'), we add an additional flag to each rule indicating if the rule matches only if we are at the end of the line. This flag is stored as part of the associated rule.
+In order to handle an end of line match ('$'), we add an additional flag to each rule indicating if the rule matches only if we are at the end of the line. This flag is stored as part of the associated rule. We similarly add a flag for the start of line match, and conditionally reduce by the rule only if the token was at the start of the line.
 
-The start of line matching is more interesting. Because we need to determine if the rules should be reduced before reading any tokens, we actually generate two state machines using the algorithms above; one which includes rules that start with the start of line matching token, and one which does not. We then select the appropriate state machine depending if we are at the start of the line or not.
+## Handling conditional rules
+
+Conditional rules are handled similarly to the start and end of line markers, by storing a bit array of flags in the variable `states`. If a rule is optionally executed, the rule is only matched if the state flag is set to true.
 
 ## Generating the output files
 
