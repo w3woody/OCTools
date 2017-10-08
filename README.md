@@ -24,7 +24,85 @@ threads at the same time.)
 
 ## Using with Xcode
 
-(TODO: Insert instructions on how to build and incorporate into Xcode.)
+To build and incorporate the OCTools into Xcode, you need to build the OCYacc tool and the OCLex tool as command-line tools, copy into a known location (such as `/user/local/bin`), add the path to your shell $PATH setting (if needed), and modify the settings for each Xcode project where you use the tools.
+
+### Step 1: Build the tools
+
+This can be done by opening the OCTools workspace, selecting "oclex" and running "Archive", then selecting "ocyacc" and running Archive. In both cases this will produce an archive with the individual tools oclex and ocyacc as command-line tools. 
+
+(After each archive process is complete, the "Archives" window will open, showing the archive of the tool. Right-click and select "Show In Finder" to show the *xcarchive* bundle. Right-click on the bundle and select "Show Package Contents." The command line tool will be in the directory Products/usr/local/bin.)
+
+### Step 2: Copy to a known path location.
+
+I usually copy the tools to `/usr/local/bin`; you may choose somewhere else if you wish.
+
+Open Terminal. Create `/usr/local/bin` if necessary; this can be done by executing commands like:
+
+    cd /usr
+    sudo mkdir local
+    cd local
+    sudo mkdir bin
+
+(After each sudo command you may need to enter your password.)
+
+Now with the current path of the Terminal at `/usr/local/bin`, execute:
+
+    open .
+
+This will open a finder window at the location `/usr/local/bin`. You can then drag and drop the tool located in the *xcarchive* bundle using Finder. (Finder may ask for a password before copying the tool into place.)
+
+### Step 3: Update your $PATH settings. (Optional)
+
+This step is strictly not necessary but comes in handy if you wish to run the oclex/ocyacc tool from the command line.
+
+Open Terminal. Make sure your home directory is the current directory. (If not, enter the command `cd ~`.) Determine if the file .bash_profile exists; if not, create the file using the command `touch .bash_profile`. Edit the file (`open .bash_profile`).
+
+In the file, add the following line:
+
+    export PATH=/usr/local/bin:$PATH
+
+Save and close the file. The next terminal window that is opened will have the $PATH variable set appropriately. You can test this by opening a new terminal window and entering the command `ocyacc` or `oclex`; this will print version and copyright information for each of the tools.
+
+### Step 4: Include support into your project.
+
+For Xcode to use the tools you must update the *Build Rules* setting under the target for the project you are building.
+
+First, open the Xcode project, and select the project file in the Project navigator on the far left. This will show the project settings.
+
+Second, select the target which you wish to modify. You will need to change the build rules for each target in your project.
+
+Third, select "Build Rules" from the tab bar along the top.
+
+Fourth, select the "Add" button, the plus sign in the upper-left of the build rules page. This will add a new build rule at the top. 
+
+For **OCLex** and **OCYacc**, the build rule uses the built-in lex and yacc source files. The settings should be as follows: for OCLex--
+
+    Process      Lex source files
+    Using        Custom script:
+    
+        /usr/local/bin/oclex -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"
+    
+    Output Files:
+        $(INPUT_FILE_BASE).m
+
+For OCYacc:
+
+    Process      Yacc source files
+    Using        Custom script:
+    
+        /usr/local/bin/ocyacc -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"
+    
+    Output Files:
+        $(INPUT_FILE_BASE).m
+
+After this is done, yacc and lex files will be compiled to .h and .m files of the same name.
+
+**NOTE:** Because the output .h and .m files are derived from the input file of the .y and .l files, they should not have the same name. For example, if creating a language using a lexer and a yacc file, you should name them something like:
+
+    MyLangLex.l
+    MyLangParser.y
+
+This would create two Objective-C classes with names MyLangLex and MyLangParser. (If you give them the same name, you'll create two classes with the same name, and this is the path to ruin. Or at least confusion.)
 
 ## License
 
