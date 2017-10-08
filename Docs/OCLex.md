@@ -169,11 +169,11 @@ write:
 Note that all five sections are optional in the OCLex file, and may be
 omitted. 
 
-##### State Support
+##### Optional Rule Support
 
-Rules may be optionally triggered by a state flag. You declare state flags by using the %state declaration:
+Rules may be optionally triggered by a start flag. You declare start flags by using the %start declaration:
 
-    %state TOKEN TOKEN ...
+    %start TOKEN TOKEN ...
 
 #### Rules
 
@@ -248,9 +248,9 @@ Note that actions may span multiple lines.
 
 ##### Optional rules
 
-A rule may be made optional by adding the \<TOKEN\> prefix, with TOKEN as one of the states previously declared in the %state declaration section. If <TOKEN> is added, then the rule is only executed if the TOKEN state is true. 
+A rule may be made optional by adding the \<START\> prefix, with START as one of the states previously declared in the %start declaration section. If <START> is added, then the rule is only executed if the START state is true. 
 
-A rule state may be activated by adding the code `BEGIN TOKEN;`--this is translated to code which sets the state associated with *TOKEN*. If the statement `BEGIN 0;` is found, all states are cleared. The code `END TOKEN;` is used to clear the specific state associated with *TOKEN*.
+A rule state may be activated by adding the code `BEGIN START;`--this is translated to code which sets the state associated with *START*. If the statement `BEGIN 0;` is found, all states are cleared. The code `END START;` is used to clear the specific state associated with *START*.
 
 ##### Token Values associated with Rules
 
@@ -605,7 +605,8 @@ be expanded.
     x|y      an x or a y.
     (x)      an x.
     {xx}     the translation of xx from the definitions section.
-    <STATE>  if at start, indicates rule only activates if STATE is true.
+    <y>x     rule x only if OCLex is in start condition y. (This must be at 
+             the start of a regular expression.)
 
 ## A trivial example
 

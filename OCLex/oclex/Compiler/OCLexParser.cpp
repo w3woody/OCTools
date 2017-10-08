@@ -144,7 +144,7 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 			 */
 
 			sym = lex.ReadToken();
-			if ((sym == OCTOKEN_TOKEN) && (lex.fToken == "state")) {
+			if ((sym == OCTOKEN_TOKEN) && (lex.fToken == "start")) {
 				/*
 				 *	Parse state list
 				 */

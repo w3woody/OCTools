@@ -9,7 +9,7 @@ IS						(u|U|l|L)*
 #import "Simple.h"
 %}
 
-%state IS ES
+%start IS ES
 
 %%
 "/*"					{ [self skipComment]; }
