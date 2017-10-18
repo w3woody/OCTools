@@ -32,7 +32,7 @@ threads at the same time.)
 
 ## Using with Xcode
 
-To build and incorporate the OCTools into Xcode, you need to build the OCYacc tool and the OCLex tool as command-line tools, copy into a known location (such as `/user/local/bin`), add the path to your shell $PATH setting (if needed), and modify the settings for each Xcode project where you use the tools.
+To build and incorporate the OCTools into Xcode, you need to build the OCYacc tool and the OCLex tool as command-line tools, copy into a known location (such as `/usr/local/bin`), add the path to your shell $PATH setting (if needed), and modify the settings for each Xcode project where you use the tools.
 
 ### Step 1: Build the tools
 
