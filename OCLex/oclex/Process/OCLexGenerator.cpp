@@ -510,7 +510,7 @@ static const char *GSource5 =
 	"\t\t\tif (newAction != MAXACTIONS) {\n"                                  \
 	"\t\t\t\tif (!(StateFlag[newAction] & 1) || [self atEOL]) {\n"            \
 	"\t\t\t\t\tif (!(StateFlag[newAction] & 2) || [self atSOL]) {\n"          \
-	"\t\t\t\t\t\tif ((StateCond[newAction] == 0) || (0 != (state & (1L << (StateCond[newAction]-1))))) {\n" \
+	"\t\t\t\t\t\tif ((StateCond[newAction] == 0) || (0 != (states & (1L << (StateCond[newAction]-1))))) {\n" \
 	"\t\t\t\t\t\t\taction = newAction;\t\t\t/* Note action */\n"              \
 	"\t\t\t\t\t\t\t[self mark];\t\t\t\t/* Mark location for rewind */\n"      \
 	"\t\t\t\t\t\t}\n"                                                         \
