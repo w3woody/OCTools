@@ -51,7 +51,7 @@ static int ToHex(char ch)
 
 /**
  *	Grab the character after a '\', and translate into the appropriate
- *	escaped character. regex should point ot the character after the '\'.
+ *	escaped character. regex should point to the character after the '\'.
  */
 
 char OCLexNFA::EscapeCharacter(const char * &regex)

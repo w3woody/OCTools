@@ -685,6 +685,7 @@ void OCLexGenerator::WriteStates(FILE *f)
 	fprintf(f," *  screen rules in these cases.\n");
 	fprintf(f," */\n\n");
 
+	// ### TODO: Rewrite the StateFlag logic as needed
 	alen = codeRules.size();
 	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
 	for (i = 0; i < alen; ++i) {
@@ -701,6 +702,7 @@ void OCLexGenerator::WriteStates(FILE *f)
 	fprintf(f," *      Index of conditional flag (or 0 if unconditional).\n");
 	fprintf(f," */\n\n");
 
+	// ### TODO: Rewrite the StateCond logic as needed
 	alen = codeRules.size();
 	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
 	for (i = 0; i < alen; ++i) {
