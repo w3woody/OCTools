@@ -40,6 +40,12 @@ void OCLexDFA::AddRuleSet(std::string regex, std::string code, std::string ruleS
 	 *	Generate the NFA for this regular expression
 	 */
 
+// ### TODO:
+//
+//	See notes in OCLexNFA.
+//
+//	We may wish to alter how we handle this so as to handle start conditions.
+
 	OCLexNFAReturn ret = AddRule(regex.c_str());
 
 	/*
@@ -247,6 +253,13 @@ bool OCLexDFA::GenerateDFA()
 	 */
 
 	std::list<OCIntegerSet> stateQueue;
+
+	/*
+	 *	### TODO:
+	 *
+	 *		Conditional start state table? See TODO on OCLexNFA.h for
+	 *	discussion
+	 */
 
 	/*
 	 *	Start: construct the set of start states that represent our start.

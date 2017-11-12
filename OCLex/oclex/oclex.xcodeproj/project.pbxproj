@@ -21,6 +21,7 @@
 		EF0112221F2D5840006FFFFB /* OCLexDFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */; };
 		EF01123C1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */; };
 		EF01123D1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */; };
+		EF1B68561FB8A6A500EAFBB7 /* OCStartState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -62,6 +63,8 @@
 		EF0112201F2CFAEB006FFFFB /* OCLexDFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexDFA.h; sourceTree = "<group>"; };
 		EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexGenerator.cpp; sourceTree = "<group>"; };
 		EF01123B1F2E47E7006FFFFB /* OCLexGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexGenerator.h; sourceTree = "<group>"; };
+		EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OCStartState.cpp; sourceTree = "<group>"; };
+		EF1B68551FB8A6A500EAFBB7 /* OCStartState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCStartState.h; sourceTree = "<group>"; };
 		EF7369341F43DD11008CC168 /* test2.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = test2.l; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -161,6 +164,8 @@
 			children = (
 				EF0112181F295BEF006FFFFB /* OCCharSet.h */,
 				EF0112171F295BEF006FFFFB /* OCCharSet.cpp */,
+				EF1B68551FB8A6A500EAFBB7 /* OCStartState.h */,
+				EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -248,6 +253,7 @@
 			files = (
 				EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */,
 				EF0112221F2D5840006FFFFB /* OCLexDFA.cpp in Sources */,
+				EF1B68561FB8A6A500EAFBB7 /* OCStartState.cpp in Sources */,
 				EF0111AF1F263F91006FFFFB /* main.cpp in Sources */,
 				EF01123C1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */,
 				EF01121A1F295C36006FFFFB /* OCCharSet.cpp in Sources */,
