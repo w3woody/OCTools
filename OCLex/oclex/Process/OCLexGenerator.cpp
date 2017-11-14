@@ -651,7 +651,9 @@ void OCLexGenerator::WriteStates(FILE *f)
 
 	/*
 	 *	Generate state actions. This is a table which maps from a state
-	 *	index to an action index
+	 *	index to an action index. Note if this DFA state has no rule, we
+	 *	land on MAXACTION. If the DFA has a conditional rule, we go to
+	 *	an index greater than MAXACTION.
 	 */
 
 	fprintf(f,"/*  StateActions\n");
@@ -659,8 +661,6 @@ void OCLexGenerator::WriteStates(FILE *f)
 	fprintf(f," *      Maps states to actions. MAXACTION if this is not a terminal\n");
 	fprintf(f," */\n\n");
 
-	// ### TODO: Rewrite StateActions rule to provide for jump into conditional
-	// table instead.
 	size_t alen = codeRules.size();
 	uint32_t swindex = (uint32_t)alen;
 	len = dfaStates.size();
@@ -682,58 +682,6 @@ void OCLexGenerator::WriteStates(FILE *f)
 	WriteArray(f,scratch,len);
 	fprintf(f,"};\n\n");
 	free(scratch);
-
-	/*
-	 *	End states
-	 */
-
-// ### INSERT conditionalAction:
-
-//	fprintf(f,"/*  StateFlag\n");
-//	fprintf(f," *\n");
-//	fprintf(f," *      True if this state starts with ^ or ends with $. Used to\n");
-//	fprintf(f," *  screen rules in these cases.\n");
-//	fprintf(f," */\n\n");
-//
-//	// ### TODO: Rewrite the StateFlag logic as needed
-//	alen = codeRules.size();
-//	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
-//	for (i = 0; i < alen; ++i) {
-//		scratch[i] = codeRules[i].atEnd ? 1 : 0;
-//		if (codeRules[i].atStart) scratch[i] |= 2;
-//	}
-//
-//	fprintf(f,"static uint8_t StateFlag[%zu] = {\n",alen);
-//	WriteArray(f,scratch,alen);
-//	fprintf(f,"};\n\n");
-//
-//	fprintf(f,"/*  StateCond\n");
-//	fprintf(f," *\n");
-//	fprintf(f," *      Index of conditional flag (or 0 if unconditional).\n");
-//	fprintf(f," */\n\n");
-//
-//	// ### TODO: Rewrite the StateCond logic as needed
-//	alen = codeRules.size();
-//	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
-//	for (i = 0; i < alen; ++i) {
-//		std::string rstate = codeRules[i].state;
-//		uint32_t ix = 0;
-//		if (!rstate.empty()) {
-//			std::list<std::string>::iterator siter;
-//			for (siter = ruleStates.begin(); siter != ruleStates.end(); ++siter) {
-//				++ix;
-//				if (*siter == rstate) {
-//					break;
-//				}
-//			}
-//		}
-//		scratch[i] = ix;
-//	}
-//
-//	fprintf(f,"static uint8_t StateCond[%zu] = {\n",alen);
-//	WriteArray(f,scratch,alen);
-//	fprintf(f,"};\n\n");
-//	free(scratch);
 
 	/*
 	 *	Generate the DFA state transitions
