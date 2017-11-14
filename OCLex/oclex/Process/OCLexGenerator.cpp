@@ -774,7 +774,7 @@ void OCLexGenerator::WriteStarts(FILE *f)
 	uint32_t index = (uint32_t)codeRules.size();
 
 	fprintf(f,"/*\n");
-	fprintf(f,"/*  For conditional states this takes an end DFA state and\n");
+	fprintf(f," *  For conditional states this takes an end DFA state and\n");
 	fprintf(f," *  determines the proper end rule given the current start\n");
 	fprintf(f," *  conditionals.\n");
 	fprintf(f," */\n\n");
