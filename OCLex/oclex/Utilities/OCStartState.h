@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <string>
-
+#include <list>
 
 /************************************************************************/
 /*                                                                      */
@@ -35,12 +35,64 @@ class OCStartState
 	public:
 		OCStartState()
 			{
+				fStart = false;
+				fEnd = false;
 			}
 
 		~OCStartState()
 			{
 			}
 
+		/*
+		 *	Building the start condition. In general the start condition
+		 *	is (startLine) && (state || state || state...)
+		 */
+
+		void addStartCondition(std::string state)
+			{
+				fStates.push_back(state);
+			}
+		void setStartConditions(std::list<std::string> state)
+			{
+				fStates = state;
+			}
+		void addStartLine()
+			{
+				fStart = true;
+			}
+		void addEndLine()
+			{
+				fEnd = true;
+			}
+
+		/*
+		 *	Return true if there are no start conditions
+		 */
+
+		bool unconditional() const
+			{
+				return !fStart && !fEnd && (fStates.size() == 0);
+			}
+
+		/*
+		 *	Get the start, end states
+		 */
+
+		bool startFlag() const
+			{
+				return fStart;
+			}
+		bool endFlag() const
+			{
+				return fEnd;
+			}
+
+		uint32_t stateFlags(const std::list<std::string> &rstates) const;
+
+	private:
+		bool fStart;
+		bool fEnd;
+		std::list<std::string> fStates;
 };
 
 #endif /* OCStartSet_hpp */

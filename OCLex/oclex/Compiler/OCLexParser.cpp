@@ -257,8 +257,10 @@ static bool RuleEndsLine(std::string const &r)
 	return endFlag;
 }
 
-static std::string RuleStartState(std::string &r)
+std::list<std::string> OCLexParser::RuleStartState(std::string &r, OCLexer &lex)
 {
+	std::list<std::string> retval;
+
 	const char *str = r.c_str();
 	const char *ptr = str;
 
@@ -266,16 +268,56 @@ static std::string RuleStartState(std::string &r)
 	 *	Run forward, only if we have a token in <> brackets
 	 */
 
-	if (*ptr++ != '<') return "";
-	if (!isalpha(*ptr++)) return "";
+	if (*ptr++ != '<') return retval;
+
 	for (;;) {
-		if (*ptr == '>') break;
-		if (!isalnum(*ptr++)) return "";
+		while (isspace(*ptr)) ++ptr;
+		if (isalpha(*ptr)) {
+			std::string t;
+			while (isalnum(*ptr)) {
+				t.push_back(*ptr++);
+			}
+			retval.push_back(t);
+
+			/*
+			 *	Validate state
+			 */
+
+			bool found = false;
+			std::list<std::string>::iterator riter;
+			for (riter = ruleStates.begin(); riter != ruleStates.end(); riter++) {
+				if (*riter == t) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				fprintf(stderr,"%s:%d state %s not defined with %%state declaration\n",lex.fFileName.c_str(),lex.fTokenLine,t.c_str());
+			}
+
+			/*
+			 *	Continue
+			 */
+
+			while (isspace(*ptr)) ++ptr;
+
+			char c = *ptr++;
+			if (c == '>') break;
+			if (c == ',') continue;
+
+			retval.clear();
+			return retval;				// Syntax error
+		} else {
+			retval.clear();				// syntax error
+			return retval;
+		}
 	}
 
-	std::string retval(str,1,ptr-str-1);	// token between < and >
-	r.erase(0,ptr-str+1);					// erase <token>
+	/*
+	 *	At this point ptr points past the closing >
+	 */
 
+	r.erase(0,ptr-str);
 	return retval;
 }
 
@@ -287,36 +329,30 @@ static std::string RuleStartState(std::string &r)
 bool OCLexParser::ParseRules(OCLexer &lex)
 {
 	bool inError = false;
-	bool atStart,atEnd;
 
 	for (;;) {
+		OCStartState startState;
+
 		std::string regex = lex.ReadRegEx();
 		if ((regex == "%%") || (regex == "")) return true;  // empty string: EOF
 
 		// See if it has a <SYMBOL> prefix. If so, track prefix.
-		std::string state = RuleStartState(regex);
-		if (!state.empty()) {
-			// Verify symbol defined
-			bool found = false;
-			std::list<std::string>::iterator riter;
-			for (riter = ruleStates.begin(); riter != ruleStates.end(); riter++) {
-				if (*riter == state) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				fprintf(stderr,"%s:%d state %s not defined with %%state declaration\n",lex.fFileName.c_str(),lex.fTokenLine,state.c_str());
-			}
-		}
+		startState.setStartConditions(RuleStartState(regex,lex));
 
 		// Examine regex to determine if it starts with a '^' or end
 		// with a '$'. If so, mark the rule appropriately
-		atStart = RuleStartsLine(regex);
-		if (atStart) regex.erase(0,1);	// delete '^' from start
 
-		atEnd = RuleEndsLine(regex);
-		if (atEnd) regex.erase(regex.size()-1,1);
+		bool startFlag = RuleStartsLine(regex);
+		if (startFlag) {
+			regex.erase(0,1);	// delete '^' from start
+			startState.addStartLine();
+		}
+
+		bool endFlag = RuleEndsLine(regex);
+		if (endFlag) {
+			regex.erase(regex.size()-1,1);
+			startState.addEndLine();
+		}
 
 		int sym = lex.ReadToken();
 		if (sym == '{') {
@@ -427,9 +463,7 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 			OCLexParser::Rule r;
 			r.regex = regex;
 			r.code = code;
-			r.atStart = atStart;
-			r.atEnd = atEnd;
-			r.state = state;
+			r.start = startState;
 			rules.push_back(r);
 
 		} else {

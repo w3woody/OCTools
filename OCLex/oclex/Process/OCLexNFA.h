@@ -29,105 +29,66 @@
 /*
  *	TODO: (Some musings as I figure this out)
  *
- *		To handle conditional rules, I want to create a new NFA transition
- *	for the "start state" which signifies the start state transition. That
- *	is, I want to create a new transition state S:
+ *		We need to handle the following case:
  *
- *		S is transitioned only if the set of start conditions are correct.
+ *	<AA>magic         printf("first");
+ *	<BB>magic         printf("second");
+ *	<CC>magic         printf("third");
  *
- *		There are two sorts of start transitions. First is the list of
- *	defined start rules {A}. Second is the condition if we are at the start
- *	of the line or not.
+ *		where AA, BB and CC can be in any state true/false.
  *
- *		Behind each transition we then note the transitions forward only to
- *	those states that are permitted by that transition. So, for example, if
- *	we have the following rules:
+ *	As it turns out this cannot be easily handled by building the appropriate
+ *	DFA state machine, unless we are willing to handle all 8 cases. That's
+ *	because we cannot know apriori when we're starting the state transitions
+ *	if we have something like:
  *
- *		A: ^...
- *		B: {R}...
- *		C: ...
- *		D: ...
+ *	<AA>[Mm]agic
+ *	<BB>magic
+ *	<CC>Magic
+ *	[Mm]agic
  *
- *		Then we need to create initial NFA transitions representing the
- *	transition through ^ and through {R}.
+ *	The problem being that a set of rules may have multiple possible resulting
+ *	states, but only one reulting state is valid once we've parsed that
+ *	combination of letters.
  *
- *		The DFA transition rules must then be able to differentiate between
- *	transitioning through ^ and not ^, {R} and not {R}. These transition rules
- *	should be handled differently from rules which read characters from the
- *	input stream.
+ *	And ultimately the start state determines which state we find in the
+ *	DFA. Meaning the original top case is identical to:
  *
- *	QUESTION: Do we need to track in each NFA constructed the list of valid
- *	states that this NFA operates in? Otherwise, the DFA process may collapse
- *	the rules:
+ *	magic				{ if AA then first, if BB then second, if CC then thrid }
  *
- *		{A}[A-C]+
- *		[A-C]+
+ *	and it may make more sense to handle it in this way: for the final result
+ *	state to drop into a piece of code to determine which is the state we're
+ *	to handle.
  *
- *	since once we move beyond the initial conditional of the {A}, the two
- *	rules look identical. This may also imply we need to track the start
- *	set for the DFA rules being constructed as well.
+ *	----
  *
- *	NOTE: We may need to include a mask to indicate if a DFA can be taken if
- *	start conditional is true, false, or either. This is because the set of
- *	start rules change for two states A and B if A is true, B is true or both
- *	are true. And that implies a new data structure OCStartSet which tracks
- *	all of these possible combinations.
+ *	Handling ^
  *
- *	It also implies that transition states in the DFA may need to be picked
- *	depending on the current state and not just the letter read. (This is
- *	because parsing the two states:
+ *	The problem with our current code is that:
  *
- *		{A}"[^"]*"
- *		"(\\.|[^\\"])*"
+ *	^[A-Z]+
+ *	[A-Z]+
  *
- *	will diverge with the character sequence "\" if condition A is true.
- *	(It is a legal match to the first rule but not a legal match with the
- *	second.) And that implies for each state in the DFA we need some sort
- *	of indicator if the start state must be validated against during parsing.
+ *	will **fail** and not parse the second rule if the first rule is not true.
+ *	Meaning right now it converts to:
  *
- *	NOTE: This raises an interesting problem: if we have a list of start
- *	states as a conditional, ideally the best thing to do is to allow the
- *	start state to permeate down while constructing the DFA in the same way
- *	we handle characters, but with multiple conditionals possibly being
- *	true. This creates the potential of complex AND/OR conditionals during
- *	construction.
+ *	[A-Z]*				{ if ^ then first }
  *
- *	I may need to add the start state object and experiment with how it
- *	is transformed during DFA conversion of an NFA state. That's because,
- *	for example,
+ *	and if ^ is not true, then the pattern [A-Z]* is ignored.
  *
- *		{A}^...
+ *	So there are two ways to handle it; either wrap it in the same sort of
+ *	conditional code as handled above, or create an extra transition that
+ *	can optionally happen if we are at the start of the line.
  *
- *	implies start conditions A AND ^ are both true. This also implies during
- *	DFA construction we have a second set of states, followed if
- *	(NOT A) OR (NOT ^).
+ *	So perhaps the right answer here is:
  *
- *	This gets more complicated if we have {A,B}^..., which implies
- *
- *		(A OR B) AND ^
- *
- *	and the fork is taken on
- *
- *		(NOT A AND NOT B) OR NOT ^
- *
- *	Because these are start states, I don't think they percolate down
- *	any farther than this. (And I wonder at the feasibility of joining
- *	disjointed states; I suspect that doesn't work.)
- *
- *	NOTE: It could be at the bottom of the stack we wind up generating
- *	a method which contains all the conditional compares to determine the
- *	start state in the final generated code. Despite this we do get a
- *	savings in the final size of the state machine. For example, if we have
- *	a rule:
- *
- *		{A}"[^"]*"
- *		"(\\.|[^\\"])*"
- *
- *	This implies in both state machines the collection of rules followed for
- *	any sequence not starting with a " will be the same.
- *
- *	(How do we guarantee this?)
+ *		(1) Replace DFA state with a list of states and conditions.
+ *		(2) Remove existing state flag material. (StateFlag, StateCond and
+ *	the like. Update StateActions to use a negative number if the rule
+ *	is actually a conditional, then use a switch statement to jump into code
+ *	which evaluates the conditional.
  */
+
 
 /*	OCLexNFATransition
  *

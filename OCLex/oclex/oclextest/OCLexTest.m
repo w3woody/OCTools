@@ -139,13 +139,13 @@ static uint16_t CharClass[256] = {
  */
 
 static uint16_t StateActions[263] = {
-     92,  83,   2,  35,  35,  35,  35,  35, 
+     92,  83,  93,  35,  35,  35,  35,  35, 
      35,  35,  35,  35,  35,  35,  35,  35, 
      35,  35,  35,  38,  38,  35,  91,  76, 
      91,  86,  85,  81,  80,  82,  84,  77, 
      87,  88,  71,  78,  66,  67,  68,  69, 
      70,  72,  73,  74,  75,  79,  89,  90, 
-     91,   0,   1,  50,  35,  35,  35,  35, 
+     91,   0,  94,  50,  35,  35,  35,  35, 
      35,  35,  35,  35,  10,  35,  35,  35, 
      35,  35,  35,  18,  35,  35,  35,  35, 
      35,  35,  35,  35,  35,  35,  35,  92, 
@@ -160,7 +160,7 @@ static uint16_t StateActions[263] = {
      35,  35,  35,  35,  36,  37,  37,  37, 
      37,  92,  40,  41,  92,  42,  42,  42, 
      42,  92,  39,  92,  41,  41,  41,  41, 
-     44,  92,  45,  46,   3,  35,   5,   6, 
+     44,  92,  45,  46,  95,  35,   5,   6, 
      35,  35,  35,  35,  12,  13,  35,  35, 
      17,  20,  35,  35,  35,  35,  35,  35, 
      35,  35,  35,  35,  35,  32,  35,  35, 
@@ -172,47 +172,6 @@ static uint16_t StateActions[263] = {
      35,  11,  14,  35,  22,  24,  25,  26, 
      27,  28,  35,  35,  35,  35,   9,  35, 
      29,  35,  35,   8,  21,  31,  33
-};
-
-/*  StateFlag
- *
- *      True if this state starts with ^ or ends with $. Used to
- *  screen rules in these cases.
- */
-
-static uint8_t StateFlag[92] = {
-      0,   1,   2,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0
-};
-
-/*  StateCond
- *
- *      Index of conditional flag (or 0 if unconditional).
- */
-
-static uint8_t StateCond[92] = {
-      0,   0,   1,   2,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0
 };
 
 /*  StateMachineIA, StateMachineJA, StateMachineA
@@ -2019,6 +1978,29 @@ static uint16_t StateMachineA[5756] = {
 
 
 /*
+/*  For conditional states this takes an end DFA state and
+ *  determines the proper end rule given the current start
+ *  conditionals.
+ */
+
+- (NSInteger)conditionalAction:(NSInteger)state
+{
+    switch (state) {
+        default:
+            return MAXACTIONS;
+        case 93:
+            if ([self atSOL] && ((1 & states) != 0)) return 2;
+            return 91;
+        case 94:
+            if ([self atEOL]) return 1;
+            return MAXACTIONS;
+        case 95:
+            if (((2 & states) != 0)) return 3;
+            return 35;
+    }
+}
+
+/*
  *	Lex interpreter. This runs the state machine until we find something
  */
 
@@ -2095,15 +2077,12 @@ static uint16_t StateMachineA[5756] = {
 			 */
 
 			uint16_t newAction = StateActions[state];
+			if (newAction > MAXACTIONS) {
+				newAction = [self conditionalAction:newAction];
+			}
 			if (newAction != MAXACTIONS) {
-				if (!(StateFlag[newAction] & 1) || [self atEOL]) {
-					if (!(StateFlag[newAction] & 2) || [self atSOL]) {
-						if ((StateCond[newAction] == 0) || (0 != (state & (1L << (StateCond[newAction]-1))))) {
-							action = newAction;			/* Note action */
-							[self mark];				/* Mark location for rewind */
-						}
-					}
-				}
+				action = newAction;
+				[self mark];
 			}
 		}
 

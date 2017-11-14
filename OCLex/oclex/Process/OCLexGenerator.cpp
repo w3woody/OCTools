@@ -507,16 +507,13 @@ static const char *GSource5 =
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\tuint16_t newAction = StateActions[state];\n"                       \
+	"\t\t\tif (newAction > MAXACTIONS) {\n"                                   \
+	"\t\t\t\tnewAction = [self conditionalAction:newAction];\n"               \
+	"\t\t\t}\n"                                                               \
 	"\t\t\tif (newAction != MAXACTIONS) {\n"                                  \
-	"\t\t\t\tif (!(StateFlag[newAction] & 1) || [self atEOL]) {\n"            \
-	"\t\t\t\t\tif (!(StateFlag[newAction] & 2) || [self atSOL]) {\n"          \
-	"\t\t\t\t\t\tif ((StateCond[newAction] == 0) || (0 != (states & (1L << (StateCond[newAction]-1))))) {\n" \
-	"\t\t\t\t\t\t\taction = newAction;\t\t\t/* Note action */\n"              \
-	"\t\t\t\t\t\t\t[self mark];\t\t\t\t/* Mark location for rewind */\n"      \
-	"\t\t\t\t\t\t}\n"                                                         \
-	"\t\t\t\t\t}\n"                                                           \
-	"\t\t\t\t}\n"                                                             \
-	"\t\t\t}\n"																  \
+	"\t\t\t\taction = newAction;\n"                                           \
+	"\t\t\t\t[self mark];\n"                                                  \
+	"\t\t\t}\n"                                                               \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
 	"\t\t/*\n"                                                                \
@@ -662,12 +659,23 @@ void OCLexGenerator::WriteStates(FILE *f)
 	fprintf(f," *      Maps states to actions. MAXACTION if this is not a terminal\n");
 	fprintf(f," */\n\n");
 
+	// ### TODO: Rewrite StateActions rule to provide for jump into conditional
+	// table instead.
 	size_t alen = codeRules.size();
+	uint32_t swindex = (uint32_t)alen;
 	len = dfaStates.size();
 	uint32_t *scratch = (uint32_t *)malloc(len * sizeof(uint32_t));
 	for (i = 0; i < len; ++i) {
 		OCLexDFAState &state = dfaStates[i];
-		scratch[i] = state.end ? state.endRule : (uint32_t)alen;
+
+		if (state.endList.size() == 0) {
+			scratch[i] = (uint32_t)alen;
+		} else if ((state.endList.size() == 1) &&
+				   (state.endList[0].startState.unconditional())) {
+			scratch[i] = state.endList[0].endRule;
+		} else {
+			scratch[i] = ++swindex;
+		}
 	}
 
 	fprintf(f,"static uint16_t StateActions[%zu] = {\n",len);
@@ -679,51 +687,53 @@ void OCLexGenerator::WriteStates(FILE *f)
 	 *	End states
 	 */
 
-	fprintf(f,"/*  StateFlag\n");
-	fprintf(f," *\n");
-	fprintf(f," *      True if this state starts with ^ or ends with $. Used to\n");
-	fprintf(f," *  screen rules in these cases.\n");
-	fprintf(f," */\n\n");
+// ### INSERT conditionalAction:
 
-	// ### TODO: Rewrite the StateFlag logic as needed
-	alen = codeRules.size();
-	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
-	for (i = 0; i < alen; ++i) {
-		scratch[i] = codeRules[i].atEnd ? 1 : 0;
-		if (codeRules[i].atStart) scratch[i] |= 2;
-	}
-
-	fprintf(f,"static uint8_t StateFlag[%zu] = {\n",alen);
-	WriteArray(f,scratch,alen);
-	fprintf(f,"};\n\n");
-
-	fprintf(f,"/*  StateCond\n");
-	fprintf(f," *\n");
-	fprintf(f," *      Index of conditional flag (or 0 if unconditional).\n");
-	fprintf(f," */\n\n");
-
-	// ### TODO: Rewrite the StateCond logic as needed
-	alen = codeRules.size();
-	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
-	for (i = 0; i < alen; ++i) {
-		std::string rstate = codeRules[i].state;
-		uint32_t ix = 0;
-		if (!rstate.empty()) {
-			std::list<std::string>::iterator siter;
-			for (siter = ruleStates.begin(); siter != ruleStates.end(); ++siter) {
-				++ix;
-				if (*siter == rstate) {
-					break;
-				}
-			}
-		}
-		scratch[i] = ix;
-	}
-
-	fprintf(f,"static uint8_t StateCond[%zu] = {\n",alen);
-	WriteArray(f,scratch,alen);
-	fprintf(f,"};\n\n");
-	free(scratch);
+//	fprintf(f,"/*  StateFlag\n");
+//	fprintf(f," *\n");
+//	fprintf(f," *      True if this state starts with ^ or ends with $. Used to\n");
+//	fprintf(f," *  screen rules in these cases.\n");
+//	fprintf(f," */\n\n");
+//
+//	// ### TODO: Rewrite the StateFlag logic as needed
+//	alen = codeRules.size();
+//	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
+//	for (i = 0; i < alen; ++i) {
+//		scratch[i] = codeRules[i].atEnd ? 1 : 0;
+//		if (codeRules[i].atStart) scratch[i] |= 2;
+//	}
+//
+//	fprintf(f,"static uint8_t StateFlag[%zu] = {\n",alen);
+//	WriteArray(f,scratch,alen);
+//	fprintf(f,"};\n\n");
+//
+//	fprintf(f,"/*  StateCond\n");
+//	fprintf(f," *\n");
+//	fprintf(f," *      Index of conditional flag (or 0 if unconditional).\n");
+//	fprintf(f," */\n\n");
+//
+//	// ### TODO: Rewrite the StateCond logic as needed
+//	alen = codeRules.size();
+//	scratch = (uint32_t *)malloc(alen * sizeof(uint32_t));
+//	for (i = 0; i < alen; ++i) {
+//		std::string rstate = codeRules[i].state;
+//		uint32_t ix = 0;
+//		if (!rstate.empty()) {
+//			std::list<std::string>::iterator siter;
+//			for (siter = ruleStates.begin(); siter != ruleStates.end(); ++siter) {
+//				++ix;
+//				if (*siter == rstate) {
+//					break;
+//				}
+//			}
+//		}
+//		scratch[i] = ix;
+//	}
+//
+//	fprintf(f,"static uint8_t StateCond[%zu] = {\n",alen);
+//	WriteArray(f,scratch,alen);
+//	fprintf(f,"};\n\n");
+//	free(scratch);
 
 	/*
 	 *	Generate the DFA state transitions
@@ -807,6 +817,89 @@ void OCLexGenerator::WriteActions(FILE *f)
 
 /************************************************************************/
 /*																		*/
+/*	Write start states													*/
+/*																		*/
+/************************************************************************/
+
+void OCLexGenerator::WriteStarts(FILE *f)
+{
+	uint32_t index = (uint32_t)codeRules.size();
+
+	fprintf(f,"/*\n");
+	fprintf(f,"/*  For conditional states this takes an end DFA state and\n");
+	fprintf(f," *  determines the proper end rule given the current start\n");
+	fprintf(f," *  conditionals.\n");
+	fprintf(f," */\n\n");
+	fprintf(f,"- (NSInteger)conditionalAction:(NSInteger)state\n");
+	fprintf(f,"{\n");
+	fprintf(f,"    switch (state) {\n");
+	fprintf(f,"        default:\n");
+	fprintf(f,"            return MAXACTIONS;\n");
+
+	uint32_t i,len;
+	len = (uint32_t)dfaStates.size();
+	for (i = 0; i < len; ++i) {
+		OCLexDFAState &state = dfaStates[i];
+
+		if ((state.endList.size() > 1) ||
+			((state.endList.size() == 1) &&
+				!state.endList[0].startState.unconditional())) {
+
+			/*
+			 *	This has at least one conditional rule or multiple rules.
+			 *	Write them out
+			 */
+
+			bool atEnd = false;
+			fprintf(f,"        case %d:\n",++index);
+
+			uint32_t e,elen = (uint32_t)state.endList.size();
+			for (e = 0; e < elen; ++e) {
+				const OCLexDFAEnd &d = state.endList[e];
+
+				if (d.startState.unconditional()) {
+					fprintf(f,"            return %d;\n",d.endRule);
+					atEnd = true;
+					break;
+				}
+
+				bool flag = false;
+				fprintf(f,"            if (");
+				if (d.startState.startFlag()) {
+					fprintf(f,"[self atSOL]");
+					flag = true;
+				}
+				if (d.startState.endFlag()) {
+					if (flag) {
+						fprintf(f," && ");
+					} else {
+						flag = true;
+					}
+					fprintf(f,"[self atEOL]");
+				}
+				uint32_t m = d.startState.stateFlags(ruleStates);
+				if (m) {
+					if (flag) {
+						fprintf(f," && ");
+					}
+					fprintf(f,"((%d & states) != 0)",m);
+				}
+
+				fprintf(f,") return %d;\n",d.endRule);
+			}
+
+			if (!atEnd) {
+				fprintf(f,"            return MAXACTIONS;\n");
+			}
+		}
+	}
+
+	fprintf(f,"    }\n");
+	fprintf(f,"}\n\n");
+}
+
+/************************************************************************/
+/*																		*/
 /*	Parser Definitions													*/
 /*																		*/
 /************************************************************************/
@@ -865,6 +958,9 @@ void OCLexGenerator::WriteOCFile(const char *className, const char *outName, FIL
 
 	// Post class declarations. We embed in our class
 	fprintf(f,"%s\n\n",endCode.c_str());
+
+	// Conditional class table
+	WriteStarts(f);
 
 	// Lexer engine
 	fprintf(f,"%s",GSource5);

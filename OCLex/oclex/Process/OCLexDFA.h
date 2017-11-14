@@ -10,6 +10,7 @@
 #define OCLexDFA_h
 
 #include "OCLexNFA.h"
+#include "OCStartState.h"
 
 #include <stdio.h>
 
@@ -30,6 +31,18 @@ struct OCLexDFATransition
 	uint32_t	state;
 };
 
+/*	OCLexDFAEnd
+ *
+ *		Represents an end state. End states are listed in order in which
+ *	they appear along with the rules which indicate their appearance.
+ */
+
+struct OCLexDFAEnd
+{
+	uint32_t endRule;
+	OCStartState startState;
+};
+
 /*	OCLexDFAState
  *
  *		DFA state
@@ -38,13 +51,10 @@ struct OCLexDFATransition
 struct OCLexDFAState
 {
 	std::vector<OCLexDFATransition> list;
-	bool end;				// if this is an end state
-	uint32_t endRule;		// index to the code rule representing this state
+	std::vector<OCLexDFAEnd> endList;		// all potential end rules
 
 	OCLexDFAState()
 	{
-		end = false;
-		endRule = 0;
 	}
 };
 
@@ -73,16 +83,14 @@ class OCLexDFA: public OCLexNFA
 
 		struct CodeRule {
 			std::string code;
-			std::string state;
-			bool atStart;
-			bool atEnd;
+			OCStartState start;
 		};
 
 		/*
 		 *	Add rules with rule states and code
 		 */
 
-		void AddRuleSet(std::string regex, std::string code, std::string state, bool atStart, bool atEnd);
+		void AddRuleSet(std::string regex, std::string code, const OCStartState &start);
 
 		/*
 		 *	Generate DFA

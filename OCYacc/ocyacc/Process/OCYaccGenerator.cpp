@@ -817,7 +817,7 @@ void OCYaccGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 					fprintf(stderr,"Code: %s\n",rule.code.c_str());
 				}
 
-				// ### Insert (type *) if type is defined
+				// Insert (type *) if type is defined
 				std::string valueType = rule.types[value-1];
 				if (valueType.size() > 0) {
 					ret += "((";

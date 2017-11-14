@@ -21,7 +21,7 @@
  *		Add rule set
  */
 
-void OCLexDFA::AddRuleSet(std::string regex, std::string code, std::string ruleState, bool atStart, bool atEnd)
+void OCLexDFA::AddRuleSet(std::string regex, std::string code, const OCStartState &start)
 {
 	/*
 	 *	Get the current code segment and the index to the code rule
@@ -29,9 +29,7 @@ void OCLexDFA::AddRuleSet(std::string regex, std::string code, std::string ruleS
 
 	CodeRule c;
 	c.code = code;
-	c.atStart = atStart;
-	c.atEnd = atEnd;
-	c.state = ruleState;
+	c.start = start;
 
 	uint32_t ruleIndex = (uint32_t)codeRules.size();
 	codeRules.push_back(c);
@@ -39,12 +37,6 @@ void OCLexDFA::AddRuleSet(std::string regex, std::string code, std::string ruleS
 	/*
 	 *	Generate the NFA for this regular expression
 	 */
-
-// ### TODO:
-//
-//	See notes in OCLexNFA.
-//
-//	We may wish to alter how we handle this so as to handle start conditions.
 
 	OCLexNFAReturn ret = AddRule(regex.c_str());
 
@@ -205,8 +197,11 @@ void OCLexDFA::SplitCharSet(std::vector<OCCharSet> &set)
 
 void OCLexDFA::FindEndRule(OCLexDFAState &state, const OCIntegerSet &set)
 {
-	bool found = false;
-	uint32_t ruleIndex = 0;
+	std::vector<OCLexDFAEnd> endList;
+
+	/*
+	 *	Search for all potential end rules
+	 */
 
 	size_t i,len = set.Size();
 	for (i = 0; i < len; ++i) {
@@ -214,21 +209,36 @@ void OCLexDFA::FindEndRule(OCLexDFAState &state, const OCIntegerSet &set)
 
 		const OCLexNFAState &s = states[nfaState];
 		if (s.end) {
-			if (!found) {
-				ruleIndex = s.endRule;
-				found = true;
-			} else {
-				if (ruleIndex > s.endRule) {
-					ruleIndex = s.endRule;
-				}
+			OCStartState start = codeRules[s.endRule].start;
+
+			OCLexDFAEnd erule;
+			erule.endRule = s.endRule;
+			erule.startState = start;
+
+			endList.push_back(erule);
+		}
+	}
+
+	/*
+	 *	sort, compact, truncate
+	 */
+
+	std::sort(endList.begin(),endList.end(),[](const OCLexDFAEnd &a, const OCLexDFAEnd &b) {
+		return b.endRule > a.endRule;
+	});
+
+	len = endList.size();
+	if (len != 0) {
+		for (i = 0; i < len-1; ++i) {
+			if (endList[i].startState.unconditional()) {
+				// Delete all past this
+				endList.erase(endList.begin()+i+1,endList.end());
+				break;
 			}
 		}
 	}
 
-	if (found) {
-		state.end = true;
-		state.endRule = ruleIndex;
-	}
+	state.endList = endList;
 }
 
 /*	OCLexDFA::GenerateDFA
@@ -255,13 +265,6 @@ bool OCLexDFA::GenerateDFA()
 	std::list<OCIntegerSet> stateQueue;
 
 	/*
-	 *	### TODO:
-	 *
-	 *		Conditional start state table? See TODO on OCLexNFA.h for
-	 *	discussion
-	 */
-
-	/*
 	 *	Start: construct the set of start states that represent our start.
 	 *	This is the list of start states we accumulated as we were building
 	 *	the rules in AddRuleSet above
@@ -281,7 +284,7 @@ bool OCLexDFA::GenerateDFA()
 	FindEndRule(dfa,start);
 	dfaStates.push_back(dfa);
 
-	if (dfa.end) {
+	if (dfa.endList.size() != 0) {
 		fprintf(stderr,"Warning: Lex rules contains a potentially empty regular expression");
 	}
 

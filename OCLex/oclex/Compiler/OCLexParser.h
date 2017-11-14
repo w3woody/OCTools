@@ -18,6 +18,8 @@
 #include <utility>
 #include <string>
 
+#include "OCStartState.h"
+
 /************************************************************************/
 /*																		*/
 /*	Parser Definitions													*/
@@ -45,9 +47,8 @@ class OCLexParser
 		struct Rule {
 			std::string regex;
 			std::string code;
-			bool atStart;			// start with '^'
-			bool atEnd;				// end with '$'
-			std::string state;		// if non-empty, contains state
+
+			OCStartState start;		// Start state marker
 		};
 
 		// Declaration code
@@ -74,6 +75,8 @@ class OCLexParser
 	private:
 		bool ParseDeclarations(OCLexer &lex);
 		bool ParseRules(OCLexer &lex);
+
+		std::list<std::string> RuleStartState(std::string &r, OCLexer &lex);
 };
 
 
