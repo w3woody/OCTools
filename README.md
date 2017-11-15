@@ -92,6 +92,7 @@ For **OCLex** and **OCYacc**, the build rule uses the built-in lex and yacc sour
     
     Output Files:
         $(INPUT_FILE_BASE).m
+        $(INPUT_FILE_BASE).h
 
 For OCYacc:
 
@@ -102,6 +103,7 @@ For OCYacc:
     
     Output Files:
         $(INPUT_FILE_BASE).m
+        $(INPUT_FILE_BASE).h
 
 After this is done, yacc and lex files will be compiled to .h and .m files of the same name.
 
