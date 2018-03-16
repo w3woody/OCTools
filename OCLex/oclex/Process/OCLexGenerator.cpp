@@ -402,7 +402,7 @@ static const char *GSource4 =
 	" *\tunrolled\n"                                                          \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (uint16_t)stateForClass:(uint16_t)charClass state:(uint16)state\n"     \
+	"- (uint16_t)stateForClass:(uint16_t)charClass state:(uint16_t)state\n"   \
 	"{\n"                                                                     \
 	"\tsize_t min,max,mid;\n"                                                 \
 	"\n"                                                                      \
