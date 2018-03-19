@@ -665,6 +665,7 @@ static const char *GSource7 = // 11
 	"\n"                                                                      \
 	"\t\t\t[self errorWithCode:ERROR_SYNTAX];\n"                              \
 	"\t\t\ta = [self.lex lex];\n"                                             \
+	"\t\t\tif (a == -1) return false;\n"                                      \
 	"\n"                                                                      \
 	"\t\t} else if (action >= 0) {\n"                                         \
 	"\t\t\t/*\n"                                                              \
