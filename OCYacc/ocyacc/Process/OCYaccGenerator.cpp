@@ -1114,12 +1114,12 @@ void OCYaccGenerator::WriteOCHeader(const char *classname, const char *outputNam
 	// Yacc constants
 	std::vector<OCYaccLR1::TokenConstant>::const_iterator tokIter;
 	for (tokIter = state.tokens.cbegin(); tokIter != state.tokens.cend(); ++tokIter) {
-		fprintf(f,"#define %-45s 0x%08x",tokIter->token.c_str(),tokIter->value);
-		if (!tokIter->used) {
-			fprintf(f,"   /* Unused */\n");
-		} else {
-			fprintf(f,"\n");
-		}
+		fprintf(f,"#define %-45s 0x%08x\n",tokIter->token.c_str(),tokIter->value);
+//		if (!tokIter->used) {
+//			fprintf(f,"   /* Unused */\n");
+//		} else {
+//			fprintf(f,"\n");
+//		}
 	}
 
 	// Bulk of declarations

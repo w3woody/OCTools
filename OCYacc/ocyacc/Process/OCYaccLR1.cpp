@@ -408,6 +408,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 		tc.value = index;
 		tokens.push_back(tc);
 		grammarMap[tc.token] = index;
+		tokenMap[index] = tc.token;
 		++index;
 	}
 

@@ -5,38 +5,31 @@
  */
 
 %{
-#import "ExpressionNode.h"
-#import "ValueNode.h"
-#import "FunctionNode.h"
-#import "UnaryNode.h"
-#import "BinaryNode.h"
-#import "ConditionalNode.h"
-#import "TypeNameNode.h"
-#import "TypecastNode.h"
-#import "InitDeclarationNode.h"
-#import "StatementNode.h"
-#import "DeclarationNode.h"
-#import "SimpleStatement.h"
-#import "ExpressionStatement.h"
-#import "LabelStatement.h"
-#import "CaseStatement.h"
 %}
+
+/*
+ *	Class declarations
+ *
+ *		SymbolPool is used during parsing to track which variables have been
+ *	defined, so we can determine if something is undefined, or if it is
+ *	a duplicate definition. (We structure the reduce for our compound statement,
+ *	structure and class definitions in order to support the push/pop scope in
+ *	the correct order.)
+ */
 
 /*
  *	Token declarations
  */
 
-%token <NSString> IDENTIFIER CONSTANT STRING_LITERAL INTEGER_CONSTANT
+%token <NSString> IDENTIFIER REAL_CONSTANT STRING_LITERAL CHAR_LITERAL
+		INTEGER_CONSTANT TYPE_NAME
 
-%token SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
-%token XOR_ASSIGN OR_ASSIGN TYPE_NAME
+%token XOR_ASSIGN OR_ASSIGN TYPE_NAME SIZEOF
 
-%token TYPEDEF EXTERN STATIC AUTO REGISTER
-%token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID STRING
-%token STRUCT UNION ENUM ELLIPSIS
+%token BYTE SHORT INT LONG UNSIGNED FLOAT DOUBLE VOID STRUCT CLASS ABSTRACT
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO GOSUB CONTINUE BREAK RETURN
 
@@ -72,32 +65,13 @@
 %left IFSTATEMENT
 %left ELSE
 
-/*
- *	Statement values
- */
-
-%type <ExpressionNode> primary_expression postfix_expression
-		unary_expression cast_expression binary_expression
-		conditional_expression assignment_expression expression
-		constant_expression
-
-%type <NSMutableArray<ExpressionNode *>> argument_expression_list
-
-%type <TypeNameNode> type_name
-
-%type <InitDeclarationNode> init_declarator
-%type <NSMutableArray<InitDeclarationNode *>> init_declarator_list
-%type <DeclarationNode> declaration
-
-%type <StatementNode> statement expression_statement labeled_statement
-		selection_statement iteration_statement jump_statement
-		switch_label
+%nonassoc GOSUB
 
 /*
  *	Start: statements list
  */
 
-%start statements
+%start translation_unit
 
 %%
 
@@ -113,192 +87,71 @@
 
 primary_expression
 	: IDENTIFIER
-			{
-				$$ = [[ValueNode alloc] initWithIdentifier:$1];
-			}
-	| CONSTANT
-			{
-				$$ = [[ValueNode alloc] initWithConstant:$1];
-			}
+	| REAL_CONSTANT
 	| INTEGER_CONSTANT
-			{
-				$$ = [[ValueNode alloc] initWithIntegerConstant:$1];
-			}
+	| CHAR_LITERAL
 	| STRING_LITERAL
-			{
-				$$ = [[ValueNode alloc] initWithStringLiteral:$1];
-			}
 	| '(' expression ')'
-			{
-				$$ = $2;
-			}
 	;
 
 postfix_expression
 	: primary_expression
-			{
-				$$ = $1;
-			}
-	| IDENTIFIER '(' ')'
-			{
-				$$ = [[FunctionNode alloc] initWithFunction:$1 expression:nil];
-			}
-	| IDENTIFIER '(' argument_expression_list ')'
-			{
-				$$ = [[FunctionNode alloc] initWithFunction:$1 expression:$3];
-			}
+	| postfix_expression '[' expression ']'
+	| postfix_expression '(' ')'
+	| postfix_expression '(' argument_expression_list ')'
+	| postfix_expression '.' IDENTIFIER
+	| postfix_expression PTR_OP IDENTIFIER
 	| postfix_expression INC_OP
-			{
-				$$ = [[UnaryNode alloc] initWithUnaryOp:OP_POSTINC expression:$1];
-			}
 	| postfix_expression DEC_OP
-			{
-				$$ = [[UnaryNode alloc] initWithUnaryOp:OP_POSTDEC expression:$1];
-			}
 	;
 
 argument_expression_list
 	: assignment_expression
-			{
-				$$ = [NSMutableArray arrayWithObject:$1];
-			}
 	| argument_expression_list ',' assignment_expression
-			{
-				$$ = $1;
-				[$$ addObject:$3];
-			}
 	;
 
 unary_expression
 	: postfix_expression
-			{
-				$$ = $1;
-			}
 	| INC_OP unary_expression
-			{
-				$$ = [[UnaryNode alloc] initWithUnaryOp:OP_PREINC expression:$2];
-			}
 	| DEC_OP unary_expression
-			{
-				$$ = [[UnaryNode alloc] initWithUnaryOp:OP_PREDEC expression:$2];
-			}
 	| '+' cast_expression
-			{
-				$$ = [[UnaryNode alloc] initWithUnaryOp:'+' expression:$2];
-			}
 	| '-' cast_expression
-			{
-				$$ = [[UnaryNode alloc] initWithUnaryOp:'-' expression:$2];
-			}
 	| '~' cast_expression
-			{
-				$$ = [[UnaryNode alloc] initWithUnaryOp:'~' expression:$2];
-			}
 	| '!' cast_expression
-			{
-				$$ = [[UnaryNode alloc] initWithUnaryOp:'!' expression:$2];
-			}
+	| SIZEOF unary_expression
+	| SIZEOF '(' abstract_declaration ')'
 	;
 
 cast_expression
 	: unary_expression
-			{
-				$$ = $1;
-			}
-	| '(' type_name ')' cast_expression
-			{
-				$$ = [[TypecastNode alloc] initWithType:$2 expression:$4];
-			}
+	| '(' abstract_declaration ')' cast_expression
 	;
 
 binary_expression
 	: cast_expression
-			{
-				$$ = $1;
-			}
 	| binary_expression '*' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'*' left:$1 right:$3];
-			}
 	| binary_expression '/' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'/' left:$1 right:$3];
-			}
 	| binary_expression '%' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'%' left:$1 right:$3];
-			}
 	| binary_expression '+' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'+' left:$1 right:$3];
-			}
 	| binary_expression '-' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'-' left:$1 right:$3];
-			}
 	| binary_expression LEFT_OP binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_LEFTSHIFT left:$1 right:$3];
-			}
 	| binary_expression RIGHT_OP binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_RIGHTSHIFT left:$1 right:$3];
-			}
 	| binary_expression '<' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'<' left:$1 right:$3];
-			}
 	| binary_expression '>' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'>' left:$1 right:$3];
-			}
 	| binary_expression LE_OP binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_LEQ left:$1 right:$3];
-			}
 	| binary_expression GE_OP binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_GEQ left:$1 right:$3];
-			}
 	| binary_expression EQ_OP binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_EQ left:$1 right:$3];
-			}
 	| binary_expression NE_OP binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_NEQ left:$1 right:$3];
-			}
 	| binary_expression '&' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'&' left:$1 right:$3];
-			}
 	| binary_expression '^' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'^' left:$1 right:$3];
-			}
 	| binary_expression '|' binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:'|' left:$1 right:$3];
-			}
 	| binary_expression AND_OP binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_AND left:$1 right:$3];
-			}
 	| binary_expression OR_OP binary_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_OR left:$1 right:$3];
-			}
 	;
 
 conditional_expression
 	: binary_expression
-			{
-				$$ = $1;
-			}
 	| binary_expression '?' expression ':' conditional_expression
-			{
-				$$ = [[ConditionalNode alloc] initWithConditional:$1 left:$3 right:$5];
-			}
 	;
 
 /*
@@ -307,53 +160,17 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression
-			{
-				$$ = $1;
-			}
 	| unary_expression '=' assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_ASSIGN left:$1 right:$3];
-			}
 	| unary_expression MUL_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_MULEQ left:$1 right:$3];
-			}
 	| unary_expression DIV_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_DIVEQ left:$1 right:$3];
-			}
 	| unary_expression MOD_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_MODEQ left:$1 right:$3];
-			}
 	| unary_expression ADD_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_ADDEQ left:$1 right:$3];
-			}
 	| unary_expression SUB_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_SUBEQ left:$1 right:$3];
-			}
 	| unary_expression LEFT_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_LEFTEQ left:$1 right:$3];
-			}
 	| unary_expression RIGHT_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_RIGHTEQ left:$1 right:$3];
-			}
 	| unary_expression AND_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_ANDEQ left:$1 right:$3];
-			}
 	| unary_expression XOR_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_XOREQ left:$1 right:$3];
-			}
 	| unary_expression OR_ASSIGN assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:OP_OREQ left:$1 right:$3];
-			}
 	;
 
 /*
@@ -362,13 +179,7 @@ assignment_expression
 
 expression
 	: assignment_expression
-			{
-				$$ = $1;
-			}
 	| expression ',' assignment_expression
-			{
-				$$ = [[BinaryNode alloc] initWithBinaryOp:',' left:$1 right:$3];
-			}
 	;
 
 /*
@@ -383,80 +194,116 @@ expression
 
 constant_expression
 	: conditional_expression
-			{
-				$$ = $1;
-			}
+	;
+
+/*
+ *	Abstract declarations
+ */
+
+abstract_declaration
+	: type_part abstract_declarator
+	| type_part
+	;
+
+abstract_declarator
+	: '*'
+	| '*' abstract_declarator
+	| direct_abstract_declarator
+	;
+
+direct_abstract_declarator
+	: '(' abstract_declarator ')'
+	| '[' ']'
+	| '[' constant_expression ']'
+	| direct_abstract_declarator '[' ']'
+	| direct_abstract_declarator '[' constant_expression ']'
+	;
+
+/*
+ *	Structure declarations. Note we separate out structure_name as a separate
+ *	rule to force a reduction prior to parsing the contents of the structure
+ *	list. This allows us to push the variable pool state with the appropriate
+ *	scope.
+ */
+
+structure_name
+	: STRUCT IDENTIFIER
+	;
+
+structure_declaration
+	: structure_name '{' structure_declaration_list '}'
+	;
+
+structure_declaration_list
+	: structure_item_declaration
+	| structure_declaration_list structure_item_declaration
+	;
+
+structure_item_declaration
+	: type_part struct_item_declaration_list ';'
+	;
+
+struct_item_declaration_list
+	: declarator
+	| struct_item_declaration_list ',' declarator
 	;
 
 /*
  *	Declaration specifiers.
  *
- *		Unlike C we allow declarations inside a block of statements. This
- *	is a subset of declarations allowed in C. Note our langauge does not
- *	permit anything but basic types, such as integers, floats and strings.
+ *		Use simplified declarations. See documentation for overview
  */
 
-type_name
-	: CHAR
-		{
-			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_CHAR];
-		}
-	| SHORT
-		{
-			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_SHORT];
-		}
-	| INT
-		{
-			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_INT];
-		}
-	| LONG
-		{
-			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_LONG];
-		}
-	| FLOAT
-		{
-			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_FLOAT];
-		}
-	| DOUBLE
-		{
-			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_DOUBLE];
-		}
-	| STRING
-		{
-			$$ = [[TypeNameNode alloc] initWithType:TYPENAME_STRING];
-		}
+declarator
+	: '*' declarator
+	| direct_declarator
+	;
+
+direct_declarator
+	: IDENTIFIER
+	| '(' declarator ')'
+	| direct_declarator '[' constant_expression ']'
+	| direct_declarator '[' ']'
+	;
+
+initializer_list
+	: initializer_list ',' initializer
+	| initializer
+	;
+
+initializer
+	: assignment_expression
+	| '{' initializer_list '}'
 	;
 
 init_declarator
-	: IDENTIFIER
-		{
-			$$ = [[InitDeclarationNode alloc] initWithName:$1 expression:nil];
-		}
-	| IDENTIFIER '=' assignment_expression
-		{
-			$$ = [[InitDeclarationNode alloc] initWithName:$1 expression:$3];
-		}
+	: declarator
+	| declarator '=' initializer
 	;
 
 init_declarator_list
-	: init_declarator
-		{
-			$$ = [NSMutableArray arrayWithObject:$1];
-		}
-	| init_declarator_list ',' init_declarator
-		{
-			$$ = $1;
-			[$1 addObject:$3];
-		}
+	: init_declarator_list ',' init_declarator
+	| init_declarator
+	;
+
+type_part
+	: UNSIGNED BYTE
+	| BYTE
+	| UNSIGNED SHORT
+	| SHORT
+	| UNSIGNED INT
+	| INT
+	| UNSIGNED LONG
+	| LONG
+	| FLOAT
+	| DOUBLE
+	| VOID
+	| TYPE_NAME					// name of structure or class
 	;
 
 declaration
-	: type_name init_declarator_list ';'
-		{
-			$$ = [[DeclarationNode alloc] initWithType:$1 declarations:$2];
-		}
+	: type_part init_declarator_list ';'
 	;
-
 
 /*
  *	Language specification.
@@ -471,38 +318,16 @@ declaration
 
 expression_statement
 	: expression ';'
-		{
-			$$ = [[ExpressionStatement alloc] initWithExpression:$1];
-		}
 	| ';'
-		{
-			$$ = [[ExpressionStatement alloc] initWithExpression:nil];
-		}
 	;
 
 labeled_statement				// Note: we call out case/default elsewhere
 	: IDENTIFIER ':'
-		{
-			$$ = [[LabelStatement alloc] initWithType:TYPE_LABEL label:$1];
-		}
-	;
-
-switch_label
-	: CASE constant_expression ':'
-		{
-			$$ = [[CaseStatement alloc] initWithExpression:$2];
-			if (!$2.isValid) {
-				[self errorWithFormat:@"case statement constant must be an integer"];
-			}
-		}
-	| DEFAULT ':'
-		{
-			$$ = [[SimpleStatement alloc] initWithType:TYPE_DEFAULT];
-		}
 	;
 
 switch_statement
-	: switch_label
+	: CASE constant_expression ':'
+	| DEFAULT ':'
 	| statement
 	;
 
@@ -514,7 +339,7 @@ switch_statements
 selection_statement
 	: IF '(' expression ')' statement %prec IFSTATEMENT
 	| IF '(' expression ')' statement ELSE statement
-	| SWITCH '(' expression ')' '{' switch_label switch_statements '}'
+	| SWITCH '(' expression ')' '{' switch_statements '}'
 	;
 
 iteration_statement
@@ -526,52 +351,29 @@ iteration_statement
 
 jump_statement
 	: GOTO IDENTIFIER ';'
-		{
-			$$ = [[LabelStatement alloc] initWithType:TYPE_GOTO label:$2];
-		}
 	| GOSUB IDENTIFIER ';'		// new gosub; return resumes execution
-		{
-			$$ = [[LabelStatement alloc] initWithType:TYPE_GOSUB label:$2];
-		}
 	| CONTINUE ';'
-		{
-			$$ = [[SimpleStatement alloc] initWithType:TYPE_CONTINUE];
-		}
 	| BREAK ';'
-		{
-			$$ = [[SimpleStatement alloc] initWithType:TYPE_BREAK];
-		}
 	| RETURN ';'
-		{
-			$$ = [[SimpleStatement alloc] initWithType:TYPE_RETURN];
-		}
 	;
 
 statement
 	: declaration				// allow embedded declarations
-		{
-			$$ = $1;
-		}
+	| compound_statement		// compound statements
 	| labeled_statement
-		{
-			$$ = $1;
-		}
 	| expression_statement
-		{
-			$$ = $1;
-		}
 	| selection_statement
-		{
-			$$ = $1;
-		}
 	| iteration_statement
-		{
-			$$ = $1;
-		}
 	| jump_statement
-		{
-			$$ = $1;
-		}
+	;
+
+compound_start			// Force push of state for compound statements
+	: '{'
+	;
+
+compound_statement
+	: '{' '}'
+	| compound_start statement_list '}'		// Modification: inline declarations
 	;
 
 
@@ -580,7 +382,17 @@ statement
  *	all to pre-defined built-ins beyond the scope of this grammar.)
  */
 
-statements : statements statement
-		   | statement
-		   ;
+statement_list
+	: statement_list statement
+	| statement
+	;
 
+/*
+ *	The translation unit. Our language is flat; we are simply a list of 
+ *	statements without founctions. (Our function calls are to predefined
+ *	built-ins beyond the scope of this parser)
+ */
+
+translation_unit
+	: statement_list
+	;
