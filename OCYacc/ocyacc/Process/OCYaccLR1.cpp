@@ -205,6 +205,16 @@ uint32_t OCYaccLR1::TokenForChar(std::string str)
 	}
 }
 
+/*
+ *	For sorting our tokens
+ */
+
+bool TokenSortPredicate(const OCYaccLR1::TokenConstant &d1, const OCYaccLR1::TokenConstant &d2)
+{
+	return d1.token < d2.token;
+}
+
+
 /*	OCYaccLR1::BuildGrammar
  *
  *		Construct the grammar state machine and eventually build the
@@ -223,6 +233,11 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 
 	// Undefined terminals
 	std::set<std::string> undefined;
+
+	// map of found tokens. We stash these here so we can sort them in
+	// order.
+	std::vector<TokenConstant> tokenConstants;
+	std::set<std::string> found;
 
 	/*
 	 *	Reset
@@ -279,6 +294,9 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	tokenMap[index] = "error";
 	grammarMap["error"] = index++;
 
+	found.insert("error");
+	found.insert("$end");		// found is our new grammarMap; indicates processed
+
 	/*
 	 *	Populate the public facing values. We do that this way in case
 	 *	our algorithm changes and we have different values here.
@@ -318,7 +336,10 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 					 *	token. If not, add to our map.
 					 */
 
-					if (grammarMap.end() == grammarMap.find(*i)) {
+					if (found.find(*i) == found.end()) {
+						found.insert(*i);
+
+//					if (grammarMap.end() == grammarMap.find(*i)) {
 						if ((*i)[0] == '\'') {
 							/* A character is its unicode value */
 							/* We store in our map but not in our array */
@@ -326,18 +347,12 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 							tokenMap[tindex] = *i;
 							grammarMap[*i] = tindex;
 						} else {
-							/* We create a new entry for our token */
-							tokenMap[index] = *i;
-							grammarMap[*i] = index;
-
-							/* Insert token information */
+							/* Simply add to our found list for later processing */
 							TokenConstant tc;
 							tc.used = true;
 							tc.value = index;
 							tc.token = *i;
-							tokens.push_back(tc);
-
-							++index;
+							tokenConstants.push_back(tc);
 
 							/*
 							 *	Determine if this item was defined in our lexer.
@@ -368,7 +383,7 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 	for (liter = p.tokens.begin(); liter != p.tokens.end(); ++liter) {
 		if ((*liter)[0] == '\'') continue;	// skip characters
 
-		if (grammarMap.find(*liter) == grammarMap.end()) {
+		if (found.find(*liter) == found.end()) {
 			// We have a token that was not defined
 			grammarMap[*liter] = index;
 
@@ -376,10 +391,24 @@ bool OCYaccLR1::BuildGrammar(OCYaccParser &p)
 			tc.used = false;
 			tc.value = index;
 			tc.token = *liter;
-			tokens.push_back(tc);
-
-			++index;
+			tokenConstants.push_back(tc);
 		}
+	}
+
+	/*
+	 *	Now sort our token constants into alphabetical order. This will
+	 *	have the nice property that if we use the same tokens in our
+	 *	grammar, we will have the same values for the tokens in our grammar
+	 */
+
+	std::sort(tokenConstants.begin(),tokenConstants.end(),TokenSortPredicate);
+	std::vector<TokenConstant>::iterator iter;
+	for (iter = tokenConstants.begin(); iter != tokenConstants.end(); ++iter) {
+		TokenConstant &tc = *iter;
+		tc.value = index;
+		tokens.push_back(tc);
+		grammarMap[tc.token] = index;
+		++index;
 	}
 
 	maxToken = index;
