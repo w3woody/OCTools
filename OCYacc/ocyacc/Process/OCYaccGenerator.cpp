@@ -818,25 +818,58 @@ void OCYaccGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 					fprintf(stderr,"Code: %s\n",rule.code.c_str());
 				}
 
-				// Insert (type *) if type is defined
-				std::string valueType = rule.types[value-1];
-				if (valueType.size() > 0) {
-					ret += "((";
-					ret += valueType;
-					ret += " *)";
-					hasType = true;
-				} else {
-					fprintf(stderr,"Warning: Rule %s, $%zu has no type\n",rule.prodDebug.c_str(),value);
-				}
+				/*
+				 *	Determine if we have one of the special fields, _file, _line,
+				 *	_col. This allows us to extract the current token location of
+				 *	a symbol
+				 */
 
-				if (value == 1) {
-					ret += "(self.stack[pos].value)";
+				if (*ptr == '_') {
+					std::string param;
+					++ptr;
+					while (isalnum(*ptr)) {
+						param.push_back(*ptr++);
+					}
+
+					if (value == 1) {
+						ret += "(self.stack[pos].";
+					} else {
+						sprintf(buffer,"(self.stack[pos + %zu].",value-1);
+						ret += buffer;
+					}
+
+					if (param == "file") {
+						ret += "filename)";
+					} else if (param == "line") {
+						ret += "line)";
+					} else if (param == "col") {
+						ret += "column)";
+					} else {
+						ret += "state)";
+						fprintf(stderr,"Warning: Unknown synthetic type $%zu_%s\n",value,param.c_str());
+					}
+
 				} else {
-					sprintf(buffer,"(self.stack[pos + %zu].value)",value-1);
-					ret += buffer;
-				}
-				if (hasType) {
-					ret.push_back(')');
+					// Insert (type *) if type is defined
+					std::string valueType = rule.types[value-1];
+					if (valueType.size() > 0) {
+						ret += "((";
+						ret += valueType;
+						ret += " *)";
+						hasType = true;
+					} else {
+						fprintf(stderr,"Warning: Rule %s, $%zu has no type\n",rule.prodDebug.c_str(),value);
+					}
+
+					if (value == 1) {
+						ret += "(self.stack[pos].value)";
+					} else {
+						sprintf(buffer,"(self.stack[pos + %zu].value)",value-1);
+						ret += buffer;
+					}
+					if (hasType) {
+						ret.push_back(')');
+					}
 				}
 
 			} else {

@@ -87,6 +87,9 @@
 
 primary_expression
 	: IDENTIFIER
+		{
+			$$ = $1_file;
+		}
 	| REAL_CONSTANT
 	| INTEGER_CONSTANT
 	| CHAR_LITERAL
