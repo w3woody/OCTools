@@ -14,30 +14,46 @@
 #include "OCYaccGenerator.h"
 
 static const char *GHelp =
-	"ocyacc\n"                                                                 \
+	"ocyacc\n"                                                                \
 	"\n"                                                                      \
 	"    A parser generator for generating code in Objective-C to perform fast\n" \
-	"pattern matching on text. This tool takes an input grammar which is \n" \
+	"pattern matching on text. This tool takes an input grammar which is \n"  \
 	"similar to yacc or bison, but generates a re-entrant Objective-C class.\n" \
 	"\n"                                                                      \
-	"Usage: ocyacc [-h] [-o filename] [-c classname] inputfile\n"              \
+	"Usage: ocyacc [-h] [-l [oc|c++]] [-o filename] [-c classname] inputfile\n" \
 	"\n"                                                                      \
 	"-h  Prints this help file. This help file will also be printed if any illegal\n" \
-	"parameters are provided. \n"                                             \
+	"    parameters are provided. \n"                                         \
+	"\n"                                                                      \
+	"-l  Select language. Arguments are oc for Objective-C and c++ for C++. If\n" \
+	"    not provided, uses Objective-C as default.\n"                        \
 	"\n"                                                                      \
 	"-o  Uses the file name as the base name for the output files. (By default this \n" \
-	"uses the input file name as the base name for the output files.) \n"     \
+	"    uses the input file name as the base name for the output files.) \n" \
 	"\n"                                                                      \
 	"-c  Uses the specified class name for the generated class. (By default this \n" \
-	"uses the input file name as the class name.)\n"                          \
+	"    uses the input file name as the class name.)\n"                      \
 	"\n"                                                                      \
 	"This program takes an input file MyFile.y, and will generate two output files\n" \
 	"MyFile.m and MyFile.h, with the class MyFile which parses an input file, unless\n" \
-	"otherwise specified.\n"                            \
+	"otherwise specified.\n"                                                  \
 	"\n"                                                                      \
 	"For more details please visit http://github.com/w3woody/OCTools\n"       \
 	"\n"                                                                      \
-	"Copyright (C) 2017 William Woody and Glenview Software, all rights reserved.\n";
+	"Copyright (C) 2017, 2018 William Woody and Glenview Software, all rights \n" \
+	"reserved.\n";
+
+/************************************************************************/
+/*																		*/
+/*	Declarations														*/
+/*																		*/
+/************************************************************************/
+
+typedef enum LanguageEnum
+{
+	KLanguageOP,
+	KLanguageCPP
+} LanguageEnum;
 
 
 /************************************************************************/
@@ -50,6 +66,7 @@ static char GOutputFile[FILENAME_MAX];
 static char GOutputFileName[FILENAME_MAX];
 static char GInputFile[FILENAME_MAX];
 static char GClassName[FILENAME_MAX];
+static LanguageEnum GLanguage = KLanguageOP;
 
 /*	PrintHelp
  *
@@ -104,6 +121,18 @@ static void ParseArgs(int argc, const char *argv[])
 		if (*ptr == '-') {
 			if (!strcmp(ptr,"-h")) {
 				PrintHelp();
+			} else if (!strcmp(ptr,"-l")) {
+				if (i >= argc) {
+					PrintError(argc,argv);
+				}
+				ptr = argv[i++];
+				if (!strcmp(ptr,"oc")) {
+					GLanguage = KLanguageOP;
+				} else if (!strcmp(ptr,"cpp")) {
+					GLanguage = KLanguageCPP;
+				} else {
+					PrintError(argc,argv);
+				}
 			} else if (!strcmp(ptr,"-c")) {
 				if (i >= argc) {
 					PrintError(argc,argv);

@@ -169,6 +169,64 @@ Defines the code that is added to the class declaration for the generated class 
 
 Defines the code inserted into a private interface declared as part of the class declaration of your class in the generated .m file.
 
+**%init** { ... }
+
+Defines code that is inserted into the initializer of the generated lex class. This can be used to initialize any internal global or local state in your code.
+
+###### Embedded Code Example
+
+The following may help to visualize where each of these headers are placed. For Objective C, we generate a header and code. There are up to six different chunks of code which are copied into the class definition; these are labeled in red below.
+
+Your embedded code is inserted as follows:
+
+<pre>
+ /* MyLex.h */
+ #import &lt;Foundation/Foundation.h&gt;
+ <font style="color:red">%header</font>
+ 
+     <i>...</i>
+ 
+ @interface MyLex : NSObject &lt;OCLexInput&gt;
+     <i>...</i>
+ - (NSInteger)lex;
+ <font style="color:red">%global</font>
+ @end
+</pre>
+
+For our source kit:
+
+<pre>
+ /* MyLex.h */
+ #import &lt;Foundation/Foundation.h&gt;
+ <font style="color:red">%{..%}</font>
+ 
+     <i>...</i>
+ 
+ @interface MyLex ()
+     <i>... private definitions ...</i>
+     <font style="color:red">%local</font>
+ @end
+ 
+ @implementation MyLex
+ - (instancetype)initWithStream(id<OCLexInput>)file
+ {
+ 	if (nil != (self = [super init])) {
+ 	    <i>...</i>
+        <font style="color:red">%init</font>
+ 	}
+ 	return self;
+ }
+     <i>...internal lexer code...</i>
+ 
+ <font style="color:red">code_block from bottom of lex file</font>
+
+ - (NSInteger)lex
+ {
+ ...
+ }
+ @end
+</pre>
+
 #### Rules
 
 Production rules in OCYacc are declared similarly as in Yacc.

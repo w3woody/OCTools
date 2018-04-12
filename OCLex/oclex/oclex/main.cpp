@@ -10,6 +10,7 @@
 #include <string.h>
 #include "OCLexParser.h"
 #include "OCLexGenerator.h"
+#include "OCLexCPPGenerator.h"
 
 static const char *GHelp =
 	"oclex\n"                                                                 \
@@ -18,16 +19,19 @@ static const char *GHelp =
 	"fast pattern matching on text. This tool takes an input grammar which is \n" \
 	"similar to lex or flex, but generates a re-entrant Objective-C class.\n" \
 	"\n"                                                                      \
-	"Usage: oclex [-h] [-o filename] [-c classname] inputfile\n"              \
+	"Usage: oclex [-h] [-l [oc|c++]] [-o filename] [-c classname] inputfile\n" \
 	"\n"                                                                      \
 	"-h  Prints this help file. This help file will also be printed if any illegal\n" \
-	"parameters are provided. \n"                                             \
+	"    parameters are provided. \n"                                         \
+	"\n"                                                                      \
+	"-l  Select language. Arguments are oc for Objective-C and c++ for C++. If\n" \
+	"    not provided, uses Objective-C as default.\n"                        \
 	"\n"                                                                      \
 	"-o  Uses the file name as the base name for the output files. (By default this \n" \
-	"uses the input file name as the base name for the output files.) \n"     \
+	"    uses the input file name as the base name for the output files.) \n" \
 	"\n"                                                                      \
 	"-c  Uses the specified class name for the generated class. (By default this \n" \
-	"uses the input file name as the class name.)\n"                          \
+	"    uses the input file name as the class name.)\n"                      \
 	"\n"                                                                      \
 	"This program takes an input file MyFile.l, and will generate two output files\n" \
 	"MyFile.m and MyFile.h, with the class MyFile which performs lexical analysis on\n" \
@@ -35,8 +39,21 @@ static const char *GHelp =
 	"\n"                                                                      \
 	"For more details please visit http://github.com/w3woody/OCTools\n"       \
 	"\n"                                                                      \
-	"Copyright (C) 2017 William Woody and Glenview Software, all rights reserved.\n";
+	"Copyright (C) 2017, 2018 William Woody and Glenview Software, all rights \n" \
+	"reserved.\n";
 
+
+/************************************************************************/
+/*																		*/
+/*	Declarations														*/
+/*																		*/
+/************************************************************************/
+
+typedef enum LanguageEnum
+{
+	KLanguageOP,
+	KLanguageCPP
+} LanguageEnum;
 
 /************************************************************************/
 /*																		*/
@@ -48,6 +65,7 @@ static char GOutputFile[FILENAME_MAX];
 static char GOutputFileName[FILENAME_MAX];
 static char GInputFile[FILENAME_MAX];
 static char GClassName[FILENAME_MAX];
+static LanguageEnum GLanguage = KLanguageOP;
 
 /*	PrintHelp
  *
@@ -102,6 +120,18 @@ static void ParseArgs(int argc, const char *argv[])
 		if (*ptr == '-') {
 			if (!strcmp(ptr,"-h")) {
 				PrintHelp();
+			} else if (!strcmp(ptr,"-l")) {
+				if (i >= argc) {
+					PrintError(argc,argv);
+				}
+				ptr = argv[i++];
+				if (!strcmp(ptr,"oc")) {
+					GLanguage = KLanguageOP;
+				} else if (!strcmp(ptr,"cpp")) {
+					GLanguage = KLanguageCPP;
+				} else {
+					PrintError(argc,argv);
+				}
 			} else if (!strcmp(ptr,"-c")) {
 				if (i >= argc) {
 					PrintError(argc,argv);
@@ -224,50 +254,97 @@ int main(int argc, const char * argv[])
 	 *	Now construct and generate the output file
 	 */
 
-	OCLexGenerator generator(parser.definitions);
-	generator.declCode = parser.declCode;
-	generator.classGlobal = parser.classGlobal;
-	generator.classLocal = parser.classLocal;
-	generator.classInit = parser.classInit;
-	generator.classHeader = parser.classHeader;
-	generator.endCode = parser.endCode;
-	generator.ruleStates = parser.ruleStates;
+	if (GLanguage == KLanguageCPP) {
+		OCLexCPPGenerator generator(parser.definitions);
+		generator.declCode = parser.declCode;
+		generator.classGlobal = parser.classGlobal;
+		generator.classLocal = parser.classLocal;
+		generator.classInit = parser.classInit;
+		generator.classHeader = parser.classHeader;
+		generator.endCode = parser.endCode;
+		generator.ruleStates = parser.ruleStates;
 
-	// Add rules and generate NFA
-	std::list<OCLexParser::Rule>::iterator i;
+		// Add rules and generate NFA
+		std::list<OCLexParser::Rule>::iterator i;
 
-	// Add rules and rule states
-	for (i = parser.rules.begin(); i != parser.rules.end(); ++i) {
-		generator.AddRuleSet(i->regex, i->code, i->start);
+		// Add rules and rule states
+		for (i = parser.rules.begin(); i != parser.rules.end(); ++i) {
+			generator.AddRuleSet(i->regex, i->code, i->start);
+		}
+
+		// Generate DFA
+		if (!generator.GenerateDFA()) {
+			// Should never happen.
+			printf("A problem happened while generating the final state machine.\n");
+			return -1;
+		}
+
+		// Now write the final output files
+		strncpy(scratch,GOutputFile,sizeof(scratch)-1);
+		strncat(scratch,".h",sizeof(scratch) - strlen(scratch) - 1);
+		FILE *out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCHeader(GClassName, GOutputFileName, out);
+		fclose(out);
+
+		strncpy(scratch,GOutputFile,sizeof(scratch));
+		strncat(scratch,".cpp",sizeof(scratch) - strlen(scratch) - 1);
+		out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCFile(GClassName, GOutputFileName, out);
+		fclose(out);
+	} else {
+		OCLexGenerator generator(parser.definitions);
+		generator.declCode = parser.declCode;
+		generator.classGlobal = parser.classGlobal;
+		generator.classLocal = parser.classLocal;
+		generator.classInit = parser.classInit;
+		generator.classHeader = parser.classHeader;
+		generator.endCode = parser.endCode;
+		generator.ruleStates = parser.ruleStates;
+
+		// Add rules and generate NFA
+		std::list<OCLexParser::Rule>::iterator i;
+
+		// Add rules and rule states
+		for (i = parser.rules.begin(); i != parser.rules.end(); ++i) {
+			generator.AddRuleSet(i->regex, i->code, i->start);
+		}
+
+		// Generate DFA
+		if (!generator.GenerateDFA()) {
+			// Should never happen.
+			printf("A problem happened while generating the final state machine.\n");
+			return -1;
+		}
+
+		// Now write the final output files
+		strncpy(scratch,GOutputFile,sizeof(scratch)-1);
+		strncat(scratch,".h",sizeof(scratch) - strlen(scratch) - 1);
+		FILE *out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCHeader(GClassName, GOutputFileName, out);
+		fclose(out);
+
+		strncpy(scratch,GOutputFile,sizeof(scratch));
+		strncat(scratch,".m",sizeof(scratch) - strlen(scratch) - 1);
+		out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCFile(GClassName, GOutputFileName, out);
+		fclose(out);
 	}
-
-	// Generate DFA
-	if (!generator.GenerateDFA()) {
-		// Should never happen.
-		printf("A problem happened while generating the final state machine.\n");
-		return -1;
-	}
-
-	// Now write the final output files
-	strncpy(scratch,GOutputFile,sizeof(scratch)-1);
-	strncat(scratch,".h",sizeof(scratch) - strlen(scratch) - 1);
-	FILE *out = fopen(scratch,"w");
-	if (out == NULL) {
-		printf("Unable to write to file %s\n\n",scratch);
-		PrintError(argc, argv);
-	}
-	generator.WriteOCHeader(GClassName, GOutputFileName, out);
-	fclose(out);
-
-	strncpy(scratch,GOutputFile,sizeof(scratch));
-	strncat(scratch,".m",sizeof(scratch) - strlen(scratch) - 1);
-	out = fopen(scratch,"w");
-	if (out == NULL) {
-		printf("Unable to write to file %s\n\n",scratch);
-		PrintError(argc, argv);
-	}
-	generator.WriteOCFile(GClassName, GOutputFileName, out);
-	fclose(out);
 
 	/*
 	 *	Done.

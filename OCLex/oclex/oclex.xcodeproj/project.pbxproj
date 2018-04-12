@@ -22,6 +22,8 @@
 		EF01123C1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */; };
 		EF01123D1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */; };
 		EF1B68561FB8A6A500EAFBB7 /* OCStartState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */; };
+		EFCC76BA207FDE3000EC2B55 /* OCLexCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCC76B8207FDE3000EC2B55 /* OCLexCPPGenerator.cpp */; };
+		EFCC76BB207FDE3000EC2B55 /* OCLexCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCC76B8207FDE3000EC2B55 /* OCLexCPPGenerator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -66,6 +68,8 @@
 		EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OCStartState.cpp; sourceTree = "<group>"; };
 		EF1B68551FB8A6A500EAFBB7 /* OCStartState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCStartState.h; sourceTree = "<group>"; };
 		EF7369341F43DD11008CC168 /* test2.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = test2.l; sourceTree = "<group>"; };
+		EFCC76B8207FDE3000EC2B55 /* OCLexCPPGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexCPPGenerator.cpp; sourceTree = "<group>"; };
+		EFCC76B9207FDE3000EC2B55 /* OCLexCPPGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCLexCPPGenerator.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +159,8 @@
 				EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */,
 				EF01123B1F2E47E7006FFFFB /* OCLexGenerator.h */,
 				EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */,
+				EFCC76B9207FDE3000EC2B55 /* OCLexCPPGenerator.h */,
+				EFCC76B8207FDE3000EC2B55 /* OCLexCPPGenerator.cpp */,
 			);
 			path = Process;
 			sourceTree = "<group>";
@@ -254,6 +260,7 @@
 				EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */,
 				EF0112221F2D5840006FFFFB /* OCLexDFA.cpp in Sources */,
 				EF1B68561FB8A6A500EAFBB7 /* OCStartState.cpp in Sources */,
+				EFCC76BA207FDE3000EC2B55 /* OCLexCPPGenerator.cpp in Sources */,
 				EF0111AF1F263F91006FFFFB /* main.cpp in Sources */,
 				EF01123C1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */,
 				EF01121A1F295C36006FFFFB /* OCCharSet.cpp in Sources */,
@@ -266,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF0112191F295BEF006FFFFB /* OCCharSet.cpp in Sources */,
+				EFCC76BB207FDE3000EC2B55 /* OCLexCPPGenerator.cpp in Sources */,
 				EF0112211F2CFAEB006FFFFB /* OCLexDFA.cpp in Sources */,
 				EF0111F21F2789DA006FFFFB /* OCLexParser.cpp in Sources */,
 				EF01123D1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */,

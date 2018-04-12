@@ -6,7 +6,8 @@
  *		https://github.com/w3woody/OCTools
  */
 
-#import <Foundation/Foundation.h>
+#include <stdint.h>
+#include <string>
 
 
 
@@ -17,13 +18,15 @@
  *	and EOF is marked with -1.
  */
 
-#ifndef OCFileInputProtocol
-#define OCFileInputProtocol
+#ifndef OCFileInputProtocolC
+#define OCFileInputProtocolC
 
-@protocol OCFileInput <NSObject>
-- (int)readByte;
-- (int)peekByte;
-@end
+class OCFileInput
+{
+	public:
+		virtual int readByte() = 0;
+		virtual int peekByte() = 0;
+};
 
 #endif
 
@@ -34,20 +37,21 @@
  *	output, and allows us to glue the Lexer and Parser together.
  */
 
-#ifndef OCLexInputProtocol
-#define OCLexInputProtocol
+#ifndef OCLexInputProtocolC
+#define OCLexInputProtocolC
 
-@protocol OCLexInput <NSObject>
-- (NSInteger)line;
-- (NSInteger)column;
-- (NSString *)filename;
-- (NSString *)text;
-- (NSString *)abort;
+class OCLexInput
+{
+	public:
+		virtual int32_t line() = 0;
+		virtual int32_t column() = 0;
+		virtual std::string filename() = 0;
+		virtual std::string text() = 0;
+		virtual std::string abort() = 0;
 
-- (NSInteger)lex;
-
-- (id<NSObject>)value;
-@end
+		virtual int32_t lex() = 0;
+		virtual void *value() = 0;			// Arbitrary type
+};
 
 #endif
 
@@ -56,28 +60,99 @@
  *		The generated lexical parser
  */
 
-@interface OCLexTest : NSObject <OCLexInput>
+class OCLexTest : public OCLexInput
+{
+	public:
+		OCLexTest(OCFileInput *file);
+		~OCLexTest(void);
 
-/*
- *	External interfaces
- */
+		/*
+		 *	Current reader state
+		 */
 
-- (instancetype)initWithStream:(id<OCFileInput>)file;
+		int32_t line()
+			{
+				return fLine;
+			}
+		int32_t column()
+			{
+				return fColumn;
+			}
+		std::string filename()
+			{
+				return fFileName;
+			}
+		std::string text()
+			{
+				return fText;
+			}
+		std::string abort()
+			{
+				return fAbort;
+			}
 
-/*
- *	Current reader state
- */
+		void *value()
+			{
+				return fValue;
+			}
 
-@property (assign) NSInteger line;		// line of last read token
-@property (assign) NSInteger column;	// column of last read token
-@property (copy)   NSString *filename;	// marked filename (if provided)
-@property (copy)   NSString *text;		// string of last read token
-@property (assign) NSString *abort;		// Set to abort string if problem
-@property (strong) id<NSObject> value;	// Lex/Yacc value of token (optional)
-
-- (NSInteger)lex;						// Method to read next token
+		void setFile(std::string &file, int32_t line);
+		void setLine(int32_t line);
+		int32_t lex();						// Method to read next token
 
 
+	private:
+		// Files
+		OCFileInput *file;
 
-@end
+		// Read position support
+		int32_t curLine;
+		int32_t curColumn;
+
+		// Mark location support
+		int32_t markLine;
+		int32_t markColumn;
+
+		// Mark buffer storage
+		bool isMarked;						// yes if we have mark set
+		unsigned char *markBuffer;			// mark buffer
+		int32_t markSize;					// bytes stored in buffer
+		int32_t markAlloc;					// capacity of buffer
+
+		// Read cache
+		unsigned char *readBuffer;			// read cache buffer
+		int32_t readPos;					// Read position
+		int32_t readSize;					// size of data in read buffer
+		int32_t readAlloc;					// Capacity of read cache
+
+		// Text read buffer
+		unsigned char *textBuffer;			// text cache for reading buffer
+		int32_t textMarkSize;
+		int32_t textSize;
+		int32_t textAlloc;
+
+		// State flags
+		uint64_t  states;
+
+		// File state
+		int32_t fLine;
+		int32_t fColumn;
+		std::string fFileName;
+		std::string fText;
+		std::string fAbort;
+		void *fValue;
+
+		// Internal Methods
+		void mark(void);
+		void reset(void);
+		int input(void);
+		bool atEOL(void);
+		bool atSOL(void);
+		uint16_t stateForClass(uint16_t charClass, uint16_t state);
+		uint16_t conditionalAction(uint16_t state);
+
+int checkType();
+	void skipComment();
+
+};
 

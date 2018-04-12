@@ -1,12 +1,12 @@
 //
-//  OCLexGenerator.cpp
+//  OCLexCPPGenerator.cpp
 //  oclex
 //
-//  Created by William Woody on 7/30/17.
-//  Copyright © 2017 Glenview Software. All rights reserved.
+//  Created by William Woody on 4/12/18.
+//  Copyright © 2018 Glenview Software. All rights reserved.
 //
 
-#include "OCLexGenerator.h"
+#include "OCLexCPPGenerator.h"
 
 /************************************************************************/
 /*																		*/
@@ -14,6 +14,7 @@
 /*																		*/
 /************************************************************************/
 
+// 1
 static const char *GHeader1 =
 	"/*\t%s.h\n"                                                              \
 	" *\n"                                                                    \
@@ -23,9 +24,11 @@ static const char *GHeader1 =
 	" *\t\thttps://github.com/w3woody/OCTools\n"                              \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"#import <Foundation/Foundation.h>\n"                                     \
+	"#include <stdint.h>\n"                                                   \
+	"#include <string>\n"                                                     \
 	"\n";
 
+// 4
 static const char *GHeader2 =
 	"/*\tOCFileInput\n"                                                       \
 	" *\n"                                                                    \
@@ -34,13 +37,15 @@ static const char *GHeader2 =
 	" *\tand EOF is marked with -1.\n"                                        \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"#ifndef OCFileInputProtocol\n"                                           \
-	"#define OCFileInputProtocol\n"                                           \
+	"#ifndef OCFileInputProtocolC\n"                                          \
+	"#define OCFileInputProtocolC\n"                                          \
 	"\n"                                                                      \
-	"@protocol OCFileInput <NSObject>\n"                                      \
-	"- (int)readByte;\n"                                                      \
-	"- (int)peekByte;\n"                                                      \
-	"@end\n"                                                                  \
+	"class OCFileInput\n"                                                     \
+	"{\n"                                                                     \
+	"\tpublic:\n"                                                             \
+	"\t\tvirtual int readByte() = 0;\n"                                       \
+	"\t\tvirtual int peekByte() = 0;\n"                                       \
+	"};\n"                                                                    \
 	"\n"                                                                      \
 	"#endif\n"                                                                \
 	"\n"                                                                      \
@@ -51,54 +56,124 @@ static const char *GHeader2 =
 	" *\toutput, and allows us to glue the Lexer and Parser together.\n"      \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"#ifndef OCLexInputProtocol\n"                                            \
-	"#define OCLexInputProtocol\n"                                            \
+	"#ifndef OCLexInputProtocolC\n"                                           \
+	"#define OCLexInputProtocolC\n"                                           \
 	"\n"                                                                      \
-	"@protocol OCLexInput <NSObject>\n"                                       \
-	"- (NSInteger)line;\n"                                                    \
-	"- (NSInteger)column;\n"                                                  \
-	"- (NSString *)filename;\n"                                               \
-	"- (NSString *)text;\n"                                                   \
-	"- (NSString *)abort;\n"                                                  \
+	"class OCLexInput\n"                                                      \
+	"{\n"                                                                     \
+	"\tpublic:\n"                                                             \
+	"\t\tvirtual int32_t line() = 0;\n"                                       \
+	"\t\tvirtual int32_t column() = 0;\n"                                     \
+	"\t\tvirtual std::string filename() = 0;\n"                               \
+	"\t\tvirtual std::string text() = 0;\n"                                   \
+	"\t\tvirtual std::string abort() = 0;\n"                                  \
 	"\n"                                                                      \
-	"- (NSInteger)lex;\n"                                                     \
+	"\t\tvirtual int32_t lex() = 0;\n"                                        \
+	"\t\tvirtual void *value() = 0;\t\t\t// Arbitrary type\n"                 \
+	"};\n"                                                                    \
 	"\n"                                                                      \
-	"- (id<NSObject>)value;\n"                                                \
-	"@end\n"                                                                  \
-	"\n"                                                                      \
-	"#endif\n"																  \
+	"#endif\n"                                                                \
 	"\n"                                                                      \
 	"/*\t%s\n"                                                                \
 	" *\n"                                                                    \
 	" *\t\tThe generated lexical parser\n"                                    \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"@interface %s : NSObject <OCLexInput>\n"                                 \
+	"class %s : public OCLexInput\n"                                          \
+	"{\n"                                                                     \
+	"\tpublic:\n"                                                             \
+	"\t\t%s(OCFileInput *file);\n"                                            \
+	"\t\t~%s(void);\n"                                                        \
 	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tExternal interfaces\n"                                               \
-	" */\n"                                                                   \
+	"\t\t/*\n"                                                                \
+	"\t\t *\tCurrent reader state\n"                                          \
+	"\t\t */\n"                                                               \
 	"\n"                                                                      \
-	"- (instancetype)initWithStream:(id<OCFileInput>)file;\n"                 \
+	"\t\tint32_t line()\n"                                                    \
+	"\t\t\t{\n"                                                               \
+	"\t\t\t\treturn fLine;\n"                                                 \
+	"\t\t\t}\n"                                                               \
+	"\t\tint32_t column()\n"                                                  \
+	"\t\t\t{\n"                                                               \
+	"\t\t\t\treturn fColumn;\n"                                               \
+	"\t\t\t}\n"                                                               \
+	"\t\tstd::string filename()\n"                                            \
+	"\t\t\t{\n"                                                               \
+	"\t\t\t\treturn fFileName;\n"                                             \
+	"\t\t\t}\n"                                                               \
+	"\t\tstd::string text()\n"                                                \
+	"\t\t\t{\n"                                                               \
+	"\t\t\t\treturn fText;\n"                                                 \
+	"\t\t\t}\n"                                                               \
+	"\t\tstd::string abort()\n"                                               \
+	"\t\t\t{\n"                                                               \
+	"\t\t\t\treturn fAbort;\n"                                                \
+	"\t\t\t}\n"                                                               \
 	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tCurrent reader state\n"                                              \
-	" */\n"                                                                   \
+	"\t\tvoid *value()\n"                                                     \
+	"\t\t\t{\n"                                                               \
+	"\t\t\t\treturn fValue;\n"                                                \
+	"\t\t\t}\n"                                                               \
 	"\n"                                                                      \
-	"@property (assign) NSInteger line;\t\t// line of last read token\n"      \
-	"@property (assign) NSInteger column;\t// column of last read token\n"    \
-	"@property (copy)   NSString *filename;\t// marked filename (if provided)\n" \
-	"@property (copy)   NSString *text;\t\t// string of last read token\n"    \
-	"@property (assign) NSString *abort;\t\t// Set to abort string if problem\n" \
-	"@property (strong) id<NSObject> value;\t// Lex/Yacc value of token (optional)\n"    \
-	"\n"                                                                      \
-	"- (void)setFile:(NSString *)file line:(NSInteger)line;\n"                \
-	"- (NSInteger)lex;\t\t\t\t\t\t// Method to read next token\n"             \
-	"\n";
+	"\t\tvoid setFile(std::string &file, int32_t line);\n"                    \
+	"\t\tvoid setLine(int32_t line);\n"                                       \
+	"\t\tint32_t lex();\t\t\t\t\t\t// Method to read next token\n";
 
+// 0
 static const char *GHeader3 =
-	"@end\n";
+	"\tprivate:\n"                                                            \
+	"\t\t// Files\n"                                                          \
+	"\t\tOCFileInput *file;\n"                                                \
+	"\n"                                                                      \
+	"\t\t// Read position support\n"                                          \
+	"\t\tint32_t curLine;\n"                                                  \
+	"\t\tint32_t curColumn;\n"                                                \
+	"\n"                                                                      \
+	"\t\t// Mark location support\n"                                          \
+	"\t\tint32_t markLine;\n"                                                 \
+	"\t\tint32_t markColumn;\n"                                               \
+	"\n"                                                                      \
+	"\t\t// Mark buffer storage\n"                                            \
+	"\t\tbool isMarked;\t\t\t\t\t\t// yes if we have mark set\n"              \
+	"\t\tunsigned char *markBuffer;\t\t\t// mark buffer\n"                    \
+	"\t\tint32_t markSize;\t\t\t\t\t// bytes stored in buffer\n"              \
+	"\t\tint32_t markAlloc;\t\t\t\t\t// capacity of buffer\n"                 \
+	"\n"                                                                      \
+	"\t\t// Read cache\n"                                                     \
+	"\t\tunsigned char *readBuffer;\t\t\t// read cache buffer\n"              \
+	"\t\tint32_t readPos;\t\t\t\t\t// Read position\n"                        \
+	"\t\tint32_t readSize;\t\t\t\t\t// size of data in read buffer\n"         \
+	"\t\tint32_t readAlloc;\t\t\t\t\t// Capacity of read cache\n"             \
+	"\n"                                                                      \
+	"\t\t// Text read buffer\n"                                               \
+	"\t\tunsigned char *textBuffer;\t\t\t// text cache for reading buffer\n"  \
+	"\t\tint32_t textMarkSize;\n"                                             \
+	"\t\tint32_t textSize;\n"                                                 \
+	"\t\tint32_t textAlloc;\n"                                                \
+	"\n"                                                                      \
+	"\t\t// State flags\n"                                                    \
+	"\t\tuint64_t  states;\n"                                                 \
+	"\n"                                                                      \
+	"\t\t// File state\n"                                                     \
+	"\t\tint32_t fLine;\n"                                                    \
+	"\t\tint32_t fColumn;\n"                                                  \
+	"\t\tstd::string fFileName;\n"                                            \
+	"\t\tstd::string fText;\n"                                                \
+	"\t\tstd::string fAbort;\n"                                               \
+	"\t\tvoid *fValue;\n"                                                     \
+	"\n"                                                                      \
+	"\t\t// Internal Methods\n"                                               \
+	"\t\tvoid mark(void);\n"                                                  \
+	"\t\tvoid reset(void);\n"                                                 \
+	"\t\tint input(void);\n"                                                  \
+	"\t\tbool atEOL(void);\n"                                                 \
+	"\t\tbool atSOL(void);\n"                                                 \
+	"\t\tuint16_t stateForClass(uint16_t charClass, uint16_t state);\n"       \
+	"\t\tuint16_t conditionalAction(uint16_t state);\n";
 
+// 0
+static const char *GHeader4 =
+	"};\n";
 
 /************************************************************************/
 /*																		*/
@@ -106,8 +181,9 @@ static const char *GHeader3 =
 /*																		*/
 /************************************************************************/
 
+// 2
 static const char *GSource1 =
-	"/*\t%s.m\n"                                                              \
+	"/*\t%s.cpp\n"                                                              \
 	" *\n"                                                                    \
 	" *\t\tThis file was automatically generated by OCLex, part of the OCTools\n" \
 	" *\tsuite available at:\n"                                               \
@@ -115,94 +191,56 @@ static const char *GSource1 =
 	" *\t\thttps://github.com/w3woody/OCTools\n"                              \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"#import \"%s.h\"\n"                                                      \
+	"#include \"%s.h\"\n"                                                     \
+	"#include <stdlib.h>\n"                                                   \
+	"#include <new>\n"                                                        \
 	"\n";
 
+// 4
 static const char *GSource2 =
-	"/*\n"                                                                    \
-	" *\tInternal storage\n"                                                  \
+	"/************************************************************************/\n" \
+	"/*                                                                      */\n" \
+	"/*  Construction/Destruction                                            */\n" \
+	"/*                                                                      */\n" \
+	"/************************************************************************/\n" \
+	"\n"                                                                      \
+	"/*\t%s::%s\n"                                                            \
+	" *\n"                                                                    \
+	" *\t\tConstructor\n"                                                     \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"@interface %s ()\n"                                                      \
+	"%s::%s(OCFileInput *f)\n"                                                \
 	"{\n"                                                                     \
-	"\t// Read position support\n"                                            \
-	"\tNSInteger curLine;\n"                                                  \
-	"\tNSInteger curColumn;\n"                                                \
+	"\tfile = f;\n"                                                           \
 	"\n"                                                                      \
-	"\t// Mark location support\n"                                            \
-	"\tNSInteger markLine;\n"                                                 \
-	"\tNSInteger markColumn;\n"                                               \
+	"\tisMarked = false;\n"                                                   \
 	"\n"                                                                      \
-	"\t// Mark buffer storage\n"                                              \
-	"\tBOOL isMarked;\t\t\t\t\t\t\t// yes if we have mark set\n"              \
-	"\tunsigned char *markBuffer;\t\t\t\t// mark buffer\n"                    \
-	"\tNSInteger markSize;\t\t\t\t\t\t// bytes stored in buffer\n"            \
-	"\tNSInteger markAlloc;\t\t\t\t\t// capacity of buffer\n"                 \
+	"\tmarkSize = 0;\n"                                                       \
+	"\tmarkAlloc = 256;\n"                                                    \
+	"\tmarkBuffer = (unsigned char *)malloc(markAlloc);\n"                    \
 	"\n"                                                                      \
-	"\t// Read cache\n"                                                       \
-	"\tunsigned char *readBuffer;\t\t\t\t// read cache buffer\n"              \
-	"\tNSInteger readPos;\t\t\t\t\t\t// Read position\n"                      \
-	"\tNSInteger readSize;\t\t\t\t\t\t// size of data in read buffer\n"       \
-	"\tNSInteger readAlloc;\t\t\t\t\t// Capacity of read cache\n"             \
+	"\treadPos = 0;\n"                                                        \
+	"\treadSize = 0;\n"                                                       \
+	"\treadAlloc = 256;\n"                                                    \
+	"\treadBuffer = (unsigned char *)malloc(readAlloc);\n"                    \
 	"\n"                                                                      \
-	"\t// Text read buffer\n"                                                 \
-	"\tunsigned char *textBuffer;\t\t\t\t// text cache for reading buffer\n"  \
-	"\tNSInteger textMarkSize;\n"                                             \
-	"\tNSInteger textSize;\n"                                                 \
-	"\tNSInteger textAlloc;\n"                                                \
-	"\t\n"                                                                    \
-	"\t// State flags\n"                                                      \
-	"\tuint64_t  states;\n"                                                   \
-	"}\n"                                                                     \
+	"\ttextMarkSize = 0;\n"                                                   \
+	"\ttextSize = 0;\n"                                                       \
+	"\ttextAlloc = 256;\n"                                                    \
+	"\ttextBuffer = (unsigned char *)malloc(textAlloc);\n"                    \
 	"\n"                                                                      \
-	"@property (strong) id<OCFileInput> file;\n";
+	"\tstates = 0;\n";
 
+// 14
 static const char *GSource3 =
-	"@end\n"                                                                  \
-	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tClass lexer\n"                                                       \
-	" */\n"                                                                   \
-	"\n"                                                                      \
-	"@implementation %s\n"                                                    \
-	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tInstantiate parser.\n"                                               \
-	" */\n"                                                                   \
-	"\n"                                                                      \
-	"- (instancetype)initWithStream:(id<OCFileInput>)file\n"                  \
-	"{\n"                                                                     \
-	"\tif (nil != (self = [super init])) {\n"                                 \
-	"\t\tself.file = file;\n"                                                 \
-	"\n"                                                                      \
-	"\t\tisMarked = NO;\n"                                                    \
-	"\t\tmarkSize = 0;\n"                                                     \
-	"\t\tmarkAlloc = 256;\n"                                                  \
-	"\t\tmarkBuffer = (unsigned char *)malloc(markAlloc);\n"                  \
-	"\n"                                                                      \
-	"\t\treadPos = 0;\n"                                                      \
-	"\t\treadSize = 0;\n"                                                     \
-	"\t\treadAlloc = 256;\n"                                                  \
-	"\t\treadBuffer = (unsigned char *)malloc(readAlloc);\n"                  \
-	"\n"                                                                      \
-	"\t\ttextMarkSize = 0;\n"                                                 \
-	"\t\ttextSize = 0;\n"                                                     \
-	"\t\ttextAlloc = 256;\n"                                                  \
-	"\t\ttextBuffer = (unsigned char *)malloc(textAlloc);\n"                  \
-	"\t\t\n"                                                                  \
-	"\t\tstates = 0;\n";
-
-
-static const char *GSource4 =
-	"\t}\n"                                                                   \
-	"\treturn self;\n"                                                        \
 	"}\n"                                                                     \
 	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tFree internal storage\n"                                             \
+	"/*\t%s::~%s\n"                                                           \
+	" *\n"                                                                    \
+	" *\t\tDestructor\n"                                                      \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (void)dealloc\n"                                                       \
+	"%s::~%s(void)\n"                                                         \
 	"{\n"                                                                     \
 	"\tif (markBuffer) free(markBuffer);\n"                                   \
 	"\tif (readBuffer) free(readBuffer);\n"                                   \
@@ -220,12 +258,13 @@ static const char *GSource4 =
 	" *\twe reach an error--at which point we rewind back to the mark location.\n" \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tmark: note that we should cache characters being read so we can rewind\n" \
+	"/*\t%s::mark\n"                                                          \
+	" *\n"                                                                    \
+	" *\t\tMark: note that we should cache characters being read so we can rewind\n" \
 	" *\tto this location in the future\n"                                    \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (void)mark\n"                                                          \
+	"void %s::mark(void)\n"                                                   \
 	"{\n"                                                                     \
 	"\t/*\n"                                                                  \
 	"\t *\tStore the current file location and enable marking. This has the side\n" \
@@ -236,15 +275,16 @@ static const char *GSource4 =
 	"\tmarkColumn = curColumn;\n"                                             \
 	"\ttextMarkSize = textSize;\n"                                            \
 	"\n"                                                                      \
-	"\tisMarked = YES;\n"                                                     \
+	"\tisMarked = true;\n"                                                    \
 	"\tmarkSize = 0;\n"                                                       \
 	"}\n"                                                                     \
 	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tReset: reset the buffer positions\n"                                 \
+	"/*\t%s::reset\n"                                                         \
+	" *\n"                                                                    \
+	" *\t\tReset: reset the buffer positions\n"                               \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (void)reset\n"                                                         \
+	"void %s::reset(void)\n"                                                  \
 	"{\n"                                                                     \
 	"\tif (!isMarked) return;\t// not marked, nothing to do.\n"               \
 	"\n"                                                                      \
@@ -262,13 +302,13 @@ static const char *GSource4 =
 	"\t\t *\tResize to fit\n"                                                 \
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
-	"\t\tNSInteger toFit = markSize + readSize - readPos;\n"                  \
+	"\t\tint32_t toFit = markSize + readSize - readPos;\n"                    \
 	"\t\ttoFit = (toFit + 255) & ~255;\t// align to 256 byte boundary\n"      \
 	"\t\tif (toFit < 0) toFit = 256;\n"                                       \
 	"\n"                                                                      \
 	"\t\tunsigned char *ptr = (unsigned char *)realloc(readBuffer, toFit);\n" \
 	"\t\tif (ptr == NULL) {\n"                                                \
-	"\t\t\t[NSException raise:NSMallocException format:@\"Out of memory\"];\n" \
+	"\t\t\tthrow std::bad_alloc();\n"                                         \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
 	"\t\treadBuffer = ptr;\n"                                                 \
@@ -303,7 +343,7 @@ static const char *GSource4 =
 	"\t *\tClear the mark\n"                                                  \
 	"\t */\n"                                                                 \
 	"\n"                                                                      \
-	"\tisMarked = NO;\n"                                                      \
+	"\tisMarked = false;\n"                                                   \
 	"\tmarkSize = 0;\n"                                                       \
 	"\n"                                                                      \
 	"\t/*\n"                                                                  \
@@ -319,7 +359,7 @@ static const char *GSource4 =
 	" *\tRead input stream.\n"                                                \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (int)input\n"                                                          \
+	"int %s::input(void)\n"                                                   \
 	"{\n"                                                                     \
 	"\tint ch;\n"                                                             \
 	"\n"                                                                      \
@@ -330,7 +370,7 @@ static const char *GSource4 =
 	"\tif (readPos < readSize) {\n"                                           \
 	"\t\tch = readBuffer[readPos++];\n"                                       \
 	"\t} else {\n"                                                            \
-	"\t\tch = [self.file readByte];\n"                                        \
+	"\t\tch = file->readByte();\n"                                            \
 	"\n"                                                                      \
 	"\t\tif (ch == -1) return -1;\t\t// At EOF; immediate return.\n"          \
 	"\t}\n"                                                                   \
@@ -352,11 +392,11 @@ static const char *GSource4 =
 	"\n"                                                                      \
 	"\tif (isMarked) {\n"                                                     \
 	"\t\tif (markSize >= markAlloc) {\n"                                      \
-	"\t\t\tNSInteger toFit = (markAlloc + 256) & ~255;\n"                     \
+	"\t\t\tint32_t toFit = (markAlloc + 256) & ~255;\n"                       \
 	"\t\t\tif (toFit < 256) toFit = 256;\n"                                   \
 	"\t\t\tunsigned char *ptr = (unsigned char *)realloc(markBuffer, toFit);\n" \
 	"\t\t\tif (ptr == NULL) {\n"                                              \
-	"\t\t\t\t[NSException raise:NSMallocException format:@\"Out of memory\"];\n" \
+	"\t\t\t\tthrow std::bad_alloc();\n"                                       \
 	"\t\t\t}\n"                                                               \
 	"\n"                                                                      \
 	"\t\t\tmarkBuffer = ptr;\n"                                               \
@@ -376,34 +416,34 @@ static const char *GSource4 =
 	" *\tRead ahead to determine if we\'re at the EOL\n"                      \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (BOOL)atEOL\n"                                                         \
+	"bool %s::atEOL()\n"                                                      \
 	"{\n"                                                                     \
 	"\tint ch;\n"                                                             \
 	"\n"                                                                      \
 	"\tif (readPos < readSize) {\n"                                           \
 	"\t\tch = readBuffer[readPos];\n"                                         \
 	"\t} else {\n"                                                            \
-	"\t\tch = [self.file peekByte];\n"                                        \
+	"\t\tch = file->peekByte();\n"                                            \
 	"\t}\n"                                                                   \
 	"\n"                                                                      \
-	"\tif ((ch == -1) || (ch == \'\\n\')) return YES;\n"                      \
-	"\treturn NO;\n"                                                          \
-	"}\n"																	  \
+	"\tif ((ch == -1) || (ch == \'\\n\')) return true;\n"                     \
+	"\treturn false;\n"                                                       \
+	"}\n"                                                                     \
 	"\n"                                                                      \
-	"- (BOOL)atSOL\n"                                                         \
+	"bool %s::atSOL()\n"                                                      \
 	"{\n"                                                                     \
-	"\treturn self.column == 0;\n"                                            \
-	"}\n"																	  \
+	"\treturn fColumn == 0;\n"                                                \
+	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
-	" *\tRead the state for the class/state combination. Decodes the sparce \n" \
+	" *\tRead the state for the class/state combination. Decodes the sparce\n" \
 	" *\tmatrix that is compressed in StateMachineIA/JA/A above. If the\n"    \
 	" *\tentry is not found, returns MAXSTATES. This is the same as the lookup\n" \
 	" *\tStateMachine[class][state] if the StateMachine sparse array was\n"   \
 	" *\tunrolled\n"                                                          \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (uint16_t)stateForClass:(uint16_t)charClass state:(uint16_t)state\n"   \
+	"uint16_t %s::stateForClass(uint16_t charClass, uint16_t state)\n"        \
 	"{\n"                                                                     \
 	"\tsize_t min,max,mid;\n"                                                 \
 	"\n"                                                                      \
@@ -426,33 +466,39 @@ static const char *GSource4 =
 	"\treturn MAXSTATES;\n"                                                   \
 	"}\n"                                                                     \
 	"\n"                                                                      \
-	"- (void)setFile:(NSString *)file line:(NSInteger)line\n"                 \
+	"void %s::setFile(std::string &file, int32_t line)\n"                     \
 	"{\n"                                                                     \
-	"\tif (file) self.filename = file;\n"                                     \
+	"\tfFileName = file;\n"                                                   \
 	"\tcurLine = line;\n"                                                     \
-	"}\n"
+	"}\n"                                                                     \
+	"\n"                                                                      \
+	"void %s::setLine(int32_t line)\n"                                        \
+	"{\n"                                                                     \
+	"\tcurLine = line;\n"                                                     \
+	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tInternal methods declared within the Lex file\n"                     \
-	" */\n";
+	" */\n"                                                                   \
+	"\n";
 
-static const char *GSource5 =
-	"/*\n"                                                                    \
-	" *\tLex interpreter. This runs the state machine until we find something\n" \
+// 2
+static const char *GSource4 =
+	"/*\t%s::lex\n"                                                           \
+	" *\n"                                                                    \
+	" *\t\tLex interpreter. THis runs the state machine until we find something\n" \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (NSInteger)lex\n"                                                      \
+	"int32_t %s::lex(void)\n"                                                 \
 	"{\n"                                                                     \
 	"\tuint16_t state;\n"                                                     \
 	"\tuint16_t action = MAXACTIONS;\n"                                       \
 	"\n"                                                                      \
-	"\tself.abort = NULL;\n"                                                  \
-	"\tself.value = NULL;\n"                                                  \
-	"\tself.text = NULL;\n"                                                   \
+	"\tfValue = NULL;\n"                                                      \
 	"\n"                                                                      \
 	"\t/*\n"                                                                  \
 	"\t *\tRun until we hit EOF or a production rule triggers a return\n"     \
-	"\t */\n"																  \
+	"\t */\n"                                                                 \
 	"\n"                                                                      \
 	"\tfor (;;) {\n"                                                          \
 	"\t\t/*\n"                                                                \
@@ -461,12 +507,12 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t\tstate = 0;\n"                                                        \
 	"\t\ttextSize = 0;\n"                                                     \
-	"\t\t\n"                                                                  \
-	"\t\tself.line = curLine;\n"                                              \
-	"\t\tself.column = curColumn;\n"                                          \
+	"\n"                                                                      \
+	"\t\tfLine = curLine;\n"                                                  \
+	"\t\tfColumn = curColumn;\n"                                              \
 	"\n"                                                                      \
 	"\t\tfor (;;) {\n"                                                        \
-	"\t\t\tint ch = [self input];\n"                                          \
+	"\t\t\tint ch = input();\n"                                               \
 	"\t\t\tif (ch == -1) {\n"                                                 \
 	"\t\t\t\t/*\n"                                                            \
 	"\t\t\t\t *\tWe\'ve hit EOF. If there is no stored text, we assume\n"     \
@@ -483,7 +529,7 @@ static const char *GSource5 =
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\tuint16_t charClass = CharClass[ch];\n"                             \
-	"\t\t\tuint16_t newState = [self stateForClass:charClass state:state];\n" \
+	"\t\t\tuint16_t newState = stateForClass(charClass, state);\n"            \
 	"\t\t\tif (newState >= MAXSTATES) {\n"                                    \
 	"\t\t\t\t/* Illegal state transition */\n"                                \
 	"\t\t\t\tbreak;\n"                                                        \
@@ -497,11 +543,11 @@ static const char *GSource5 =
 	"\t\t\tstate = newState;\n"                                               \
 	"\n"                                                                      \
 	"\t\t\tif (textSize >= textAlloc) {\n"                                    \
-	"\t\t\t\tNSInteger toFit = (textAlloc + 256) & ~255;\n"                   \
+	"\t\t\t\tint32_t toFit = (textAlloc + 256) & ~255;\n"                     \
 	"\t\t\t\tif (toFit < 256) toFit = 256;\n"                                 \
 	"\t\t\t\tunsigned char *ptr = (unsigned char *)realloc(textBuffer, toFit);\n" \
 	"\t\t\t\tif (ptr == NULL) {\n"                                            \
-	"\t\t\t\t\t[NSException raise:NSMallocException format:@\"Out of memory\"];\n" \
+	"\t\t\t\t\tthrow std::bad_alloc();\n"                                     \
 	"\t\t\t\t}\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\t\ttextBuffer = ptr;\n"                                             \
@@ -515,11 +561,11 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t\t\tuint16_t newAction = StateActions[state];\n"                       \
 	"\t\t\tif (newAction > MAXACTIONS) {\n"                                   \
-	"\t\t\t\tnewAction = [self conditionalAction:newAction];\n"               \
+	"\t\t\t\tnewAction = conditionalAction(newAction);\n"                     \
 	"\t\t\t}\n"                                                               \
 	"\t\t\tif (newAction != MAXACTIONS) {\n"                                  \
 	"\t\t\t\taction = newAction;\n"                                           \
-	"\t\t\t\t[self mark];\n"                                                  \
+	"\t\t\t\tmark();\n"                                                       \
 	"\t\t\t}\n"                                                               \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
@@ -529,7 +575,7 @@ static const char *GSource5 =
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
 	"\t\tif (action == MAXACTIONS) {\n"                                       \
-	"\t\t\tself.abort = @\"Illegal character sequence\";\n"                   \
+	"\t\t\tfAbort = \"Illegal character sequence\";\n"                        \
 	"\t\t\treturn -1;\n"                                                      \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
@@ -537,9 +583,9 @@ static const char *GSource5 =
 	"\t\t *\tAction is set, so we rewind.\n"                                  \
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
-	"\t\t[self reset];\n"                                                     \
+	"\t\treset();\n"                                                          \
 	"\t\tif (textSize == 0) {\n"                                              \
-	"\t\t\tself.abort = @\"No characters read in sequence\";\n"               \
+	"\t\t\tfAbort = \"No characters read in sequence\";\n"                    \
 	"\t\t\treturn -1;\n"                                                      \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
@@ -547,8 +593,8 @@ static const char *GSource5 =
 	"\t\t *\tConvert text sequence into string\n"                             \
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
-	"\t\tself.text = [[NSString alloc] initWithBytes:textBuffer length:textSize encoding:NSUTF8StringEncoding];\n" \
-	"\t\tself.value = self.text;\n"                                           \
+	"\t\tfText = std::string((char *)textBuffer,textSize);\n"                 \
+	"\t\tfValue = (void *)fText.c_str();\n"                                   \
 	"\n"                                                                      \
 	"\t\t/*\n"                                                                \
 	"\t\t *\tExecute action\n"                                                \
@@ -556,14 +602,14 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t\tswitch (action) {\n";
 
-static const char *GSource6 =
+static const char *GSource5 =
 	"\t\t\tdefault:\n"                                                        \
 	"\t\t\t\tbreak;\n"                                                        \
 	"\t\t}\n"                                                                 \
 	"\t}\n"                                                                   \
 	"}\n"                                                                     \
-	"\n"                                                                      \
-	"@end\n";
+	"\n";
+
 
 /************************************************************************/
 /*																		*/
@@ -571,12 +617,12 @@ static const char *GSource6 =
 /*																		*/
 /************************************************************************/
 
-/*	OCLexGenerator::WriteArray
+/*	OCLexCPPGenerator::WriteArray
  *
  *		Write an array. This simply writes the list of items to an array
  */
 
-void OCLexGenerator::WriteArray(FILE *f, uint32_t *list, size_t len)
+void OCLexCPPGenerator::WriteArray(FILE *f, uint32_t *list, size_t len)
 {
 	size_t i = 0;
 
@@ -593,12 +639,12 @@ void OCLexGenerator::WriteArray(FILE *f, uint32_t *list, size_t len)
 	fprintf(f,"\n");
 }
 
-/*	OCLexGenerator::WriteStates
+/*	OCLexCPPGenerator::WriteStates
  *
  *		Write the states
  */
 
-void OCLexGenerator::WriteStates(FILE *f)
+void OCLexCPPGenerator::WriteStates(FILE *f)
 {
 	/*
 	 *	Print the state sizes
@@ -754,13 +800,13 @@ void OCLexGenerator::WriteStates(FILE *f)
 	free(scratch);
 }
 
-/*	OCLexGenerator::WriteActions
+/*	OCLexCPPGenerator::WriteActions
  *
  *		Write the actions state machine. This only writes the contents of
  *	the switch state, not the switch state itself.
  */
 
-void OCLexGenerator::WriteActions(FILE *f)
+void OCLexCPPGenerator::WriteActions(FILE *f)
 {
 	size_t i,len = codeRules.size();
 	for (i = 0; i < len; ++i) {
@@ -776,7 +822,7 @@ void OCLexGenerator::WriteActions(FILE *f)
 /*																		*/
 /************************************************************************/
 
-void OCLexGenerator::WriteStarts(FILE *f)
+void OCLexCPPGenerator::WriteStarts(FILE *f, const char *className)
 {
 	uint32_t index = (uint32_t)codeRules.size();
 
@@ -785,7 +831,7 @@ void OCLexGenerator::WriteStarts(FILE *f)
 	fprintf(f," *  determines the proper end rule given the current start\n");
 	fprintf(f," *  conditionals.\n");
 	fprintf(f," */\n\n");
-	fprintf(f,"- (NSInteger)conditionalAction:(NSInteger)state\n");
+	fprintf(f,"uint16_t %s::conditionalAction(uint16_t state)\n",className);
 	fprintf(f,"{\n");
 	fprintf(f,"    switch (state) {\n");
 	fprintf(f,"        default:\n");
@@ -821,7 +867,7 @@ void OCLexGenerator::WriteStarts(FILE *f)
 				bool flag = false;
 				fprintf(f,"            if (");
 				if (d.startState.startFlag()) {
-					fprintf(f,"[self atSOL]");
+					fprintf(f,"atSOL()");
 					flag = true;
 				}
 				if (d.startState.endFlag()) {
@@ -830,7 +876,7 @@ void OCLexGenerator::WriteStarts(FILE *f)
 					} else {
 						flag = true;
 					}
-					fprintf(f,"[self atEOL]");
+					fprintf(f,"atEOL()");
 				}
 				uint32_t m = d.startState.stateFlags(ruleStates);
 				if (m) {
@@ -859,35 +905,41 @@ void OCLexGenerator::WriteStarts(FILE *f)
 /*																		*/
 /************************************************************************/
 
-/*	OCLexGenerator::WriteOCHeader
+/*	OCLexCPPGenerator::WriteOCHeader
  *
  *		This generates the standard header file, using the specified
  *	class name.
  */
 
-void OCLexGenerator::WriteOCHeader(const char *className, const char *outName, FILE *f)
+void OCLexCPPGenerator::WriteOCHeader(const char *className, const char *outName, FILE *f)
 {
 	fprintf(f,GHeader1,outName);
 
 	// Header declarations
 	fprintf(f,"%s\n\n",classHeader.c_str());
 
-	fprintf(f,GHeader2,className,className);
+	fprintf(f,GHeader2,className,className,className,className);
 
 	// Class global declarations
 	fprintf(f,"%s\n\n",classGlobal.c_str());
 
-	// Final
+	// Internal declarations
 	fprintf(f,"%s\n",GHeader3);
+
+	// Local declarations
+	fprintf(f,"%s\n",classLocal.c_str());
+
+	// Final
+	fprintf(f,"%s\n",GHeader4);
 }
 
-/*	OCLexGenerator::WriteOCFile
+/*	OCLexCPPGenerator::WriteOCFile
  *
  *		This generates the various tables and writes the Objective C
  *	lex file
  */
 
-void OCLexGenerator::WriteOCFile(const char *className, const char *outName, FILE *f)
+void OCLexCPPGenerator::WriteOCFile(const char *className, const char *outName, FILE *f)
 {
 	// Standard header
 	fprintf(f,GSource1,outName,outName);
@@ -899,30 +951,27 @@ void OCLexGenerator::WriteOCFile(const char *className, const char *outName, FIL
 	WriteStates(f);
 
 	// Start class declaration
-	fprintf(f,GSource2,className);
-
-	// Insert class variables
-	fprintf(f,"%s\n",classLocal.c_str());
-
-	// Start class
-	fprintf(f,GSource3,className);
+	fprintf(f,GSource2,className,className,className,className);
 
 	fprintf(f,"%s\n",classInit.c_str());
 
-	fprintf(f,GSource4,className);
+	fprintf(f,GSource3,className,className,className,className,
+					   className,className,className,className,
+					   className,className,className,className,
+					   className,className);
 
 	// Post class declarations. We embed in our class
 	fprintf(f,"%s\n\n",endCode.c_str());
 
 	// Conditional class table
-	WriteStarts(f);
+	WriteStarts(f,className);
 
 	// Lexer engine
-	fprintf(f,"%s",GSource5);
+	fprintf(f,GSource4,className,className);
 
 	// Action states
 	WriteActions(f);
 
 	// And the rest of the stuff
-	fprintf(f,"%s",GSource6);
+	fprintf(f,"%s",GSource5);
 }
