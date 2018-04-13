@@ -14,6 +14,7 @@
 /*																		*/
 /************************************************************************/
 
+// 1
 static const char *GHeader1 =
 	"/*\t%s.h\n"                                                              \
 	" *\n"                                                                    \
@@ -26,6 +27,7 @@ static const char *GHeader1 =
 	"#import <Foundation/Foundation.h>\n"                                     \
 	"\n";
 
+// 2
 static const char *GHeader2 =
 	"/*\tOCFileInput\n"                                                       \
 	" *\n"                                                                    \
@@ -106,6 +108,7 @@ static const char *GHeader3 =
 /*																		*/
 /************************************************************************/
 
+// 2
 static const char *GSource1 =
 	"/*\t%s.m\n"                                                              \
 	" *\n"                                                                    \
@@ -118,6 +121,7 @@ static const char *GSource1 =
 	"#import \"%s.h\"\n"                                                      \
 	"\n";
 
+// 1
 static const char *GSource2 =
 	"/*\n"                                                                    \
 	" *\tInternal storage\n"                                                  \
@@ -157,6 +161,7 @@ static const char *GSource2 =
 	"\n"                                                                      \
 	"@property (strong) id<OCFileInput> file;\n";
 
+// 1
 static const char *GSource3 =
 	"@end\n"                                                                  \
 	"\n"                                                                      \
@@ -192,7 +197,7 @@ static const char *GSource3 =
 	"\t\t\n"                                                                  \
 	"\t\tstates = 0;\n";
 
-
+// 0
 static const char *GSource4 =
 	"\t}\n"                                                                   \
 	"\treturn self;\n"                                                        \
@@ -206,7 +211,10 @@ static const char *GSource4 =
 	"{\n"                                                                     \
 	"\tif (markBuffer) free(markBuffer);\n"                                   \
 	"\tif (readBuffer) free(readBuffer);\n"                                   \
-	"\tif (textBuffer) free(textBuffer);\n"                                   \
+	"\tif (textBuffer) free(textBuffer);\n";
+
+// 0
+static const char *GSource5 =
 	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
@@ -436,7 +444,7 @@ static const char *GSource4 =
 	" *\tInternal methods declared within the Lex file\n"                     \
 	" */\n";
 
-static const char *GSource5 =
+static const char *GSource6 =
 	"/*\n"                                                                    \
 	" *\tLex interpreter. This runs the state machine until we find something\n" \
 	" */\n"                                                                   \
@@ -556,7 +564,7 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t\tswitch (action) {\n";
 
-static const char *GSource6 =
+static const char *GSource7 =
 	"\t\t\tdefault:\n"                                                        \
 	"\t\t\t\tbreak;\n"                                                        \
 	"\t\t}\n"                                                                 \
@@ -909,7 +917,12 @@ void OCLexGenerator::WriteOCFile(const char *className, const char *outName, FIL
 
 	fprintf(f,"%s\n",classInit.c_str());
 
-	fprintf(f,GSource4,className);
+	fprintf(f,"%s",GSource4);
+
+	// Finish code
+	fprintf(f, "%s\n", classFinish.c_str());
+
+	fprintf(f,"%s",GSource5);
 
 	// Post class declarations. We embed in our class
 	fprintf(f,"%s\n\n",endCode.c_str());
@@ -918,11 +931,11 @@ void OCLexGenerator::WriteOCFile(const char *className, const char *outName, FIL
 	WriteStarts(f);
 
 	// Lexer engine
-	fprintf(f,"%s",GSource5);
+	fprintf(f,"%s",GSource6);
 
 	// Action states
 	WriteActions(f);
 
 	// And the rest of the stuff
-	fprintf(f,"%s",GSource6);
+	fprintf(f,"%s",GSource7);
 }

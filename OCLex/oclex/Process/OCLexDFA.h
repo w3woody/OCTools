@@ -106,6 +106,7 @@ class OCLexDFA: public OCLexNFA
 		std::string classHeader;		// class declaration of .h
 		std::string classLocal;			// class declaration of .m
 		std::string classInit;			// init code to insert in init
+		std::string classFinish;		// finish code to insert in init
 		std::string classGlobal;		// class declaration of .h
 		std::string endCode;			// code section of .m
 

@@ -100,51 +100,51 @@ void Test3()
 	printf("%s\n",set.ToString().c_str());
 }
 
-void PrintDFA(const OCLexDFA &dfa)
-{
-	int i,len = (int)dfa.dfaStates.size();
-	for (i = 0; i < len; ++i) {
-		const OCLexDFAState &s = dfa.dfaStates[i];
-
-		int t,tlen = (int)s.list.size();
-		for (t = 0; t < tlen; ++t) {
-			const OCLexDFATransition &trans = s.list[t];
-
-			printf("%d -- %s --> %u\n",i,trans.set.ToString().c_str(),trans.state);
-		}
-
-		if (s.end) {
-			printf("%u endrule %s\n",i,dfa.codeRules[s.endRule].code.c_str());
-		}
-	}
-}
-
-void Test4()
-{
-	std::map<std::string,std::string> definitions;
-	definitions["D"] = "[0-9]";
-
-	OCLexGenerator dfa(definitions);
-
-	dfa.AddRuleSet("{D}+", "return 0x10001;",false,false);
-	dfa.AddRuleSet("[A-Za-z][A-Za-z0-9]*", "return 0x10002;",false,false);
-	dfa.AddRuleSet("0x[A-Fa-f0-9]+", "return 0x10003;",false,true);
-	dfa.AddRuleSet(".","return textBuffer[0];",false,false);
-
-	dfa.GenerateDFA();
-
-	PrintDFA(dfa);
-
-	printf("\n\n\n");
-	dfa.WriteOCFile("OCTest","OCTest.m",stdout);
-}
+//void PrintDFA(const OCLexDFA &dfa)
+//{
+//	int i,len = (int)dfa.dfaStates.size();
+//	for (i = 0; i < len; ++i) {
+//		const OCLexDFAState &s = dfa.dfaStates[i];
+//
+//		int t,tlen = (int)s.list.size();
+//		for (t = 0; t < tlen; ++t) {
+//			const OCLexDFATransition &trans = s.list[t];
+//
+//			printf("%d -- %s --> %u\n",i,trans.set.ToString().c_str(),trans.state);
+//		}
+//
+//		if (s.end) {
+//			printf("%u endrule %s\n",i,dfa.codeRules[s.endRule].code.c_str());
+//		}
+//	}
+//}
+//
+//void Test4()
+//{
+//	std::map<std::string,std::string> definitions;
+//	definitions["D"] = "[0-9]";
+//
+//	OCLexGenerator dfa(definitions);
+//
+//	dfa.AddRuleSet("{D}+", "return 0x10001;",false,false);
+//	dfa.AddRuleSet("[A-Za-z][A-Za-z0-9]*", "return 0x10002;",false,false);
+//	dfa.AddRuleSet("0x[A-Fa-f0-9]+", "return 0x10003;",false,true);
+//	dfa.AddRuleSet(".","return textBuffer[0];",false,false);
+//
+//	dfa.GenerateDFA();
+//
+//	PrintDFA(dfa);
+//
+//	printf("\n\n\n");
+//	dfa.WriteOCFile("OCTest","OCTest.m",stdout);
+//}
 
 int main(int argc, const char * argv[])
 {
 //	Test1();
 //	Test2();
 //	Test3();
-	Test4();
+//	Test4();
 
 	printf("Done.\n");
 	return 0;

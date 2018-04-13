@@ -363,6 +363,8 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 							classHeader = code;
 						} else if (codeType == "init") {
 							classInit = code;
+						} else if (codeType == "finish") {
+							classFinish = code;
 						} else if (codeType == "local") {
 							classLocal = code;
 						} else {

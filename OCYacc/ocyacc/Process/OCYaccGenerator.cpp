@@ -1107,6 +1107,14 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 
 	fprintf(f, "%s", GSource5);
 
+	if (parser.classFinish.size() > 0) {
+		fprintf(f, "- (void)dealloc\n");
+		fprintf(f, "{\n");
+		fprintf(f, "%s\n", parser.classFinish.c_str());
+		fprintf(f, "}\n");
+		fprintf(f, "\n");
+	}
+
 	// Class code
 	fprintf(f, "%s\n", parser.endCode.c_str());
 

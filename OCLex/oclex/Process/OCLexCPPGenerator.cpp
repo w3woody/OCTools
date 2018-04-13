@@ -231,7 +231,7 @@ static const char *GSource2 =
 	"\n"                                                                      \
 	"\tstates = 0;\n";
 
-// 14
+// 4
 static const char *GSource3 =
 	"}\n"                                                                     \
 	"\n"                                                                      \
@@ -244,7 +244,10 @@ static const char *GSource3 =
 	"{\n"                                                                     \
 	"\tif (markBuffer) free(markBuffer);\n"                                   \
 	"\tif (readBuffer) free(readBuffer);\n"                                   \
-	"\tif (textBuffer) free(textBuffer);\n"                                   \
+	"\tif (textBuffer) free(textBuffer);\n";
+
+// 10
+static const char *GSource4 =
 	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
@@ -483,7 +486,7 @@ static const char *GSource3 =
 	"\n";
 
 // 2
-static const char *GSource4 =
+static const char *GSource5 =
 	"/*\t%s::lex\n"                                                           \
 	" *\n"                                                                    \
 	" *\t\tLex interpreter. THis runs the state machine until we find something\n" \
@@ -602,7 +605,7 @@ static const char *GSource4 =
 	"\n"                                                                      \
 	"\t\tswitch (action) {\n";
 
-static const char *GSource5 =
+static const char *GSource6 =
 	"\t\t\tdefault:\n"                                                        \
 	"\t\t\t\tbreak;\n"                                                        \
 	"\t\t}\n"                                                                 \
@@ -955,8 +958,12 @@ void OCLexCPPGenerator::WriteOCFile(const char *className, const char *outName, 
 
 	fprintf(f,"%s\n",classInit.c_str());
 
-	fprintf(f,GSource3,className,className,className,className,
-					   className,className,className,className,
+	fprintf(f,GSource3,className,className,className,className);
+
+	// Dealloc code
+	fprintf(f, "%s\n", classFinish.c_str());
+
+	fprintf(f,GSource4,className,className,className,className,
 					   className,className,className,className,
 					   className,className);
 
@@ -967,11 +974,11 @@ void OCLexCPPGenerator::WriteOCFile(const char *className, const char *outName, 
 	WriteStarts(f,className);
 
 	// Lexer engine
-	fprintf(f,GSource4,className,className);
+	fprintf(f,GSource5,className,className);
 
 	// Action states
 	WriteActions(f);
 
 	// And the rest of the stuff
-	fprintf(f,"%s",GSource5);
+	fprintf(f,"%s",GSource6);
 }

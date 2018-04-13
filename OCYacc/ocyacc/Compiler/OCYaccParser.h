@@ -48,6 +48,7 @@ class OCYaccParser
 		std::string classLocal;			// class declaration of .m
 		std::string classGlobal;		// class declaration of .h
 		std::string classInit;			// class code in .m init...
+		std::string classFinish;		// class code in .m finish...
 		std::string endCode;			// code section of .m
 
 		/*

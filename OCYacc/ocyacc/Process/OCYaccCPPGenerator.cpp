@@ -190,11 +190,13 @@ static const char *GSource4 = // 2
 	" */\n"                                                                   \
 	"\n"                                                                      \
 	"%s::~%s()\n"                                                             \
-	"{\n"                                                                     \
+	"{\n";
+
+static const char *GSource5 = // 0
 	"}\n"                                                                     \
 	"\n";
 
-static const char *GSource5 = // 4
+static const char *GSource6 = // 4
 	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tProcess production rule. This processes the production rule and creates\n" \
@@ -224,7 +226,7 @@ static const char *GSource5 = // 4
 	"\ttry {\n"                                                               \
 	"\t\tswitch (rule) {\n";
 
-static const char *GSource6 = // 10
+static const char *GSource7 = // 10
 	"\t\t\tdefault:\n"                                                        \
 	"\t\t\t\tbreak;\n"                                                        \
 	"\t\t}\n"                                                                 \
@@ -1074,11 +1076,16 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	// Close class internal, start class
 	fprintf(f, GSource4, classname, classname);
 
+	// Dealloc code
+	fprintf(f, "%s\n", parser.classFinish.c_str());
+
+	fprintf(f,"%s",GSource5);
+
 	// Class code
 	fprintf(f, "%s\n", parser.endCode.c_str());
 
 	// Production (to switch statement)
-	fprintf(f, GSource5, classname, classname, classname, classname);
+	fprintf(f, GSource6, classname, classname, classname, classname);
 
 	// Print information about the rules we're reducing by
 	fprintf(f,"\n        // Production rules\n");
@@ -1092,7 +1099,7 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	fprintf(f,"\n");
 
 	// Close switch, finish writing the rest
-	fprintf(f, GSource6, classname, classname, classname, classname,
+	fprintf(f, GSource7, classname, classname, classname, classname,
 						 classname, classname, classname, classname,
 						 classname, classname, classname, classname,
 						 classname, classname, classname, classname,

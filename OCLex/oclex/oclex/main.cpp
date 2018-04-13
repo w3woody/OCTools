@@ -260,6 +260,7 @@ int main(int argc, const char * argv[])
 		generator.classGlobal = parser.classGlobal;
 		generator.classLocal = parser.classLocal;
 		generator.classInit = parser.classInit;
+		generator.classFinish = parser.classFinish;
 		generator.classHeader = parser.classHeader;
 		generator.endCode = parser.endCode;
 		generator.ruleStates = parser.ruleStates;
@@ -305,6 +306,7 @@ int main(int argc, const char * argv[])
 		generator.classGlobal = parser.classGlobal;
 		generator.classLocal = parser.classLocal;
 		generator.classInit = parser.classInit;
+		generator.classFinish = parser.classFinish;
 		generator.classHeader = parser.classHeader;
 		generator.endCode = parser.endCode;
 		generator.ruleStates = parser.ruleStates;
