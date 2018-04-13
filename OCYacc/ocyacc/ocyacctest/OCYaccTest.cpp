@@ -434,5 +434,282 @@ bool OCYaccTest::reduceByAction(int16_t action)
 
 bool OCYaccTest::parse()
 {
-	return false;
+	int32_t a;				// lex symbol
+
+	/*
+	 *	Step 1: reset and push the empty state.
+	 */
+
+	success = true;
+	stack.clear();
+
+	OCYaccTestStack initStack;
+	initStack.state = K_STARTSTATE;
+	initStack.filename = lex->filename();
+	initStack.line = lex->line();
+	initStack.column = lex->column();
+	stack.push_back(initStack);
+
+	/*
+	 *	Now repeat forever:
+	 */
+
+	a = lex->lex();
+
+	for (;;) {
+		OCYaccTestStack &s = stack.back();
+
+		/*
+		 *	Determine if this is the end state. If so, then we immediately
+		 *	quit. We assume the user has set the production rule at the
+		 *	top, so we can simply drop the stack
+		 */
+
+		if (s.state == K_ACCEPTSTATE) {
+			stack.clear();
+			return success;
+		}
+
+		/*
+		 *	Now determine the action and shift, reduce or handle error as
+		 *	appropriate
+		 */
+
+		int32_t action = actionForState(s.state, a);
+
+		if (action == INT_MAX) {
+			/*
+			 *	Handle error. First, note we have an error, and note the
+			 *	symbol on which our error took place.
+			 */
+
+			success = false;		// regardless, we will always fail.
+
+			/*
+			 *	First, scan backwards from the current state, looking for one
+			 *	which has an 'error' symbol.
+			 */
+
+			size_t ix = stack.size();
+			while (ix > 0) {
+				OCYaccTestStack &si = stack[--ix];
+				action = actionForState(si.state, K_ERRORTOKEN);
+				if ((action >= 0) && (action != INT_MAX)) {
+					/*
+					 *	Encountered error state. If the user has defined an
+					 *	error token, we ultimately will want to (a) unwind
+					 *	the stack until we find a state which handles the
+					 *	error transition. We then .
+					 */
+
+					if (ix+1 < stack.size()) {
+						stack.erase(stack.begin() + (ix + 1),stack.end());
+					}
+
+					/*
+					 *	At this point we perform a shift to our new error
+					 *	state.
+					 */
+
+					OCYaccTestStack stmp;
+					stmp.state = action;
+					stmp.value = lex->value();
+					stmp.filename = lex->filename();
+					stmp.line = lex->line();
+					stmp.column = lex->column();
+					stack.push_back(stmp);
+
+					/*
+					 *	Second, we start pulling symbols until we find a symbol
+					 *	that shifts, or until we hit the end of file symbol.
+					 *	This becomes our current token for parsing
+					 */
+
+					for (;;) {
+						a = lex->lex();
+						action = actionForState(s.state, a);
+						if ((action >= 0) && (action != INT_MAX)) {
+							/*
+							 *	Valid shift. This becomes our current token,
+							 *	and we resume processing.
+							 */
+
+							continue;
+
+						} else if (action == K_EOFTOKEN) {
+							/*
+							 *	We ran out of tokens. At this point all
+							 *	we can do is print an error and force quit.
+							 */
+
+							errorWithCode(ERROR_SYNTAX);
+							stack.clear();
+
+							return false;
+						}
+					}
+				}
+			}
+
+			/*
+			 *	If we reach this point, there is no error we can recover to.
+			 *	So figure this out on our own.
+			 *
+			 *	First, we see if the state we're in has a limited number of
+			 *	choices. For example, in C, the 'for' keyword will always be
+			 *	followed by a '(' token, so we can offer to automatically
+			 *	insert that token.
+			 */
+
+			int32_t actionMin = ActionI[s.state];
+			int32_t actionMax = ActionI[s.state + 1];
+			int32_t actionVal = actionMin;
+			int16_t actionState = -1;
+			for (int32_t ix = actionMin; ix < actionMax; ++ix) {
+				int16_t act = ActionA[ix];
+				if (actionState == -1) {
+					if (act >= 0) {
+						actionState = act;
+						actionVal = ix;
+					}
+				} else {
+					actionState = -1;
+					break;
+				}
+			}
+
+			if (actionState != -1) {
+				/*
+				 *	We can accomplish this transition with one token. Print
+				 *	an error, and do a shift on the state with an empty value.
+				 */
+
+				std::string tokenStr = tokenToString(ActionJ[actionVal]);
+				std::map<std::string,std::string> map;
+				map["token"] = tokenStr;
+				errorWithCode(ERROR_MISSINGTOKEN, map);
+
+				/*
+				 *	Perform a shift but do not pull a new token
+				 */
+
+				OCYaccTestStack &top = stack.back();
+
+				OCYaccTestStack stmp;
+				stmp.state = actionState;
+				stmp.value = lex->value();
+				stmp.filename = top.filename;
+				stmp.line = top.line;
+				stmp.column = top.column;
+
+				stack.push_back(stmp);
+				continue;
+			}
+
+			/*
+			 *	See if we have a limited choice in reductions. If this can
+			 *	only reduce to a single state, try that reduction.
+			 */
+
+			actionState = 0;
+			for (int32_t ix = actionMin; ix < actionMax; ++ix) {
+				int16_t act = ActionA[ix];
+				if (actionState == 0) {
+					if ((act < 0) && (actionState != act)) {
+						actionState = act;
+					}
+				} else {
+					actionState = 0;
+					break;
+				}
+			}
+
+			if (actionState != 0) {
+				/*
+				 *	We have one possible reduction. Try that. Note that this
+				 *	will trigger a syntax error since we're reducing down
+				 *	without the follow token. My hope is that the state we
+				 *	transition to has a limited set of next tokens to follow.
+				 */
+
+				reduceByAction(action);
+				continue;
+			}
+
+			/*
+			 *	If we have a limited number of tokens which can follow,
+			 *	print a list of them. Then shift by the first one we
+			 *	find. We don't do this if the number of shifts is greater
+			 *	than five.
+			 */
+
+			if (actionMax - actionMin <= 5) {
+				std::string tlist;
+				for (int32_t ix = actionMin; ix < actionMax; ++ix) {
+					if (ix > actionMin) tlist += ", ";
+					tlist += tokenToString(ActionJ[ix]);
+				}
+
+				std::map<std::string,std::string> map;
+				map["token"] = tlist;
+				errorWithCode(ERROR_MISSINGTOKENS, map);
+
+				/*
+				 *	Now we artificially insert the first of the list of
+				 *	tokens as our action and continue.
+				 */
+
+				a = ActionJ[actionMin];
+				continue;
+			}
+
+			/*
+			 *	If we get here, things just went too far south. So we
+			 *	skip a token, print syntax error and move on
+			 */
+
+			errorWithCode(ERROR_SYNTAX);
+			a = lex->lex();
+			if (a == -1) return false;
+
+		} else if (action >= 0) {
+			/*
+			 *	Shift operation.
+			 */
+
+			// Shift
+			OCYaccTestStack stmp;
+			stmp.state = action;
+			stmp.value = lex->value();
+			stmp.filename = lex->filename();
+			stmp.line = lex->line();
+			stmp.column = lex->column();
+
+			stack.push_back(stmp);
+
+			// Advance to next token.
+			a = lex->lex();
+
+			// Decrement our error count. If this is non-zero we're in an
+			// error state, and we don't pass spurrous errors upwards
+			if (errorCount) --errorCount;
+
+		} else {
+			/*
+			 *	Reduce action. (Reduce is < 0, and the production to reduce
+			 *	by is given below
+			 */
+
+			action = -action-1;
+
+			if (!reduceByAction(action)) {
+				// If there is an error, this handles the error.
+				// (This should not happen in practice).
+				errorWithCode(ERROR_SYNTAX);
+
+				// Advance to next token.
+				a = lex->lex();
+			}
+		}
+	}
 }

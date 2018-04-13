@@ -404,7 +404,284 @@ static const char *GSource6 = // 10
 	"\n"                                                                      \
 	"bool %s::parse()\n"                                                      \
 	"{\n"                                                                     \
-	"\treturn false;\n"                                                       \
+	"\tint32_t a;\t\t\t\t// lex symbol\n"                                     \
+	"\n"                                                                      \
+	"\t/*\n"                                                                  \
+	"\t *\tStep 1: reset and push the empty state.\n"                         \
+	"\t */\n"                                                                 \
+	"\n"                                                                      \
+	"\tsuccess = true;\n"                                                     \
+	"\tstack.clear();\n"                                                      \
+	"\n"                                                                      \
+	"\t%sStack initStack;\n"                                                  \
+	"\tinitStack.state = K_STARTSTATE;\n"                                     \
+	"\tinitStack.filename = lex->filename();\n"                               \
+	"\tinitStack.line = lex->line();\n"                                       \
+	"\tinitStack.column = lex->column();\n"                                   \
+	"\tstack.push_back(initStack);\n"                                         \
+	"\n"                                                                      \
+	"\t/*\n"                                                                  \
+	"\t *\tNow repeat forever:\n"                                             \
+	"\t */\n"                                                                 \
+	"\n"                                                                      \
+	"\ta = lex->lex();\n"                                                     \
+	"\n"                                                                      \
+	"\tfor (;;) {\n"                                                          \
+	"\t\t%sStack &s = stack.back();\n"                                        \
+	"\n"                                                                      \
+	"\t\t/*\n"                                                                \
+	"\t\t *\tDetermine if this is the end state. If so, then we immediately\n" \
+	"\t\t *\tquit. We assume the user has set the production rule at the\n"   \
+	"\t\t *\ttop, so we can simply drop the stack\n"                          \
+	"\t\t */\n"                                                               \
+	"\n"                                                                      \
+	"\t\tif (s.state == K_ACCEPTSTATE) {\n"                                   \
+	"\t\t\tstack.clear();\n"                                                  \
+	"\t\t\treturn success;\n"                                                 \
+	"\t\t}\n"                                                                 \
+	"\n"                                                                      \
+	"\t\t/*\n"                                                                \
+	"\t\t *\tNow determine the action and shift, reduce or handle error as\n" \
+	"\t\t *\tappropriate\n"                                                   \
+	"\t\t */\n"                                                               \
+	"\n"                                                                      \
+	"\t\tint32_t action = actionForState(s.state, a);\n"                      \
+	"\n"                                                                      \
+	"\t\tif (action == INT_MAX) {\n"                                          \
+	"\t\t\t/*\n"                                                              \
+	"\t\t\t *\tHandle error. First, note we have an error, and note the\n"    \
+	"\t\t\t *\tsymbol on which our error took place.\n"                       \
+	"\t\t\t */\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\tsuccess = false;\t\t// regardless, we will always fail.\n"         \
+	"\n"                                                                      \
+	"\t\t\t/*\n"                                                              \
+	"\t\t\t *\tFirst, scan backwards from the current state, looking for one\n" \
+	"\t\t\t *\twhich has an \'error\' symbol.\n"                              \
+	"\t\t\t */\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\tsize_t ix = stack.size();\n"                                       \
+	"\t\t\twhile (ix > 0) {\n"                                                \
+	"\t\t\t\t%sStack &si = stack[--ix];\n"                                    \
+	"\t\t\t\taction = actionForState(si.state, K_ERRORTOKEN);\n"              \
+	"\t\t\t\tif ((action >= 0) && (action != INT_MAX)) {\n"                   \
+	"\t\t\t\t\t/*\n"                                                          \
+	"\t\t\t\t\t *\tEncountered error state. If the user has defined an\n"     \
+	"\t\t\t\t\t *\terror token, we ultimately will want to (a) unwind\n"      \
+	"\t\t\t\t\t *\tthe stack until we find a state which handles the\n"       \
+	"\t\t\t\t\t *\terror transition. We then .\n"                             \
+	"\t\t\t\t\t */\n"                                                         \
+	"\n"                                                                      \
+	"\t\t\t\t\tif (ix+1 < stack.size()) {\n"                                  \
+	"\t\t\t\t\t\tstack.erase(stack.begin() + (ix + 1),stack.end());\n"        \
+	"\t\t\t\t\t}\n"                                                           \
+	"\n"                                                                      \
+	"\t\t\t\t\t/*\n"                                                          \
+	"\t\t\t\t\t *\tAt this point we perform a shift to our new error\n"       \
+	"\t\t\t\t\t *\tstate.\n"                                                  \
+	"\t\t\t\t\t */\n"                                                         \
+	"\n"                                                                      \
+	"\t\t\t\t\t%sStack stmp;\n"                                               \
+	"\t\t\t\t\tstmp.state = action;\n"                                        \
+	"\t\t\t\t\tstmp.value = lex->value();\n"                                  \
+	"\t\t\t\t\tstmp.filename = lex->filename();\n"                            \
+	"\t\t\t\t\tstmp.line = lex->line();\n"                                    \
+	"\t\t\t\t\tstmp.column = lex->column();\n"                                \
+	"\t\t\t\t\tstack.push_back(stmp);\n"                                      \
+	"\n"                                                                      \
+	"\t\t\t\t\t/*\n"                                                          \
+	"\t\t\t\t\t *\tSecond, we start pulling symbols until we find a symbol\n" \
+	"\t\t\t\t\t *\tthat shifts, or until we hit the end of file symbol.\n"    \
+	"\t\t\t\t\t *\tThis becomes our current token for parsing\n"              \
+	"\t\t\t\t\t */\n"                                                         \
+	"\n"                                                                      \
+	"\t\t\t\t\tfor (;;) {\n"                                                  \
+	"\t\t\t\t\t\ta = lex->lex();\n"                                           \
+	"\t\t\t\t\t\taction = actionForState(s.state, a);\n"                      \
+	"\t\t\t\t\t\tif ((action >= 0) && (action != INT_MAX)) {\n"               \
+	"\t\t\t\t\t\t\t/*\n"                                                      \
+	"\t\t\t\t\t\t\t *\tValid shift. This becomes our current token,\n"        \
+	"\t\t\t\t\t\t\t *\tand we resume processing.\n"                           \
+	"\t\t\t\t\t\t\t */\n"                                                     \
+	"\n"                                                                      \
+	"\t\t\t\t\t\t\tcontinue;\n"                                               \
+	"\n"                                                                      \
+	"\t\t\t\t\t\t} else if (action == K_EOFTOKEN) {\n"                        \
+	"\t\t\t\t\t\t\t/*\n"                                                      \
+	"\t\t\t\t\t\t\t *\tWe ran out of tokens. At this point all\n"             \
+	"\t\t\t\t\t\t\t *\twe can do is print an error and force quit.\n"         \
+	"\t\t\t\t\t\t\t */\n"                                                     \
+	"\n"                                                                      \
+	"\t\t\t\t\t\t\terrorWithCode(ERROR_SYNTAX);\n"                            \
+	"\t\t\t\t\t\t\tstack.clear();\n"                                          \
+	"\n"                                                                      \
+	"\t\t\t\t\t\t\treturn false;\n"                                           \
+	"\t\t\t\t\t\t}\n"                                                         \
+	"\t\t\t\t\t}\n"                                                           \
+	"\t\t\t\t}\n"                                                             \
+	"\t\t\t}\n"                                                               \
+	"\n"                                                                      \
+	"\t\t\t/*\n"                                                              \
+	"\t\t\t *\tIf we reach this point, there is no error we can recover to.\n" \
+	"\t\t\t *\tSo figure this out on our own.\n"                              \
+	"\t\t\t *\n"                                                              \
+	"\t\t\t *\tFirst, we see if the state we\'re in has a limited number of\n" \
+	"\t\t\t *\tchoices. For example, in C, the \'for\' keyword will always be\n" \
+	"\t\t\t *\tfollowed by a \'(\' token, so we can offer to automatically\n" \
+	"\t\t\t *\tinsert that token.\n"                                          \
+	"\t\t\t */\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\tint32_t actionMin = ActionI[s.state];\n"                           \
+	"\t\t\tint32_t actionMax = ActionI[s.state + 1];\n"                       \
+	"\t\t\tint32_t actionVal = actionMin;\n"                                  \
+	"\t\t\tint16_t actionState = -1;\n"                                       \
+	"\t\t\tfor (int32_t ix = actionMin; ix < actionMax; ++ix) {\n"            \
+	"\t\t\t\tint16_t act = ActionA[ix];\n"                                    \
+	"\t\t\t\tif (actionState == -1) {\n"                                      \
+	"\t\t\t\t\tif (act >= 0) {\n"                                             \
+	"\t\t\t\t\t\tactionState = act;\n"                                        \
+	"\t\t\t\t\t\tactionVal = ix;\n"                                           \
+	"\t\t\t\t\t}\n"                                                           \
+	"\t\t\t\t} else {\n"                                                      \
+	"\t\t\t\t\tactionState = -1;\n"                                           \
+	"\t\t\t\t\tbreak;\n"                                                      \
+	"\t\t\t\t}\n"                                                             \
+	"\t\t\t}\n"                                                               \
+	"\n"                                                                      \
+	"\t\t\tif (actionState != -1) {\n"                                        \
+	"\t\t\t\t/*\n"                                                            \
+	"\t\t\t\t *\tWe can accomplish this transition with one token. Print\n"   \
+	"\t\t\t\t *\tan error, and do a shift on the state with an empty value.\n" \
+	"\t\t\t\t */\n"                                                           \
+	"\n"                                                                      \
+	"\t\t\t\tstd::string tokenStr = tokenToString(ActionJ[actionVal]);\n"     \
+	"\t\t\t\tstd::map<std::string,std::string> map;\n"                        \
+	"\t\t\t\tmap[\"token\"] = tokenStr;\n"                                    \
+	"\t\t\t\terrorWithCode(ERROR_MISSINGTOKEN, map);\n"                       \
+	"\n"                                                                      \
+	"\t\t\t\t/*\n"                                                            \
+	"\t\t\t\t *\tPerform a shift but do not pull a new token\n"               \
+	"\t\t\t\t */\n"                                                           \
+	"\n"                                                                      \
+	"\t\t\t\t%sStack &top = stack.back();\n"                                  \
+	"\n"                                                                      \
+	"\t\t\t\t%sStack stmp;\n"                                                 \
+	"\t\t\t\tstmp.state = actionState;\n"                                     \
+	"\t\t\t\tstmp.value = lex->value();\n"                                    \
+	"\t\t\t\tstmp.filename = top.filename;\n"                                 \
+	"\t\t\t\tstmp.line = top.line;\n"                                         \
+	"\t\t\t\tstmp.column = top.column;\n"                                     \
+	"\n"                                                                      \
+	"\t\t\t\tstack.push_back(stmp);\n"                                        \
+	"\t\t\t\tcontinue;\n"                                                     \
+	"\t\t\t}\n"                                                               \
+	"\n"                                                                      \
+	"\t\t\t/*\n"                                                              \
+	"\t\t\t *\tSee if we have a limited choice in reductions. If this can\n"  \
+	"\t\t\t *\tonly reduce to a single state, try that reduction.\n"          \
+	"\t\t\t */\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\tactionState = 0;\n"                                                \
+	"\t\t\tfor (int32_t ix = actionMin; ix < actionMax; ++ix) {\n"            \
+	"\t\t\t\tint16_t act = ActionA[ix];\n"                                    \
+	"\t\t\t\tif (actionState == 0) {\n"                                       \
+	"\t\t\t\t\tif ((act < 0) && (actionState != act)) {\n"                    \
+	"\t\t\t\t\t\tactionState = act;\n"                                        \
+	"\t\t\t\t\t}\n"                                                           \
+	"\t\t\t\t} else {\n"                                                      \
+	"\t\t\t\t\tactionState = 0;\n"                                            \
+	"\t\t\t\t\tbreak;\n"                                                      \
+	"\t\t\t\t}\n"                                                             \
+	"\t\t\t}\n"                                                               \
+	"\n"                                                                      \
+	"\t\t\tif (actionState != 0) {\n"                                         \
+	"\t\t\t\t/*\n"                                                            \
+	"\t\t\t\t *\tWe have one possible reduction. Try that. Note that this\n"  \
+	"\t\t\t\t *\twill trigger a syntax error since we\'re reducing down\n"    \
+	"\t\t\t\t *\twithout the follow token. My hope is that the state we\n"    \
+	"\t\t\t\t *\ttransition to has a limited set of next tokens to follow.\n" \
+	"\t\t\t\t */\n"                                                           \
+	"\n"                                                                      \
+	"\t\t\t\treduceByAction(action);\n"                                       \
+	"\t\t\t\tcontinue;\n"                                                     \
+	"\t\t\t}\n"                                                               \
+	"\n"                                                                      \
+	"\t\t\t/*\n"                                                              \
+	"\t\t\t *\tIf we have a limited number of tokens which can follow,\n"     \
+	"\t\t\t *\tprint a list of them. Then shift by the first one we\n"        \
+	"\t\t\t *\tfind. We don\'t do this if the number of shifts is greater\n"  \
+	"\t\t\t *\tthan five.\n"                                                  \
+	"\t\t\t */\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\tif (actionMax - actionMin <= 5) {\n"                               \
+	"\t\t\t\tstd::string tlist;\n"                                            \
+	"\t\t\t\tfor (int32_t ix = actionMin; ix < actionMax; ++ix) {\n"          \
+	"\t\t\t\t\tif (ix > actionMin) tlist += \", \";\n"                        \
+	"\t\t\t\t\ttlist += tokenToString(ActionJ[ix]);\n"                        \
+	"\t\t\t\t}\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\t\tstd::map<std::string,std::string> map;\n"                        \
+	"\t\t\t\tmap[\"token\"] = tlist;\n"                                       \
+	"\t\t\t\terrorWithCode(ERROR_MISSINGTOKENS, map);\n"                      \
+	"\n"                                                                      \
+	"\t\t\t\t/*\n"                                                            \
+	"\t\t\t\t *\tNow we artificially insert the first of the list of\n"       \
+	"\t\t\t\t *\ttokens as our action and continue.\n"                        \
+	"\t\t\t\t */\n"                                                           \
+	"\n"                                                                      \
+	"\t\t\t\ta = ActionJ[actionMin];\n"                                       \
+	"\t\t\t\tcontinue;\n"                                                     \
+	"\t\t\t}\n"                                                               \
+	"\n"                                                                      \
+	"\t\t\t/*\n"                                                              \
+	"\t\t\t *\tIf we get here, things just went too far south. So we\n"       \
+	"\t\t\t *\tskip a token, print syntax error and move on\n"                \
+	"\t\t\t */\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\terrorWithCode(ERROR_SYNTAX);\n"                                    \
+	"\t\t\ta = lex->lex();\n"                                                 \
+	"\t\t\tif (a == -1) return false;\n"                                      \
+	"\n"                                                                      \
+	"\t\t} else if (action >= 0) {\n"                                         \
+	"\t\t\t/*\n"                                                              \
+	"\t\t\t *\tShift operation.\n"                                            \
+	"\t\t\t */\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\t// Shift\n"                                                        \
+	"\t\t\t%sStack stmp;\n"                                                   \
+	"\t\t\tstmp.state = action;\n"                                            \
+	"\t\t\tstmp.value = lex->value();\n"                                      \
+	"\t\t\tstmp.filename = lex->filename();\n"                                \
+	"\t\t\tstmp.line = lex->line();\n"                                        \
+	"\t\t\tstmp.column = lex->column();\n"                                    \
+	"\n"                                                                      \
+	"\t\t\tstack.push_back(stmp);\n"                                          \
+	"\n"                                                                      \
+	"\t\t\t// Advance to next token.\n"                                       \
+	"\t\t\ta = lex->lex();\n"                                                 \
+	"\n"                                                                      \
+	"\t\t\t// Decrement our error count. If this is non-zero we\'re in an\n"  \
+	"\t\t\t// error state, and we don\'t pass spurrous errors upwards\n"      \
+	"\t\t\tif (errorCount) --errorCount;\n"                                   \
+	"\n"                                                                      \
+	"\t\t} else {\n"                                                          \
+	"\t\t\t/*\n"                                                              \
+	"\t\t\t *\tReduce action. (Reduce is < 0, and the production to reduce\n" \
+	"\t\t\t *\tby is given below\n"                                           \
+	"\t\t\t */\n"                                                             \
+	"\n"                                                                      \
+	"\t\t\taction = -action-1;\n"                                             \
+	"\n"                                                                      \
+	"\t\t\tif (!reduceByAction(action)) {\n"                                  \
+	"\t\t\t\t// If there is an error, this handles the error.\n"              \
+	"\t\t\t\t// (This should not happen in practice).\n"                      \
+	"\t\t\t\terrorWithCode(ERROR_SYNTAX);\n"                                  \
+	"\n"                                                                      \
+	"\t\t\t\t// Advance to next token.\n"                                     \
+	"\t\t\t\ta = lex->lex();\n"                                               \
+	"\t\t\t}\n"                                                               \
+	"\t\t}\n"                                                                 \
+	"\t}\n"                                                                   \
 	"}\n";
 
 
@@ -818,7 +1095,8 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	fprintf(f, GSource6, classname, classname, classname, classname,
 						 classname, classname, classname, classname,
 						 classname, classname, classname, classname,
-						 classname);
+						 classname, classname, classname, classname,
+						 classname, classname, classname, classname);
 }
 
 /*	OCYaccCPPGenerator::WriteOCHeader
