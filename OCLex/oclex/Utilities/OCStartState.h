@@ -95,4 +95,4 @@ class OCStartState
 		std::list<std::string> fStates;
 };
 
-#endif /* OCStartSet_hpp */
+#endif /* OCStartSet_h */

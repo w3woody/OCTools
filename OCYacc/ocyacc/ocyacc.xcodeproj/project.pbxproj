@@ -17,6 +17,8 @@
 		EFBF28A01F3D14DC00935504 /* OCYaccTestLR0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF28991F3D14DC00935504 /* OCYaccTestLR0.cpp */; };
 		EFBF28A11F3D14DC00935504 /* OCYaccTestLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF289B1F3D14DC00935504 /* OCYaccTestLR1.cpp */; };
 		EFBF28A21F3D14DC00935504 /* OCYaccTestSLR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF289D1F3D14DC00935504 /* OCYaccTestSLR.cpp */; };
+		EFCC76D42080261100EC2B55 /* OCYaccCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCC76D22080261100EC2B55 /* OCYaccCPPGenerator.cpp */; };
+		EFCC76D52080261700EC2B55 /* OCYaccCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCC76D22080261100EC2B55 /* OCYaccCPPGenerator.cpp */; };
 		EFF29F4F1F3D271D00024C76 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */; };
 		EFF29F501F3D271D00024C76 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */; };
 		EFF29F531F407B8200024C76 /* OCYaccGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */; };
@@ -68,6 +70,8 @@
 		EFBF289C1F3D14DC00935504 /* OCYaccTestLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestLR1.h; sourceTree = "<group>"; };
 		EFBF289D1F3D14DC00935504 /* OCYaccTestSLR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccTestSLR.cpp; sourceTree = "<group>"; };
 		EFBF289E1F3D14DC00935504 /* OCYaccTestSLR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestSLR.h; sourceTree = "<group>"; };
+		EFCC76D22080261100EC2B55 /* OCYaccCPPGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccCPPGenerator.cpp; sourceTree = "<group>"; };
+		EFCC76D32080261100EC2B55 /* OCYaccCPPGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCYaccCPPGenerator.h; sourceTree = "<group>"; };
 		EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccLR1.cpp; sourceTree = "<group>"; };
 		EFF29F4E1F3D271D00024C76 /* OCYaccLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccLR1.h; sourceTree = "<group>"; };
 		EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccGenerator.cpp; sourceTree = "<group>"; };
@@ -173,6 +177,8 @@
 				EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */,
 				EFF29F521F407B8200024C76 /* OCYaccGenerator.h */,
 				EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */,
+				EFCC76D32080261100EC2B55 /* OCYaccCPPGenerator.h */,
+				EFCC76D22080261100EC2B55 /* OCYaccCPPGenerator.cpp */,
 			);
 			path = Process;
 			sourceTree = "<group>";
@@ -262,6 +268,7 @@
 				EF0111FA1F281103006FFFFB /* OCYaccParser.cpp in Sources */,
 				EFF29F531F407B8200024C76 /* OCYaccGenerator.cpp in Sources */,
 				EF0111C21F263FBA006FFFFB /* main.cpp in Sources */,
+				EFCC76D42080261100EC2B55 /* OCYaccCPPGenerator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +284,7 @@
 				EF0112021F283240006FFFFB /* test.cpp in Sources */,
 				EFBF28A11F3D14DC00935504 /* OCYaccTestLR1.cpp in Sources */,
 				EFF29F501F3D271D00024C76 /* OCYaccLR1.cpp in Sources */,
+				EFCC76D52080261700EC2B55 /* OCYaccCPPGenerator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

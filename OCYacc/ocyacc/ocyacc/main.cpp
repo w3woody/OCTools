@@ -12,6 +12,7 @@
 #include "OCYaccParser.h"
 #include "OCYaccLR1.h"
 #include "OCYaccGenerator.h"
+#include "OCYaccCPPGenerator.h"
 
 static const char *GHelp =
 	"ocyacc\n"                                                                \
@@ -265,28 +266,53 @@ int main(int argc, const char * argv[])
 	 *	Now generate the output file
 	 */
 
-	OCYaccGenerator generator(parser,stateMachine);
+	if (GLanguage == KLanguageOP) {
+		OCYaccGenerator generator(parser,stateMachine);
 
-	// Now write the final output files
-	strncpy(scratch,GOutputFile,sizeof(scratch)-1);
-	strncat(scratch,".h",sizeof(scratch) - strlen(scratch) - 1);
-	FILE *out = fopen(scratch,"w");
-	if (out == NULL) {
-		printf("Unable to write to file %s\n\n",scratch);
-		PrintError(argc, argv);
-	}
-	generator.WriteOCHeader(GClassName, GOutputFileName, out);
-	fclose(out);
+		// Now write the final output files
+		strncpy(scratch,GOutputFile,sizeof(scratch)-1);
+		strncat(scratch,".h",sizeof(scratch) - strlen(scratch) - 1);
+		FILE *out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCHeader(GClassName, GOutputFileName, out);
+		fclose(out);
 
-	strncpy(scratch,GOutputFile,sizeof(scratch));
-	strncat(scratch,".m",sizeof(scratch) - strlen(scratch) - 1);
-	out = fopen(scratch,"w");
-	if (out == NULL) {
-		printf("Unable to write to file %s\n\n",scratch);
-		PrintError(argc, argv);
+		strncpy(scratch,GOutputFile,sizeof(scratch));
+		strncat(scratch,".m",sizeof(scratch) - strlen(scratch) - 1);
+		out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCFile(GClassName, GOutputFileName, out);
+		fclose(out);
+	} else if (GLanguage == KLanguageCPP) {
+		OCYaccCPPGenerator generator(parser,stateMachine);
+
+		// Now write the final output files
+		strncpy(scratch,GOutputFile,sizeof(scratch)-1);
+		strncat(scratch,".h",sizeof(scratch) - strlen(scratch) - 1);
+		FILE *out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCHeader(GClassName, GOutputFileName, out);
+		fclose(out);
+
+		strncpy(scratch,GOutputFile,sizeof(scratch));
+		strncat(scratch,".cpp",sizeof(scratch) - strlen(scratch) - 1);
+		out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCFile(GClassName, GOutputFileName, out);
+		fclose(out);
 	}
-	generator.WriteOCFile(GClassName, GOutputFileName, out);
-	fclose(out);
 
 	/*
 	 *	Done.

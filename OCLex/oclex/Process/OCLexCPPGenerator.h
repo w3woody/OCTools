@@ -1,5 +1,5 @@
 //
-//  OCLexCPPGenerator.hpp
+//  OCLexCPPGenerator.h
 //  oclex
 //
 //  Created by William Woody on 4/12/18.
@@ -50,4 +50,4 @@ class OCLexCPPGenerator : public OCLexDFA
 		void WriteStates(FILE *f);
 };
 
-#endif /* OCLexCPPGenerator_hpp */
+#endif /* OCLexCPPGenerator_h */
