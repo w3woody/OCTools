@@ -114,6 +114,13 @@ After this is done, yacc and lex files will be compiled to .h and .m files of th
 
 This would create two Objective-C classes with names MyLangLex and MyLangParser. (If you give them the same name, you'll create two classes with the same name, and this is the path to ruin. Or at least confusion.)
 
+## New Features
+
+### April 15, 2018
+
+* Added %finish declaration token, for inserting code into the generated class's destructor/dealloc method.
+* Added C++ generator. This is an untested experimental feature and is subject to change.
+
 ## License
 
 Licensed under the open-source BSD license:

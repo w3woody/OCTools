@@ -47,17 +47,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Usage
 
-Usage: oclex [-h] [-o filename] [-c classname] inputfile
+Usage: oclex [-h] [-l [oc|cpp]] [-o filename] [-c classname] inputfile
 
 * -h  
+
     Prints this help file. This help file will also be printed if any illegal
     parameters are provided. 
+    
+* -l [oc|cpp] 
+
+    Choose language. Currently supports Objective-C by default. Can generate
+    a re-entrant C++ file instead. (This feature is currently experimental.)
 
 * -o  
+
     Uses the file name as the base name for the output files. (By default 
     this uses the input file name as the base name for the output files.) 
 
 * -c  
+
     Uses the specified class name for the generated class. (By default this 
     uses the input file name as the class name.)
 
@@ -166,7 +174,21 @@ write:
         @property (assign) NSInteger intProperty;
     }
 
-Note that all five sections are optional in the OCLex file, and may be
+Sixth is initializer code that can be inserted into the initializer of your class. This is code that can be used to set up any internal state. For example, if you need to set your intProperty to 1, you can write: 
+
+    %init {
+        intProperty = 1;
+    }
+
+Seventh is code run when the class is torn down. Normally in Objective-C you probably don't need to provide this, but sometimes you may wish to if, for example, you need to insert some shutdown code to release internal state (such as unregistering your class from receiving notifications), you can write: 
+
+    %finish {
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    }
+
+This would insert the line of code in the %finish bracket into the Objective-C's `dealloc` method.
+
+Note that all seven sections are optional in the OCLex file, and may be
 omitted. 
 
 ##### Optional Rule Support
