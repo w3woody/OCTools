@@ -167,30 +167,7 @@ static const char *GSource2 =		// 0
 	"/************************************************************************/\n"
 	"\n";
 
-static const char *GSource3 = // 4
-	"/************************************************************************/\n" \
-	"/*                                                                      */\n" \
-	"/*  Internal Structures\t\t\t\t\t\t\t\t\t\t\t\t\t*/\n"                   \
-	"/*                                                                      */\n" \
-	"/************************************************************************/\n" \
-	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tInternal parser stack\n"                                             \
-	" */\n"                                                                   \
-	"\n"                                                                      \
-	"@interface %sStack: NSObject\n"                                          \
-	"@property (assign) uint16_t state;\n"                                    \
-	"@property (assign) NSInteger line;\n"                                    \
-	"@property (assign) NSInteger column;\n"                                  \
-	"@property (copy) NSString *filename;\n"                                  \
-	"\n"                                                                      \
-	"/* Represent the intermediate values for reduction rule values */\n"     \
-	"@property (strong) id<NSObject> value;\n"                                \
-	"@end\n"                                                                  \
-	"\n"                                                                      \
-	"@implementation %sStack\n"                                               \
-	"@end\n"                                                                  \
-	"\n"                                                                      \
+static const char *GSource3 = // 2
 	"/************************************************************************/\n" \
 	"/*                                                                      */\n" \
 	"/*  Parser Code\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t*/\n"                       \
@@ -198,66 +175,42 @@ static const char *GSource3 = // 4
 	"/************************************************************************/\n" \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
-	" *\tClass internals\n"                                                   \
+	" *\tConstruction\n"                                                      \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"@interface %s ()\n"                                                      \
-	"@property (strong) NSMutableArray<%sStack *> *stack;\n"                  \
-	"@property (strong) id<OCLexInput> lex;\n"                                \
-	"\n"                                                                      \
-	"// Error support\n"                                                      \
-	"@property (assign) BOOL success;\n"                                      \
-	"\n"                                                                      \
-	"@property (assign) NSInteger errorCount;\n"                              \
-	"\n"                                                                      \
-	"// Yacc class declarations\n";
-
-static const char *GSource4 = // 1
-	"@end\n"                                                                  \
-	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tGenerated class\n"                                                   \
-	" */\n"                                                                   \
-	"\n"                                                                      \
-	"@implementation %s\n"                                                    \
-	"\n"                                                                      \
-	"/*\n"                                                                    \
-	" *\tStartup\n"                                                           \
-	" */\n"                                                                   \
-	"\n"                                                                      \
-	"- (instancetype)initWithLexer:(id<OCLexInput>)lexer\n"                   \
+	"%s::%s(OCLexInput *l)\n"                                                 \
 	"{\n"                                                                     \
-	"\tif (nil != (self = [super init])) {\n"                                 \
-	"\t\tself.lex = lexer;\n"                                                 \
-	"\n"                                                                      \
-	"\t\t/*\n"                                                                \
-	"\t\t *\tAlloc stack\n"                                                   \
-	"\t\t */\n"                                                               \
-	"\n"                                                                      \
-	"\t\tself.stack = [[NSMutableArray alloc] init];\n";
+	"\tlex = l;\n";
 
-static const char *GSource5 = // 0
-	"\t}\n"                                                                   \
-	"\treturn self;\n"                                                        \
+static const char *GSource4 = // 2
+	"}\n"                                                                     \
+	"\n"                                                                      \
+	"/*\n"                                                                    \
+	" *\tDestruction\n"                                                       \
+	" */\n"                                                                   \
+	"\n"                                                                      \
+	"%s::~%s()\n"                                                             \
+	"{\n"                                                                     \
 	"}\n"                                                                     \
 	"\n";
 
-static const char *GSource6 = // 4
+static const char *GSource5 = // 4
+	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tProcess production rule. This processes the production rule and creates\n" \
 	" *\ta new stack state with the rule reduction.\n"                        \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (%sStack *)processReduction:(NSInteger)rule\n"                         \
+	"%sStack %s::processReduction(int16_t rule)\n"                            \
 	"{\n"                                                                     \
 	"\t// Get production len, for translating $1...$N into something useful\n" \
-	"\tNSInteger pos = self.stack.count - RuleLength[rule];\n"                \
+	"\tint32_t pos = (int32_t)stack.size() - RuleLength[rule];\n"             \
 	"\n"                                                                      \
 	"\t// Set up initial state.\n"                                            \
-	"\t%sStack *s = [[%sStack alloc] init];\n"                                \
+	"\t%sStack s;\n"                                                          \
 	"\n"                                                                      \
 	"\t// File position of reduced rule is first token of the symbols reduced\n" \
-	"\t%sStack *fs = self.stack[pos];\n"                                      \
+	"\t%sStack &fs = stack[pos];\n"                                           \
 	"\ts.filename = fs.filename;\n"                                           \
 	"\ts.line = fs.line;\n"                                                   \
 	"\ts.column = fs.column;\n"                                               \
@@ -268,21 +221,18 @@ static const char *GSource6 = // 4
 	"\t// $n translates into ((<type> *)(self.stack[pos+(n-1)])), where <type>\n" \
 	"\t// is the declared type of the token or production rule.\n"            \
 	"\n"                                                                      \
-	"\t@try {\n"                                                              \
+	"\ttry {\n"                                                               \
 	"\t\tswitch (rule) {\n";
 
-static const char *GSource7 = // 11
+static const char *GSource6 = // 10
 	"\t\t\tdefault:\n"                                                        \
 	"\t\t\t\tbreak;\n"                                                        \
 	"\t\t}\n"                                                                 \
 	"\t}\n"                                                                   \
-	"\t@catch (NSException *exception) {\n"                                   \
-	"\t\t/* This can happen in the event we start seeing errors */\n"         \
+	"\tcatch (...) {\n"                                                       \
 	"\t}\n"                                                                   \
-	"\n"                                                                      \
 	"\treturn s;\n"                                                           \
 	"}\n"                                                                     \
-	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tLook up the action value for the state and token values provided. This\n" \
 	" *\tparses through the ActionI, ActionJ and ActionA lists to find the correct\n" \
@@ -290,7 +240,7 @@ static const char *GSource7 = // 11
 	" *\terror entry.\n"                                                      \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (NSInteger)actionForState:(NSInteger)state token:(NSInteger)token\n"   \
+	"int32_t %s::actionForState(int32_t state, int32_t token)\n"              \
 	"{\n"                                                                     \
 	"\tsize_t min,max,mid;\n"                                                 \
 	"\n"                                                                      \
@@ -304,7 +254,7 @@ static const char *GSource7 = // 11
 	"\t/* Binary search for value in ja */\n"                                 \
 	"\twhile (min < max) {\n"                                                 \
 	"\t\tmid = (min + max)/2;\n"                                              \
-	"\t\tNSInteger j = ActionJ[mid];\n"                                       \
+	"\t\tuint32_t j = ActionJ[mid];\n"                                        \
 	"\t\tif (token == j) {\n"                                                 \
 	"\t\t\treturn ActionA[mid];\n"                                            \
 	"\t\t} else if (token < j) {\n"                                           \
@@ -313,7 +263,7 @@ static const char *GSource7 = // 11
 	"\t\t\tmin = mid+1;\n"                                                    \
 	"\t\t}\n"                                                                 \
 	"\t}\n"                                                                   \
-	"\treturn NSIntegerMax;\n"                                                \
+	"\treturn INT_MAX;\n"                                                     \
 	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
@@ -323,7 +273,7 @@ static const char *GSource7 = // 11
 	" *\ttokens do not overlap).\n"                                           \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (NSInteger)gotoForState:(NSInteger)state production:(NSInteger)token\n" \
+	"int32_t %s::gotoForState(int32_t state, int32_t token)\n"                \
 	"{\n"                                                                     \
 	"\tsize_t min,max,mid;\n"                                                 \
 	"\n"                                                                      \
@@ -334,7 +284,7 @@ static const char *GSource7 = // 11
 	"\t/* Binary search for value in ja */\n"                                 \
 	"\twhile (min < max) {\n"                                                 \
 	"\t\tmid = (min + max)/2;\n"                                              \
-	"\t\tNSInteger j = GotoJ[mid];\n"                                         \
+	"\t\tint32_t j = GotoJ[mid];\n"                                           \
 	"\t\tif (token == j) {\n"                                                 \
 	"\t\t\treturn GotoA[mid];\n"                                              \
 	"\t\t} else if (token < j) {\n"                                           \
@@ -343,85 +293,108 @@ static const char *GSource7 = // 11
 	"\t\t\tmin = mid+1;\n"                                                    \
 	"\t\t}\n"                                                                 \
 	"\t}\n"                                                                   \
-	"\treturn NSIntegerMax;\n"                                                \
+	"\treturn INT_MAX;\n"                                                     \
+	"}\n"                                                                     \
+	"\n"                                                                      \
+	"/*\t%s::error\n"                                                         \
+	" *\n"                                                                    \
+	" *\t\tOverride this if you want error reporting\n"                       \
+	" */\n"                                                                   \
+	"\n"                                                                      \
+	"void %s::error(int32_t line, int32_t col, std::string fname, int32_t errCode, std::map<std::string,std::string> &map)\n" \
+	"{\n"                                                                     \
+	"\t// By default this does nothing.\n"                                    \
 	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tErrors. This formats and prints the specified error\n"               \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (void)errorWithCode:(NSInteger)code data:(NSDictionary<NSString *, id<NSObject>> *)data\n" \
+	"void %s::errorWithCode(int32_t code, std::map<std::string,std::string> &data)\n" \
 	"{\n"                                                                     \
-	"\tif (self.errorDelegate == nil) return;\t// No error handling, ignore.\n" \
-	"\n"                                                                      \
-	"\tif (self.errorCount > 0) return;\t\t// skip until synced on 3 shifts\n" \
+	"\tif (errorCount > 0) return;\t\t// skip until synced on 3 shifts\n"     \
 	"\n"                                                                      \
 	"\t// Call delegate with current token position\n"                        \
 	"\t// Token position is the topmost symbol\n"                             \
-	"\t%sStack *top = self.stack.lastObject;\n"                               \
-	"\t[self.errorDelegate errorFrom:self line:top.line column:top.column filename:top.filename errorCode:code data:data];\n" \
+	"\t%sStack &top = stack.back();\n"                                        \
+	"\n"                                                                      \
+	"\terror(top.line,top.column,top.filename,code,data);\n"                  \
 	"\n"                                                                      \
 	"\t// And now skip the next 3 token shifts so we don\'t spew garbage.\n"  \
 	"\tif (0 == (code & ERRORMASK_WARNING)) {\n"                              \
-	"\t\tself.success = NO;\n"                                                \
-	"\t\tself.errorCount = 3;\n"                                              \
+	"\t\tsuccess = false;\n"                                                  \
+	"\t\terrorCount = 3;\n"                                                   \
 	"\t}\n"                                                                   \
 	"}\n"                                                                     \
 	"\n"                                                                      \
-	"- (void)errorWithCode:(NSInteger)code\n"                                 \
+	"void %s::errorWithCode(int32_t code)\n"                                  \
 	"{\n"                                                                     \
-	"\t[self errorWithCode:code data:nil];\n"                                 \
+	"\tstd::map<std::string,std::string> empty;\n"                            \
+	"\terrorWithCode(code, empty);\n"                                         \
 	"}\n"                                                                     \
 	"\n"                                                                      \
-	"- (void)errorOK\n"                                                       \
+	"void %s::errorOK()\n"                                                    \
 	"{\n"                                                                     \
-	"\tself.errorCount = 0;\n"                                                \
+	"\terrorCount = 0;\n"                                                     \
 	"}\n"                                                                     \
 	"\n"                                                                      \
-	"- (const NSString *)tokenToString:(uint32_t)token\n"                     \
+	"std::string %s::tokenToString(uint32_t token)\n"                         \
 	"{\n"                                                                     \
 	"\tif (token >= K_FIRSTTOKEN) {\n"                                        \
 	"\t\treturn TokenArray[token - K_FIRSTTOKEN];\n"                          \
-	"\t} else if (token <= 0xFFFF) {\n"                                       \
-	"\t\treturn [NSString stringWithFormat:@\"%%C\",(unichar)token];\n"       \
 	"\t} else {\n"                                                            \
-	"\t\t// Extended UTF-32 character.\n"                                     \
-	"\t\tunichar c[2];\n"                                                     \
-	"\t\ttoken -= 0x10000;\t// Convert to two UTF-16 words\n"                 \
-	"\t\tc[0] = 0xD800 | (0x3FF & (token >> 10));\n"                          \
-	"\t\tc[1] = 0xDC00 | (0x3FF & token);\n"                                  \
-	"\t\treturn [NSString stringWithCharacters:c length:2];\n"                \
+	"\t\t/*\n"                                                                \
+	"\t\t *\tConvert token to UTF-8\n"                                        \
+	"\t\t */\n"                                                               \
+	"\n"                                                                      \
+	"\t\tstd::string ret;\n"                                                  \
+	"\t\tif (token < 0x80) {\n"                                               \
+	"\t\t\tret += (char)token;\n"                                             \
+	"\t\t} else if (token < 0x800) {\n"                                       \
+	"\t\t\tret += (char)(0xC0 | (0x1F & (token >> 6)));\n"                    \
+	"\t\t\tret += (char)(0x80 | (0x3F & (token)));\n"                         \
+	"\t\t} else if (token < 0x10000) {\n"                                     \
+	"\t\t\tret += (char)(0xE0 | (0x0F & (token >> 12)));\n"                   \
+	"\t\t\tret += (char)(0x80 | (0x3F & (token >> 6)));\n"                    \
+	"\t\t\tret += (char)(0x80 | (0x3F & (token)));\n"                         \
+	"\t\t} else {\n"                                                          \
+	"\t\t\tret += (char)(0xF0 | (0x07 & (token >> 18)));\n"                   \
+	"\t\t\tret += (char)(0x80 | (0x3F & (token >> 12)));\n"                   \
+	"\t\t\tret += (char)(0x80 | (0x3F & (token >> 6)));\n"                    \
+	"\t\t\tret += (char)(0x80 | (0x3F & (token)));\n"                         \
+	"\t\t}\n"                                                                 \
+	"\t\treturn ret;\n"                                                       \
 	"\t}\n"                                                                   \
 	"}\n"                                                                     \
 	"\n"                                                                      \
-	"- (BOOL)reduceByAction:(int16_t)action\n"                                \
+	"bool %s::reduceByAction(int16_t action)\n"                               \
 	"{\n"                                                                     \
 	"\t// Determine the new state we\'re transitioning to.\n"                 \
 	"\tuint32_t production = RuleProduction[action];\n"                       \
-	"\tNSInteger length = RuleLength[action];\n"                              \
+	"\tuint8_t length = RuleLength[action];\n"                                \
 	"\n"                                                                      \
 	"\t// We pull the state we\'d have after popping the stack.\n"            \
-	"\tNSInteger statep = self.stack[[self.stack count] - length - 1].state;\n" \
+	"\tuint16_t statep = stack[stack.size() - length - 1].state;\n"           \
 	"\n"                                                                      \
 	"\t// Now calculate the state we should transition to\n"                  \
-	"\tNSInteger newState = [self gotoForState:statep production:production];\n" \
-	"\tif (newState == NSIntegerMax) return NO;\n"                            \
+	"\tint32_t newState = gotoForState(statep,production);\n"                 \
+	"\tif (newState == INT_MAX) return false;\n"                              \
 	"\n"                                                                      \
 	"\t// Process production rule, which generates the new state\n"           \
-	"\t%sStack *state = [self processReduction:action];\n"                    \
+	"\t%sStack state = processReduction(action);\n"                           \
 	"\n"                                                                      \
 	"\t// Update state\n"                                                     \
 	"\tstate.state = newState;\n"                                             \
 	"\n"                                                                      \
 	"\t// Pop the stack\n"                                                    \
-	"\t[self.stack removeObjectsInRange:NSMakeRange(self.stack.count - length, length)];\n" \
+	"\tstack.erase(stack.begin() + (stack.size() - length),stack.end());\n"   \
 	"\n"                                                                      \
 	"\t// Push new state\n"                                                   \
-	"\t[self.stack addObject:state];\n"                                       \
+	"\tstack.push_back(state);\n"                                             \
 	"\n"                                                                      \
 	"\t// Done.\n"                                                            \
-	"\treturn YES;\n"                                                         \
-	"}\n"																	  \
+	"\treturn true;\n"                                                        \
+	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tParser engine. Returns NO if there was an error during processing. Note\n" \
@@ -429,294 +402,11 @@ static const char *GSource7 = // 11
 	" *\timplements the algorithm described in the Dragon Book, Algorithm 4.7.\n" \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"- (BOOL)parse\n"                                                         \
+	"bool %s::parse()\n"                                                      \
 	"{\n"                                                                     \
-	"\t%sStack *s;\t\t\t\t// state\n"                                         \
-	"\tNSInteger a;\t\t\t\t// lex symbol\n"                                   \
-	"\n"                                                                      \
-	"\t/*\n"                                                                  \
-	"\t *\tStep 1: reset and push the empty state.\n"                         \
-	"\t */\n"                                                                 \
-	"\n"                                                                      \
-	"\tself.success = YES;\n"                                                 \
-	"\t[self.stack removeAllObjects];\n"                                      \
-	"\n"                                                                      \
-	"\ts = [[%sStack alloc] init];\n"                                         \
-	"\ts.state = K_STARTSTATE;\n"                                             \
-	"\n"                                                                      \
-	"\ts.filename = self.lex.filename;\n"                                     \
-	"\ts.line = self.lex.line;\n"                                             \
-	"\ts.column = self.lex.column;\n"                                         \
-	"\n"                                                                      \
-	"\t[self.stack addObject:s];\n"                                           \
-	"\n"                                                                      \
-	"\t/*\n"                                                                  \
-	"\t *\tNow repeat forever:\n"                                             \
-	"\t */\n"                                                                 \
-	"\n"                                                                      \
-	"\ta = [self.lex lex];\n"                                                 \
-	"\n"                                                                      \
-	"\tfor (;;) {\n"                                                          \
-	"\t\ts = [self.stack lastObject];\n"                                      \
-	"\n"                                                                      \
-	"\t\t/*\n"                                                                \
-	"\t\t *\tDetermine if this is the end state. If so, then we immediately\n" \
-	"\t\t *\tquit. We assume the user has set the production rule at the \n"  \
-	"\t\t *\ttop, so we can simply drop the stack\n"                          \
-	"\t\t */\n"                                                               \
-	"\n"                                                                      \
-	"\t\tif (s.state == K_ACCEPTSTATE) {\n"                                   \
-	"\t\t\t[self.stack removeAllObjects];\n"                                  \
-	"\t\t\treturn self.success;\n"                                            \
-	"\t\t}\n"                                                                 \
-	"\n"                                                                      \
-	"\t\t/*\n"                                                                \
-	"\t\t *\tNow determine the action and shift, reduce or handle error as\n" \
-	"\t\t *\tappropriate\n"                                                   \
-	"\t\t */\n"                                                               \
-	"\n"                                                                      \
-	"\t\tNSInteger action = [self actionForState:s.state token:a];\n"         \
-	"\n"                                                                      \
-	"\t\tif (action == NSIntegerMax) {\n"                                     \
-	"\t\t\t/*\n"                                                              \
-	"\t\t\t *\tHandle error. First, note we have an error, and note the\n"    \
-	"\t\t\t *\tsymbol on which our error took place.\n"                       \
-	"\t\t\t */\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\tself.success = NO;\t\t// regardless, we will always fail.\n"       \
-	"\n"                                                                      \
-	"\t\t\t/*\n"                                                              \
-	"\t\t\t *\tFirst, scan backwards from the current state, looking for one\n" \
-	"\t\t\t *\twhich has an \'error\' symbol.\n"                              \
-	"\t\t\t */\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\tNSInteger ix = self.stack.count;\n"                                \
-	"\t\t\twhile (ix > 0) {\n"                                                \
-	"\t\t\t\t%sStack *si = self.stack[--ix];\n"                               \
-	"\t\t\t\taction = [self actionForState:si.state token:K_ERRORTOKEN];\n"   \
-	"\t\t\t\tif ((action >= 0) && (action != NSIntegerMax)) {\n"              \
-	"\t\t\t\t\t/*\n"                                                          \
-	"\t\t\t\t\t *\tEncountered error state. If the user has defined an\n"     \
-	"\t\t\t\t\t *\terror token, we ultimately will want to (a) unwind\n"      \
-	"\t\t\t\t\t *\tthe stack until we find a state which handles the\n"       \
-	"\t\t\t\t\t *\terror transition. We then .\n"                             \
-	"\t\t\t\t\t */\n"                                                         \
-	"\n"                                                                      \
-	"\t\t\t\t\tNSRange range = NSMakeRange(ix+1, self.stack.count - ix - 1);\n" \
-	"\t\t\t\t\tif (range.length) {\n"                                         \
-	"\t\t\t\t\t\t[self.stack removeObjectsInRange:range];\n"                  \
-	"\t\t\t\t\t}\n"                                                           \
-	"\n"                                                                      \
-	"\t\t\t\t\t/*\n"                                                          \
-	"\t\t\t\t\t *\tAt this point we perform a shift to our new error\n"       \
-	"\t\t\t\t\t *\tstate.\n"                                                  \
-	"\t\t\t\t\t */\n"                                                         \
-	"\n"                                                                      \
-	"\t\t\t\t\ts = [[%sStack alloc] init];\n"                                 \
-	"\t\t\t\t\ts.state = action;\n"                                           \
-	"\t\t\t\t\ts.value = self.lex.value;\n"                                   \
-	"\n"                                                                      \
-	"\t\t\t\t\ts.filename = self.lex.filename;\n"                             \
-	"\t\t\t\t\ts.line = self.lex.line;\n"                                     \
-	"\t\t\t\t\ts.column = self.lex.column;\n"                                 \
-	"\n"                                                                      \
-	"\t\t\t\t\t[self.stack addObject:s];\n"                                   \
-	"\n"                                                                      \
-	"\t\t\t\t\t/*\n"                                                          \
-	"\t\t\t\t\t *\tSecond, we start pulling symbols until we find a symbol\n" \
-	"\t\t\t\t\t *\tthat shifts, or until we hit the end of file symbol. \n"   \
-	"\t\t\t\t\t *\tThis becomes our current token for parsing\n"              \
-	"\t\t\t\t\t */\n"                                                         \
-	"\n"                                                                      \
-	"\t\t\t\t\tfor (;;) {\n"                                                  \
-	"\t\t\t\t\t\ta = [self.lex lex];\n"                                       \
-	"\t\t\t\t\t\taction = [self actionForState:s.state token:a];\n"           \
-	"\t\t\t\t\t\tif ((action >= 0) && (action != NSIntegerMax)) {\n"          \
-	"\t\t\t\t\t\t\t/*\n"                                                      \
-	"\t\t\t\t\t\t\t *\tValid shift. This becomes our current token,\n"        \
-	"\t\t\t\t\t\t\t *\tand we resume processing.\n"                           \
-	"\t\t\t\t\t\t\t */\n"                                                     \
-	"\n"                                                                      \
-	"\t\t\t\t\t\t\tcontinue;\n"                                               \
-	"\n"                                                                      \
-	"\t\t\t\t\t\t} else if (action == K_EOFTOKEN) {\n"                        \
-	"\t\t\t\t\t\t\t/*\n"                                                      \
-	"\t\t\t\t\t\t\t *\tWe ran out of tokens. At this point all\n"             \
-	"\t\t\t\t\t\t\t *\twe can do is print an error and force quit.\n"         \
-	"\t\t\t\t\t\t\t */\n"                                                     \
-	"\n"                                                                      \
-	"\t\t\t\t\t\t\t[self errorWithCode:ERROR_SYNTAX];\n"                      \
-	"\t\t\t\t\t\t\t[self.stack removeAllObjects];\n"                          \
-	"\n"                                                                      \
-	"\t\t\t\t\t\t\treturn false;\n"                                           \
-	"\t\t\t\t\t\t}\n"                                                         \
-	"\t\t\t\t\t}\n"                                                           \
-	"\t\t\t\t}\n"                                                             \
-	"\t\t\t}\n"                                                               \
-	"\n"                                                                      \
-	"\t\t\t/*\n"                                                              \
-	"\t\t\t *\tIf we reach this point, there is no error we can recover to.\n" \
-	"\t\t\t *\tSo figure this out on our own.\n"                              \
-	"\t\t\t *\n"                                                              \
-	"\t\t\t *\tFirst, we see if the state we\'re in has a limited number of\n" \
-	"\t\t\t *\tchoices. For example, in C, the \'for\' keyword will always be\n" \
-	"\t\t\t *\tfollowed by a \'(\' token, so we can offer to automatically \n" \
-	"\t\t\t *\tinsert that token.\n"                                          \
-	"\t\t\t */\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\tNSInteger actionMin = ActionI[s.state];\n"                         \
-	"\t\t\tNSInteger actionMax = ActionI[s.state + 1];\n"                     \
-	"\t\t\tNSInteger actionVal = actionMin;\n"                                \
-	"\t\t\tint16_t actionState = -1;\n"                                       \
-	"\t\t\tfor (NSInteger ix = actionMin; ix < actionMax; ++ix) {\n"          \
-	"\t\t\t\tint16_t act = ActionA[ix];\n"                                    \
-	"\t\t\t\tif (actionState == -1) {\n"                                      \
-	"\t\t\t\t\tif (act >= 0) {\n"                                             \
-	"\t\t\t\t\t\tactionState = act;\n"                                        \
-	"\t\t\t\t\t\tactionVal = ix;\n"                                           \
-	"\t\t\t\t\t}\n"                                                           \
-	"\t\t\t\t} else {\n"                                                      \
-	"\t\t\t\t\tactionState = -1;\n"                                           \
-	"\t\t\t\t\tbreak;\n"                                                      \
-	"\t\t\t\t}\n"                                                             \
-	"\t\t\t}\n"                                                               \
-	"\n"                                                                      \
-	"\t\t\tif (actionState != -1) {\n"                                        \
-	"\t\t\t\t/*\n"                                                            \
-	"\t\t\t\t *\tWe can accomplish this transition with one token. Print\n"   \
-	"\t\t\t\t *\tan error, and do a shift on the state with an empty value.\n" \
-	"\t\t\t\t */\n"                                                           \
-	"\n"                                                                      \
-	"\t\t\t\tconst NSString *tokenStr = [self tokenToString:ActionJ[actionVal]];\n" \
-	"\t\t\t\t[self errorWithCode:ERROR_MISSINGTOKEN data:@{ @\"token\": tokenStr} ];\n" \
-	"\n"                                                                      \
-	"\t\t\t\t/*\n"                                                            \
-	"\t\t\t\t *\tPerform a shift but do not pull a new token\n"               \
-	"\t\t\t\t */\n"                                                           \
-	"\n"                                                                      \
-	"\t\t\t\t%sStack *top = self.stack.lastObject;\n"                         \
-	"\n"                                                                      \
-	"\t\t\t\t%sStack *stack = [[%sStack alloc] init];\n"                      \
-	"\t\t\t\tstack.state = actionState;\n"                                    \
-	"\t\t\t\tstack.value = self.lex.value;\n"                                 \
-	"\n"                                                                      \
-	"\t\t\t\tstack.filename = top.filename;\n"                                \
-	"\t\t\t\tstack.line = top.line;\n"                                        \
-	"\t\t\t\tstack.column = top.column;\n"                                    \
-	"\n"                                                                      \
-	"\t\t\t\t[self.stack addObject:stack];\n"                                 \
-	"\t\t\t\tcontinue;\n"                                                     \
-	"\t\t\t}\n"                                                               \
-	"\n"                                                                      \
-	"\t\t\t/*\n"                                                              \
-	"\t\t\t *\tSee if we have a limited choice in reductions. If this can\n"  \
-	"\t\t\t *\tonly reduce to a single state, try that reduction.\n"          \
-	"\t\t\t */\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\tactionState = 0;\n"                                                \
-	"\t\t\tfor (NSInteger ix = actionMin; ix < actionMax; ++ix) {\n"          \
-	"\t\t\t\tint16_t act = ActionA[ix];\n"                                    \
-	"\t\t\t\tif (actionState == 0) {\n"                                       \
-	"\t\t\t\t\tif ((act < 0) && (actionState != act)) {\n"                    \
-	"\t\t\t\t\t\tactionState = act;\n"                                        \
-	"\t\t\t\t\t}\n"                                                           \
-	"\t\t\t\t} else {\n"                                                      \
-	"\t\t\t\t\tactionState = 0;\n"                                            \
-	"\t\t\t\t\tbreak;\n"                                                      \
-	"\t\t\t\t}\n"                                                             \
-	"\t\t\t}\n"                                                               \
-	"\n"                                                                      \
-	"\t\t\tif (actionState != 0) {\n"                                         \
-	"\t\t\t\t/*\n"                                                            \
-	"\t\t\t\t *\tWe have one possible reduction. Try that. Note that this\n"  \
-	"\t\t\t\t *\twill trigger a syntax error since we\'re reducing down \n"   \
-	"\t\t\t\t *\twithout the follow token. My hope is that the state we\n"    \
-	"\t\t\t\t *\ttransition to has a limited set of next tokens to follow.\n" \
-	"\t\t\t\t */\n"                                                           \
-	"\n"                                                                      \
-	"\t\t\t\t[self reduceByAction:action];\n"                                 \
-	"\t\t\t\tcontinue;\n"                                                     \
-	"\t\t\t}\n"                                                               \
-	"\n"                                                                      \
-	"\t\t\t/*\n"                                                              \
-	"\t\t\t *\tIf we have a limited number of tokens which can follow, \n"    \
-	"\t\t\t *\tprint a list of them. Then shift by the first one we\n"        \
-	"\t\t\t *\tfind. We don\'t do this if the number of shifts is greater\n"  \
-	"\t\t\t *\tthan five.\n"                                                  \
-	"\t\t\t */\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\tif (actionMax - actionMin <= 5) {\n"                               \
-	"\t\t\t\tNSMutableArray<const NSString *> *list = [[NSMutableArray alloc] init];\n" \
-	"\t\t\t\tfor (NSInteger ix = actionMin; ix < actionMax; ++ix) {\n"        \
-	"\t\t\t\t\t[list addObject:[self tokenToString:ActionJ[ix]]];\n"          \
-	"\t\t\t\t}\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\t\t[self errorWithCode:ERROR_MISSINGTOKENS data:@{ @\"tokens\": list }];\n" \
-	"\n"                                                                      \
-	"\t\t\t\t/*\n"                                                            \
-	"\t\t\t\t *\tNow we artificially insert the first of the list of\n"       \
-	"\t\t\t\t *\ttokens as our action and continue.\n"                        \
-	"\t\t\t\t */\n"                                                           \
-	"\n"                                                                      \
-	"\t\t\t\ta = ActionJ[actionMin];\n"                                       \
-	"\t\t\t\tcontinue;\n"                                                     \
-	"\t\t\t}\n"                                                               \
-	"\n"                                                                      \
-	"\t\t\t/*\n"                                                              \
-	"\t\t\t *\tIf we get here, things just went too far south. So we\n"       \
-	"\t\t\t *\tskip a token, print syntax error and move on\n"                \
-	"\t\t\t */\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\t[self errorWithCode:ERROR_SYNTAX];\n"                              \
-	"\t\t\ta = [self.lex lex];\n"                                             \
-	"\t\t\tif (a == -1) return false;\n"                                      \
-	"\n"                                                                      \
-	"\t\t} else if (action >= 0) {\n"                                         \
-	"\t\t\t/*\n"                                                              \
-	"\t\t\t *\tShift operation.\n"                                            \
-	"\t\t\t */\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\t// Shift\n"                                                        \
-	"\t\t\t%sStack *stack = [[%sStack alloc] init];\n"                        \
-	"\t\t\tstack.state = action;\n"                                           \
-	"\t\t\tstack.value = self.lex.value;\n"                                   \
-	"\n"                                                                      \
-	"\t\t\tstack.filename = self.lex.filename;\n"                             \
-	"\t\t\tstack.line = self.lex.line;\n"                                     \
-	"\t\t\tstack.column = self.lex.column;\n"                                 \
-	"\n"                                                                      \
-	"\t\t\t[self.stack addObject:stack];\n"                                   \
-	"\n"                                                                      \
-	"\t\t\t// Advance to next token.\n"                                       \
-	"\t\t\ta = [self.lex lex];\n"                                             \
-	"\n"                                                                      \
-	"\t\t\t// Decrement our error count. If this is non-zero we\'re in an\n"  \
-	"\t\t\t// error state, and we don\'t pass spurrous errors upwards\n"      \
-	"\t\t\tif (self.errorCount) {\n"                                          \
-	"\t\t\t\tself.errorCount = self.errorCount-1;\n"                          \
-	"\t\t\t}\n"                                                               \
-	"\n"                                                                      \
-	"\t\t} else {\n"                                                          \
-	"\t\t\t/*\n"                                                              \
-	"\t\t\t *\tReduce action. (Reduce is < 0, and the production to reduce\n" \
-	"\t\t\t *\tby is given below\n"                                           \
-	"\t\t\t */\n"                                                             \
-	"\n"                                                                      \
-	"\t\t\taction = -action-1;\n"                                             \
-	"\n"                                                                      \
-	"\t\t\tif (![self reduceByAction:action]) {\n"                            \
-	"\t\t\t\t// If there is an error, this handles the error.\n"              \
-	"\t\t\t\t// (This should not happen in practice).\n"                      \
-	"\t\t\t\t[self errorWithCode:ERROR_SYNTAX];\n"                            \
-	"\n"                                                                      \
-	"\t\t\t\t// Advance to next token.\n"                                     \
-	"\t\t\t\ta = [self.lex lex];\n"                                           \
-	"\t\t\t}\n"                                                               \
-	"\t\t}\n"                                                                 \
-	"\t}\n"                                                                   \
-	"}\n"                                                                     \
-	"\n"                                                                      \
-	"@end\n";
+	"\treturn false;\n"                                                       \
+	"}\n";
+
 
 /************************************************************************/
 /*																		*/
@@ -1099,23 +789,19 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	WriteYTables(f);
 
 	// Start generating the rest of the file
-	fprintf(f, GSource3, classname, classname, classname, classname);
+	fprintf(f, GSource3, classname, classname);
 
-	// Insert class declarations
-	fprintf(f, "%s\n", parser.classLocal.c_str());
-
-	// Close class internal, start class
-	fprintf(f, GSource4, classname);
-
+	// Insert initializers
 	fprintf(f, "%s\n", parser.classInit.c_str());
 
-	fprintf(f, "%s", GSource5);
+	// Close class internal, start class
+	fprintf(f, GSource4, classname, classname);
 
 	// Class code
 	fprintf(f, "%s\n", parser.endCode.c_str());
 
 	// Production (to switch statement)
-	fprintf(f, GSource6, classname, classname, classname, classname);
+	fprintf(f, GSource5, classname, classname, classname, classname);
 
 	// Print information about the rules we're reducing by
 	fprintf(f,"\n        // Production rules\n");
@@ -1129,7 +815,10 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	fprintf(f,"\n");
 
 	// Close switch, finish writing the rest
-	fprintf(f, GSource7, classname, classname, classname, classname, classname, classname, classname, classname, classname, classname, classname);
+	fprintf(f, GSource6, classname, classname, classname, classname,
+						 classname, classname, classname, classname,
+						 classname, classname, classname, classname,
+						 classname);
 }
 
 /*	OCYaccCPPGenerator::WriteOCHeader
