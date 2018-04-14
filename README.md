@@ -119,7 +119,7 @@ This would create two Objective-C classes with names MyLangLex and MyLangParser.
 ### April 15, 2018
 
 * Added %finish declaration token, for inserting code into the generated class's destructor/dealloc method.
-* Added C++ generator. This is an untested experimental feature and is subject to change.
+* Added C++ generator. This is an untested experimental feature and is subject to change. [See the notes here for more information.](Docs/CPPNotes.md)
 
 ## License
 
