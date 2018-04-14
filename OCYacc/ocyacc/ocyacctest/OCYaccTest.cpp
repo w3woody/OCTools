@@ -6,7 +6,8 @@
  *		https://github.com/w3woody/OCTools
  */
 
-#import "OCYaccTest.h"
+#include "OCYaccTest.h"
+#include "OCLexTest.h"
 
 
 /*
@@ -157,7 +158,7 @@ static const int16_t GotoA[17] = {
  *	Construction
  */
 
-OCYaccTest::OCYaccTest(OCLexInput *l)
+OCYaccTest::OCYaccTest(OCLexTest *l)
 {
 	lex = l;
 
@@ -169,6 +170,7 @@ OCYaccTest::OCYaccTest(OCLexInput *l)
 
 OCYaccTest::~OCYaccTest()
 {
+
 }
 
 
@@ -195,7 +197,7 @@ OCYaccTestStack OCYaccTest::processReduction(int16_t rule)
 	// Now process production.
 	//
 	// Note that $$ translated into (s.value), and
-	// $n translates into ((<type> *)(self.stack[pos+(n-1)])), where <type>
+	// $n translates into ((<type> *)(stack[pos+(n-1)])), where <type>
 	// is the declared type of the token or production rule.
 
 	try {
@@ -248,6 +250,7 @@ OCYaccTestStack OCYaccTest::processReduction(int16_t rule)
 
             // (110008) statements : statement 
             case 11:
+                s.value.a = (stack[pos].value.a); 
                 break;
 
             // (110008) statements : statements statement 
@@ -445,9 +448,9 @@ bool OCYaccTest::parse()
 
 	OCYaccTestStack initStack;
 	initStack.state = K_STARTSTATE;
-	initStack.filename = lex->filename();
-	initStack.line = lex->line();
-	initStack.column = lex->column();
+	initStack.filename = lex->filename;
+	initStack.line = lex->line;
+	initStack.column = lex->column;
 	stack.push_back(initStack);
 
 	/*
@@ -513,10 +516,10 @@ bool OCYaccTest::parse()
 
 					OCYaccTestStack stmp;
 					stmp.state = action;
-					stmp.value = lex->value();
-					stmp.filename = lex->filename();
-					stmp.line = lex->line();
-					stmp.column = lex->column();
+					stmp.value = lex->value;
+					stmp.filename = lex->filename;
+					stmp.line = lex->line;
+					stmp.column = lex->column;
 					stack.push_back(stmp);
 
 					/*
@@ -597,7 +600,7 @@ bool OCYaccTest::parse()
 
 				OCYaccTestStack stmp;
 				stmp.state = actionState;
-				stmp.value = lex->value();
+				stmp.value = lex->value;
 				stmp.filename = top.filename;
 				stmp.line = top.line;
 				stmp.column = top.column;
@@ -680,10 +683,10 @@ bool OCYaccTest::parse()
 			// Shift
 			OCYaccTestStack stmp;
 			stmp.state = action;
-			stmp.value = lex->value();
-			stmp.filename = lex->filename();
-			stmp.line = lex->line();
-			stmp.column = lex->column();
+			stmp.value = lex->value;
+			stmp.filename = lex->filename;
+			stmp.line = lex->line;
+			stmp.column = lex->column;
 
 			stack.push_back(stmp);
 

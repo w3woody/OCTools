@@ -14,7 +14,7 @@
 /*																		*/
 /************************************************************************/
 
-// 1
+// 3
 static const char *GHeader1 =
 	"/*\t%s.h\n"                                                              \
 	" *\n"                                                                    \
@@ -24,10 +24,13 @@ static const char *GHeader1 =
 	" *\t\thttps://github.com/w3woody/OCTools\n"                              \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"#import <stdint.h>\n"                                                    \
-	"#import <map>\n"                                                         \
-	"#import <vector>\n"                                                      \
-	"#import <string>\n";
+	"#ifndef %s_h\n"                                                          \
+	"#define %s_h\n"                                                          \
+	"\n"                                                                      \
+	"#include <stdint.h>\n"                                                   \
+	"#include <map>\n"                                                        \
+	"#include <vector>\n"                                                     \
+	"#include <string>\n";
 
 // 0
 static const char *GHeader2 =
@@ -37,7 +40,7 @@ static const char *GHeader2 =
 	" */\n"                                                                   \
 	"\n";
 
-// 5
+// 0
 static const char *GHeader3 =
 	"\n"                                                                      \
 	"/*\n"                                                                    \
@@ -51,8 +54,10 @@ static const char *GHeader3 =
 	"#define ERROR_MISSINGTOKEN\t\t0x0002\t// { @\"token\": string of token missing }\n" \
 	"#define ERROR_MISSINGTOKENS\t\t0x0003\t// { @\"tokens\": array of token strings }\n" \
 	"#define ERROR_STARTERRORID\t\t0x0100\t// Your errors should start with this\n" \
-	"\n"                                                                      \
-	"\n"                                                                      \
+	"\n";
+
+// 0
+static const char *GHeader3a =
 	"/*\tOCLexInput\n"                                                        \
 	" *\n"                                                                    \
 	" *\t\tThe protocol for our lex reader file that the lex stream must\n"   \
@@ -66,17 +71,21 @@ static const char *GHeader3 =
 	"class OCLexInput\n"                                                      \
 	"{\n"                                                                     \
 	"\tpublic:\n"                                                             \
-	"\t\tvirtual int32_t line() = 0;\n"                                       \
-	"\t\tvirtual int32_t column() = 0;\n"                                     \
-	"\t\tvirtual std::string filename() = 0;\n"                               \
-	"\t\tvirtual std::string text() = 0;\n"                                   \
-	"\t\tvirtual std::string abort() = 0;\n"                                  \
+	"\t\tint32_t line;\n"                                                     \
+	"\t\tint32_t column;\n"                                                   \
+	"\t\tstd::string filename;\n"                                             \
+	"\t\tstd::string text;\n"                                                 \
+	"\t\tstd::string abort;\n"                                                \
 	"\n"                                                                      \
-	"\t\tvirtual int32_t lex() = 0;\n"                                        \
-	"\t\tvirtual void *value() = 0;\t\t\t// Arbitrary type\n"                 \
+	"\t\tvirtual int32_t lex() = 0;\n";
+
+static const char *GHeader3a1 =
 	"};\n"                                                                    \
 	"\n"                                                                      \
-	"#endif\n"                                                                \
+	"#endif\n";
+
+// 1, class
+static const char *GHeader3b =
 	"\n"                                                                      \
 	"/*\n"                                                                    \
 	" *\tInternal parser stack\n"                                             \
@@ -87,8 +96,10 @@ static const char *GHeader3 =
 	"\tuint16_t state;\n"                                                     \
 	"\tint32_t line;\n"                                                       \
 	"\tint32_t column;\n"                                                     \
-	"\tstd::string filename;\n"                                               \
-	"\tvoid *value;\n"                                                        \
+	"\tstd::string filename;\n";
+
+// 5, class, class, class, lex, class
+static const char *GHeader3c =
 	"};\n"                                                                    \
 	"\n"                                                                      \
 	"/*\t%s\n"                                                                \
@@ -99,18 +110,18 @@ static const char *GHeader3 =
 	"class %s\n"                                                              \
 	"{\n"                                                                     \
 	"\tpublic:\n"                                                             \
-	"\t\t%s(OCLexInput *lexer);\n"                                            \
+	"\t\t%s(%s *lexer);\n"                                                    \
 	"\t\tvirtual ~%s(void);\n"                                                \
 	"\n"                                                                      \
 	"\t\tvirtual void error(int32_t line, int32_t col, std::string fname, int32_t errCode, std::map<std::string,std::string> &map);\n" \
 	"\n"                                                                      \
 	"\t\tbool parse(void);\n";
 
-// 2
+// 3, class, lex, class
 static const char *GHeader4 =
 	"\tprivate:\n"                                                            \
 	"\t\tstd::vector<%sStack> stack;\n"                                       \
-	"\t\tOCLexInput *lex;\n"                                                  \
+	"\t\t%s *lex;\n"                                                          \
 	"\t\tbool success;\n"                                                     \
 	"\t\tint32_t errorCount;\n"                                               \
 	"\n"                                                                      \
@@ -124,7 +135,9 @@ static const char *GHeader4 =
 	"\t\tbool reduceByAction(int16_t action);\n";
 
 static const char *GHeader5 =
-	"};\n\n";
+	"};\n"                                                                    \
+	"\n"                                                                      \
+	"#endif\n";
 
 /************************************************************************/
 /*																		*/
@@ -141,7 +154,7 @@ static const char *GSource1 =		// 2
 	" *\t\thttps://github.com/w3woody/OCTools\n"                              \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"#import \"%s.h\"\n";
+	"#include \"%s.h\"\n";
 
 static const char *GSource2 =		// 0
 	"/*\n"                                                                    \
@@ -167,7 +180,7 @@ static const char *GSource2 =		// 0
 	"/************************************************************************/\n"
 	"\n";
 
-static const char *GSource3 = // 2
+static const char *GSource3 = // 3 class class lex
 	"/************************************************************************/\n" \
 	"/*                                                                      */\n" \
 	"/*  Parser Code\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t*/\n"                       \
@@ -178,7 +191,7 @@ static const char *GSource3 = // 2
 	" *\tConstruction\n"                                                      \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"%s::%s(OCLexInput *l)\n"                                                 \
+	"%s::%s(%s *l)\n"                                                         \
 	"{\n"                                                                     \
 	"\tlex = l;\n";
 
@@ -220,7 +233,7 @@ static const char *GSource6 = // 4
 	"\t// Now process production.\n"                                          \
 	"\t//\n"                                                                  \
 	"\t// Note that $$ translated into (s.value), and\n"                      \
-	"\t// $n translates into ((<type> *)(self.stack[pos+(n-1)])), where <type>\n" \
+	"\t// $n translates into ((<type> *)(stack[pos+(n-1)])), where <type>\n" \
 	"\t// is the declared type of the token or production rule.\n"            \
 	"\n"                                                                      \
 	"\ttry {\n"                                                               \
@@ -417,9 +430,9 @@ static const char *GSource7 = // 10
 	"\n"                                                                      \
 	"\t%sStack initStack;\n"                                                  \
 	"\tinitStack.state = K_STARTSTATE;\n"                                     \
-	"\tinitStack.filename = lex->filename();\n"                               \
-	"\tinitStack.line = lex->line();\n"                                       \
-	"\tinitStack.column = lex->column();\n"                                   \
+	"\tinitStack.filename = lex->filename;\n"                                 \
+	"\tinitStack.line = lex->line;\n"                                         \
+	"\tinitStack.column = lex->column;\n"                                     \
 	"\tstack.push_back(initStack);\n"                                         \
 	"\n"                                                                      \
 	"\t/*\n"                                                                  \
@@ -485,10 +498,12 @@ static const char *GSource7 = // 10
 	"\n"                                                                      \
 	"\t\t\t\t\t%sStack stmp;\n"                                               \
 	"\t\t\t\t\tstmp.state = action;\n"                                        \
-	"\t\t\t\t\tstmp.value = lex->value();\n"                                  \
-	"\t\t\t\t\tstmp.filename = lex->filename();\n"                            \
-	"\t\t\t\t\tstmp.line = lex->line();\n"                                    \
-	"\t\t\t\t\tstmp.column = lex->column();\n"                                \
+
+	"\t\t\t\t\tstmp.value = lex->value;\n"                                    \
+
+	"\t\t\t\t\tstmp.filename = lex->filename;\n"                              \
+	"\t\t\t\t\tstmp.line = lex->line;\n"                                      \
+	"\t\t\t\t\tstmp.column = lex->column;\n"                                  \
 	"\t\t\t\t\tstack.push_back(stmp);\n"                                      \
 	"\n"                                                                      \
 	"\t\t\t\t\t/*\n"                                                          \
@@ -569,7 +584,9 @@ static const char *GSource7 = // 10
 	"\n"                                                                      \
 	"\t\t\t\t%sStack stmp;\n"                                                 \
 	"\t\t\t\tstmp.state = actionState;\n"                                     \
-	"\t\t\t\tstmp.value = lex->value();\n"                                    \
+
+	"\t\t\t\tstmp.value = lex->value;\n"                                      \
+
 	"\t\t\t\tstmp.filename = top.filename;\n"                                 \
 	"\t\t\t\tstmp.line = top.line;\n"                                         \
 	"\t\t\t\tstmp.column = top.column;\n"                                     \
@@ -652,10 +669,10 @@ static const char *GSource7 = // 10
 	"\t\t\t// Shift\n"                                                        \
 	"\t\t\t%sStack stmp;\n"                                                   \
 	"\t\t\tstmp.state = action;\n"                                            \
-	"\t\t\tstmp.value = lex->value();\n"                                      \
-	"\t\t\tstmp.filename = lex->filename();\n"                                \
-	"\t\t\tstmp.line = lex->line();\n"                                        \
-	"\t\t\tstmp.column = lex->column();\n"                                    \
+	"\t\t\tstmp.value = lex->value;\n"                                        \
+	"\t\t\tstmp.filename = lex->filename;\n"                                  \
+	"\t\t\tstmp.line = lex->line;\n"                                          \
+	"\t\t\tstmp.column = lex->column;\n"                                      \
 	"\n"                                                                      \
 	"\t\t\tstack.push_back(stmp);\n"                                          \
 	"\n"                                                                      \
@@ -766,14 +783,17 @@ void OCYaccCPPGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 
 				if (isAssign) {
 					ret += "s.value";
+					if (rule.prodType.length() != 0) {
+						ret += "." + rule.prodType;
+					}
 				} else {
 					if (rule.prodType.length() == 0) {
 						fprintf(stderr,"Warning: Production for rule %s has no type\n",rule.prodDebug.c_str());
 						ret += "(s.value)";
 					} else {
-						ret += "((";
+						ret += " (s.value.";
 						ret += rule.prodType;
-						ret += " *)s.value)";
+						ret += ")";
 					}
 				}
 			} else if (isdigit(*ptr)) {
@@ -805,9 +825,9 @@ void OCYaccCPPGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 					}
 
 					if (value == 1) {
-						ret += "(self.stack[pos].";
+						ret += "(stack[pos].";
 					} else {
-						sprintf(buffer,"(self.stack[pos + %zu].",value-1);
+						sprintf(buffer,"(stack[pos + %zu].",value-1);
 						ret += buffer;
 					}
 
@@ -825,24 +845,23 @@ void OCYaccCPPGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 				} else {
 					// Insert (type *) if type is defined
 					std::string valueType = rule.types[value-1];
+
+					if (value == 1) {
+						ret += "(stack[pos].value";
+					} else {
+						sprintf(buffer,"(stack[pos + %zu].value",value-1);
+						ret += buffer;
+					}
+
 					if (valueType.size() > 0) {
-						ret += "((";
+						ret += ".";
 						ret += valueType;
-						ret += " *)";
 						hasType = true;
 					} else {
 						fprintf(stderr,"Warning: Rule %s, $%zu has no type\n",rule.prodDebug.c_str(),value);
 					}
 
-					if (value == 1) {
-						ret += "(self.stack[pos].value)";
-					} else {
-						sprintf(buffer,"(self.stack[pos + %zu].value)",value-1);
-						ret += buffer;
-					}
-					if (hasType) {
-						ret.push_back(')');
-					}
+					ret.push_back(')');
 				}
 
 			} else {
@@ -1055,8 +1074,20 @@ void OCYaccCPPGenerator::WriteYTables(FILE *f)
 
 void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputName, FILE *f)
 {
+	const char *lexerClass;
+	if (parser.lexerClass.size() > 0) {
+		lexerClass = parser.lexerClass.c_str();
+	} else {
+		lexerClass = "OCLexInput";
+	}
+
 	// Prefix
 	fprintf(f,GSource1,outputName,outputName);
+
+	// If we define a lex header, insert it
+	if (parser.lexerHeader.size() > 0) {
+		fprintf(f,"#include \"%s\"\n",parser.lexerHeader.c_str());
+	}
 
 	// Header declarations
 	fprintf(f,"\n%s\n",parser.declCode.c_str());
@@ -1068,7 +1099,7 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	WriteYTables(f);
 
 	// Start generating the rest of the file
-	fprintf(f, GSource3, classname, classname);
+	fprintf(f, GSource3, classname, classname, lexerClass);
 
 	// Insert initializers
 	fprintf(f, "%s\n", parser.classInit.c_str());
@@ -1113,8 +1144,15 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 
 void OCYaccCPPGenerator::WriteOCHeader(const char *classname, const char *outputName, FILE *f)
 {
+	const char *lexerClass;
+	if (parser.lexerClass.size() > 0) {
+		lexerClass = parser.lexerClass.c_str();
+	} else {
+		lexerClass = "OCLexInput";
+	}
+
 	// Prefix
-	fprintf(f,GHeader1,outputName);
+	fprintf(f,GHeader1,outputName,outputName,outputName);
 
 	// Header declarations
 	fprintf(f,"\n%s\n",parser.classHeader.c_str());
@@ -1133,17 +1171,47 @@ void OCYaccCPPGenerator::WriteOCHeader(const char *classname, const char *output
 //		}
 	}
 
+	// If we define our union, generate the union definition
+	if (parser.valueUnion.size() > 0) {
+		fprintf(f,"\n");
+		fprintf(f,"#ifndef %s_ValueDefined\n",lexerClass);
+		fprintf(f,"#define %s_ValueDefined\n",lexerClass);
+		fprintf(f,"\n");
+		fprintf(f,"/*  %sValue\n",lexerClass);
+		fprintf(f," *\n");
+		fprintf(f," *      Internally defined value.\n");
+		fprintf(f," */\n\n");
+		fprintf(f,"union %sValue {\n",lexerClass);
+		fprintf(f,"    %s",parser.valueUnion.c_str());
+		fprintf(f,"};\n\n");
+		fprintf(f,"#endif\n");
+	}
+
 	// Bulk of declarations
-	fprintf(f,GHeader3,classname,classname,classname,classname,classname);
+	fprintf(f,"%s",GHeader3);
+	if (parser.lexerClass.size() > 0) {
+		fprintf(f,"class %s;\n",parser.lexerClass.c_str());
+	} else {
+		fprintf(f,"%s",GHeader3a);
+		if (parser.valueUnion.size() > 0) {
+			fprintf(f,"\t\tunion %sValue value;\n",lexerClass);
+		}
+		fprintf(f,"%s",GHeader3a1);
+	}
+	fprintf(f,GHeader3b,classname);
+	if (parser.valueUnion.size() > 0) {
+		fprintf(f,"\tunion %sValue value;\n",lexerClass);
+	}
+	fprintf(f,GHeader3c,classname,classname,classname,lexerClass,classname);
 
 	// Class globals
 	fprintf(f,"\n%s\n",parser.classGlobal.c_str());
 
 	// Private
-	fprintf(f,GHeader4,classname,classname);
+	fprintf(f,GHeader4,classname,lexerClass,classname);
 
 	// Insert class declarations
-	fprintf(f, "%s\n", parser.classLocal.c_str());
+	fprintf(f, "%s", parser.classLocal.c_str());
 
-	fprintf(f,"%s\n",GHeader5);
+	fprintf(f,"%s",GHeader5);
 }

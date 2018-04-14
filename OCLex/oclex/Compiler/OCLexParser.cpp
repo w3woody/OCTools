@@ -163,7 +163,8 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 				}
 			} else if ((sym != OCTOKEN_TOKEN) ||
 					((lex.fToken != "global") && (lex.fToken != "local") &&
-					(lex.fToken != "header") && (lex.fToken != "init"))) {
+					(lex.fToken != "header") && (lex.fToken != "init") &&
+					(lex.fToken != "union") && (lex.fToken != "finish"))) {
 				fprintf(stderr,"%s:%d Syntax error in declarations\n",lex.fFileName.c_str(),lex.fTokenLine);
 
 			} else {
@@ -210,6 +211,8 @@ bool OCLexParser::ParseDeclarations(OCLexer &lex)
 						classFinish = code;
 					} else if (codeType == "local") {
 						classLocal = code;
+					} else if (codeType == "union") {
+						valueUnion = code;
 					} else {
 						classGlobal = code;
 					}

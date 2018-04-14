@@ -262,6 +262,7 @@ int main(int argc, const char * argv[])
 		generator.classInit = parser.classInit;
 		generator.classFinish = parser.classFinish;
 		generator.classHeader = parser.classHeader;
+		generator.valueUnion = parser.valueUnion;
 		generator.endCode = parser.endCode;
 		generator.ruleStates = parser.ruleStates;
 
@@ -308,6 +309,7 @@ int main(int argc, const char * argv[])
 		generator.classInit = parser.classInit;
 		generator.classFinish = parser.classFinish;
 		generator.classHeader = parser.classHeader;
+		generator.valueUnion = parser.valueUnion;
 		generator.endCode = parser.endCode;
 		generator.ruleStates = parser.ruleStates;
 

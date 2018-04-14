@@ -14,7 +14,7 @@
 /*																		*/
 /************************************************************************/
 
-// 1
+// 3
 static const char *GHeader1 =
 	"/*\t%s.h\n"                                                              \
 	" *\n"                                                                    \
@@ -24,11 +24,14 @@ static const char *GHeader1 =
 	" *\t\thttps://github.com/w3woody/OCTools\n"                              \
 	" */\n"                                                                   \
 	"\n"                                                                      \
+	"#ifndef %s_h\n"                                                          \
+	"#define %s_h\n"                                                          \
+	"\n"                                                                      \
 	"#include <stdint.h>\n"                                                   \
 	"#include <string>\n"                                                     \
 	"\n";
 
-// 4
+// 6
 static const char *GHeader2 =
 	"/*\tOCFileInput\n"                                                       \
 	" *\n"                                                                    \
@@ -49,37 +52,12 @@ static const char *GHeader2 =
 	"\n"                                                                      \
 	"#endif\n"                                                                \
 	"\n"                                                                      \
-	"/*\tOCLexInput\n"                                                        \
-	" *\n"                                                                    \
-	" *\t\tThe protocol for our lex reader file that the lex stream must\n"   \
-	" *\tprovide. This is the same as the protocol generated as part of the OCYacc\n" \
-	" *\toutput, and allows us to glue the Lexer and Parser together.\n"      \
-	" */\n"                                                                   \
-	"\n"                                                                      \
-	"#ifndef OCLexInputProtocolC\n"                                           \
-	"#define OCLexInputProtocolC\n"                                           \
-	"\n"                                                                      \
-	"class OCLexInput\n"                                                      \
-	"{\n"                                                                     \
-	"\tpublic:\n"                                                             \
-	"\t\tvirtual int32_t line() = 0;\n"                                       \
-	"\t\tvirtual int32_t column() = 0;\n"                                     \
-	"\t\tvirtual std::string filename() = 0;\n"                               \
-	"\t\tvirtual std::string text() = 0;\n"                                   \
-	"\t\tvirtual std::string abort() = 0;\n"                                  \
-	"\n"                                                                      \
-	"\t\tvirtual int32_t lex() = 0;\n"                                        \
-	"\t\tvirtual void *value() = 0;\t\t\t// Arbitrary type\n"                 \
-	"};\n"                                                                    \
-	"\n"                                                                      \
-	"#endif\n"                                                                \
-	"\n"                                                                      \
 	"/*\t%s\n"                                                                \
 	" *\n"                                                                    \
 	" *\t\tThe generated lexical parser\n"                                    \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"class %s : public OCLexInput\n"                                          \
+	"class %s\n"                                                              \
 	"{\n"                                                                     \
 	"\tpublic:\n"                                                             \
 	"\t\t%s(OCFileInput *file);\n"                                            \
@@ -89,31 +67,15 @@ static const char *GHeader2 =
 	"\t\t *\tCurrent reader state\n"                                          \
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
-	"\t\tint32_t line()\n"                                                    \
-	"\t\t\t{\n"                                                               \
-	"\t\t\t\treturn fLine;\n"                                                 \
-	"\t\t\t}\n"                                                               \
-	"\t\tint32_t column()\n"                                                  \
-	"\t\t\t{\n"                                                               \
-	"\t\t\t\treturn fColumn;\n"                                               \
-	"\t\t\t}\n"                                                               \
-	"\t\tstd::string filename()\n"                                            \
-	"\t\t\t{\n"                                                               \
-	"\t\t\t\treturn fFileName;\n"                                             \
-	"\t\t\t}\n"                                                               \
-	"\t\tstd::string text()\n"                                                \
-	"\t\t\t{\n"                                                               \
-	"\t\t\t\treturn fText;\n"                                                 \
-	"\t\t\t}\n"                                                               \
-	"\t\tstd::string abort()\n"                                               \
-	"\t\t\t{\n"                                                               \
-	"\t\t\t\treturn fAbort;\n"                                                \
-	"\t\t\t}\n"                                                               \
+	"\t\tint32_t line;\n"                                                     \
+	"\t\tint32_t column;\n"                                                   \
+	"\t\tstd::string filename;\n"                                             \
+	"\t\tstd::string text;\n"                                                 \
+	"\t\tstd::string abort;\n"                                                \
 	"\n"                                                                      \
-	"\t\tvoid *value()\n"                                                     \
-	"\t\t\t{\n"                                                               \
-	"\t\t\t\treturn fValue;\n"                                                \
-	"\t\t\t}\n"                                                               \
+	"#ifdef %s_ValueDefined\n"                                                \
+	"\t\tunion %sValue value;\n"                                              \
+	"#endif\n"                                                                \
 	"\n"                                                                      \
 	"\t\tvoid setFile(std::string &file, int32_t line);\n"                    \
 	"\t\tvoid setLine(int32_t line);\n"                                       \
@@ -154,14 +116,6 @@ static const char *GHeader3 =
 	"\t\t// State flags\n"                                                    \
 	"\t\tuint64_t  states;\n"                                                 \
 	"\n"                                                                      \
-	"\t\t// File state\n"                                                     \
-	"\t\tint32_t fLine;\n"                                                    \
-	"\t\tint32_t fColumn;\n"                                                  \
-	"\t\tstd::string fFileName;\n"                                            \
-	"\t\tstd::string fText;\n"                                                \
-	"\t\tstd::string fAbort;\n"                                               \
-	"\t\tvoid *fValue;\n"                                                     \
-	"\n"                                                                      \
 	"\t\t// Internal Methods\n"                                               \
 	"\t\tvoid mark(void);\n"                                                  \
 	"\t\tvoid reset(void);\n"                                                 \
@@ -173,7 +127,9 @@ static const char *GHeader3 =
 
 // 0
 static const char *GHeader4 =
-	"};\n";
+	"};\n"                                                                    \
+	"\n"                                                                      \
+	"#endif\n";
 
 /************************************************************************/
 /*																		*/
@@ -193,6 +149,7 @@ static const char *GSource1 =
 	"\n"                                                                      \
 	"#include \"%s.h\"\n"                                                     \
 	"#include <stdlib.h>\n"                                                   \
+	"#include <string.h>\n"                                                   \
 	"#include <new>\n"                                                        \
 	"\n";
 
@@ -435,7 +392,7 @@ static const char *GSource4 =
 	"\n"                                                                      \
 	"bool %s::atSOL()\n"                                                      \
 	"{\n"                                                                     \
-	"\treturn fColumn == 0;\n"                                                \
+	"\treturn column == 0;\n"                                                 \
 	"}\n"                                                                     \
 	"\n"                                                                      \
 	"/*\n"                                                                    \
@@ -471,7 +428,7 @@ static const char *GSource4 =
 	"\n"                                                                      \
 	"void %s::setFile(std::string &file, int32_t line)\n"                     \
 	"{\n"                                                                     \
-	"\tfFileName = file;\n"                                                   \
+	"\tfilename = file;\n"                                                    \
 	"\tcurLine = line;\n"                                                     \
 	"}\n"                                                                     \
 	"\n"                                                                      \
@@ -485,7 +442,7 @@ static const char *GSource4 =
 	" */\n"                                                                   \
 	"\n";
 
-// 2
+// 3
 static const char *GSource5 =
 	"/*\t%s::lex\n"                                                           \
 	" *\n"                                                                    \
@@ -497,7 +454,9 @@ static const char *GSource5 =
 	"\tuint16_t state;\n"                                                     \
 	"\tuint16_t action = MAXACTIONS;\n"                                       \
 	"\n"                                                                      \
-	"\tfValue = NULL;\n"                                                      \
+	"#ifdef %s_ValueDefined\n"                                                \
+	"\tmemset(&value,0,sizeof(value));\n"                                     \
+	"#endif\n"                                                                \
 	"\n"                                                                      \
 	"\t/*\n"                                                                  \
 	"\t *\tRun until we hit EOF or a production rule triggers a return\n"     \
@@ -511,8 +470,8 @@ static const char *GSource5 =
 	"\t\tstate = 0;\n"                                                        \
 	"\t\ttextSize = 0;\n"                                                     \
 	"\n"                                                                      \
-	"\t\tfLine = curLine;\n"                                                  \
-	"\t\tfColumn = curColumn;\n"                                              \
+	"\t\tline = curLine;\n"                                                   \
+	"\t\tcolumn = curColumn;\n"                                               \
 	"\n"                                                                      \
 	"\t\tfor (;;) {\n"                                                        \
 	"\t\t\tint ch = input();\n"                                               \
@@ -578,7 +537,7 @@ static const char *GSource5 =
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
 	"\t\tif (action == MAXACTIONS) {\n"                                       \
-	"\t\t\tfAbort = \"Illegal character sequence\";\n"                        \
+	"\t\t\tabort = \"Illegal character sequence\";\n"                         \
 	"\t\t\treturn -1;\n"                                                      \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
@@ -588,7 +547,7 @@ static const char *GSource5 =
 	"\n"                                                                      \
 	"\t\treset();\n"                                                          \
 	"\t\tif (textSize == 0) {\n"                                              \
-	"\t\t\tfAbort = \"No characters read in sequence\";\n"                    \
+	"\t\t\tabort = \"No characters read in sequence\";\n"                     \
 	"\t\t\treturn -1;\n"                                                      \
 	"\t\t}\n"                                                                 \
 	"\n"                                                                      \
@@ -596,8 +555,7 @@ static const char *GSource5 =
 	"\t\t *\tConvert text sequence into string\n"                             \
 	"\t\t */\n"                                                               \
 	"\n"                                                                      \
-	"\t\tfText = std::string((char *)textBuffer,textSize);\n"                 \
-	"\t\tfValue = (void *)fText.c_str();\n"                                   \
+	"\t\ttext = std::string((char *)textBuffer,textSize);\n"                  \
 	"\n"                                                                      \
 	"\t\t/*\n"                                                                \
 	"\t\t *\tExecute action\n"                                                \
@@ -916,24 +874,41 @@ void OCLexCPPGenerator::WriteStarts(FILE *f, const char *className)
 
 void OCLexCPPGenerator::WriteOCHeader(const char *className, const char *outName, FILE *f)
 {
-	fprintf(f,GHeader1,outName);
+	fprintf(f,GHeader1,outName,outName,outName);
 
 	// Header declarations
 	fprintf(f,"%s\n\n",classHeader.c_str());
 
-	fprintf(f,GHeader2,className,className,className,className);
+	// If we define our union, generate the union definition
+	if (valueUnion.size() > 0) {
+		fprintf(f,"#ifndef %s_ValueDefined\n",className);
+		fprintf(f,"#define %s_ValueDefined\n",className);
+		fprintf(f,"\n");
+		fprintf(f,"/*  %sValue\n",className);
+		fprintf(f," *\n");
+		fprintf(f," *      Internally defined value.\n");
+		fprintf(f," */\n\n");
+		fprintf(f,"union %sValue {\n",className);
+		fprintf(f,"    %s",valueUnion.c_str());
+		fprintf(f,"};\n");
+		fprintf(f,"\n");
+		fprintf(f,"#endif\n");
+	}
+
+	fprintf(f,GHeader2,className,className,className,className,
+					   className,className);
 
 	// Class global declarations
 	fprintf(f,"%s\n\n",classGlobal.c_str());
 
 	// Internal declarations
-	fprintf(f,"%s\n",GHeader3);
+	fprintf(f,"%s",GHeader3);
 
 	// Local declarations
 	fprintf(f,"%s\n",classLocal.c_str());
 
 	// Final
-	fprintf(f,"%s\n",GHeader4);
+	fprintf(f,"%s",GHeader4);
 }
 
 /*	OCLexCPPGenerator::WriteOCFile
@@ -974,7 +949,7 @@ void OCLexCPPGenerator::WriteOCFile(const char *className, const char *outName, 
 	WriteStarts(f,className);
 
 	// Lexer engine
-	fprintf(f,GSource5,className,className);
+	fprintf(f,GSource5,className,className,className);
 
 	// Action states
 	WriteActions(f);

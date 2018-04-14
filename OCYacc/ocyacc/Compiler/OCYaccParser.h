@@ -49,7 +49,11 @@ class OCYaccParser
 		std::string classGlobal;		// class declaration of .h
 		std::string classInit;			// class code in .m init...
 		std::string classFinish;		// class code in .m finish...
+		std::string valueUnion;			// C++ specific value union decl
 		std::string endCode;			// code section of .m
+
+		std::string lexerClass;			// lexer class declaration
+		std::string lexerHeader;		// header name for lexer class
 
 		/*
 		 *	FilePos gives the position of certain declarations for 

@@ -6,11 +6,28 @@
  *		https://github.com/w3woody/OCTools
  */
 
+#ifndef OCLexTest_h
+#define OCLexTest_h
+
 #include <stdint.h>
 #include <string>
 
 
 
+#ifndef OCLexTest_ValueDefined
+#define OCLexTest_ValueDefined
+
+/*  OCLexTestValue
+ *
+ *      Internally defined value.
+ */
+
+union OCLexTestValue {
+    int value;
+	long lvalue;
+};
+
+#endif
 /*	OCFileInput
  *
  *		The input file stream must correspond to this interface to read
@@ -30,37 +47,12 @@ class OCFileInput
 
 #endif
 
-/*	OCLexInput
- *
- *		The protocol for our lex reader file that the lex stream must
- *	provide. This is the same as the protocol generated as part of the OCYacc
- *	output, and allows us to glue the Lexer and Parser together.
- */
-
-#ifndef OCLexInputProtocolC
-#define OCLexInputProtocolC
-
-class OCLexInput
-{
-	public:
-		virtual int32_t line() = 0;
-		virtual int32_t column() = 0;
-		virtual std::string filename() = 0;
-		virtual std::string text() = 0;
-		virtual std::string abort() = 0;
-
-		virtual int32_t lex() = 0;
-		virtual void *value() = 0;			// Arbitrary type
-};
-
-#endif
-
 /*	OCLexTest
  *
  *		The generated lexical parser
  */
 
-class OCLexTest : public OCLexInput
+class OCLexTest
 {
 	public:
 		OCLexTest(OCFileInput *file);
@@ -70,31 +62,15 @@ class OCLexTest : public OCLexInput
 		 *	Current reader state
 		 */
 
-		int32_t line()
-			{
-				return fLine;
-			}
-		int32_t column()
-			{
-				return fColumn;
-			}
-		std::string filename()
-			{
-				return fFileName;
-			}
-		std::string text()
-			{
-				return fText;
-			}
-		std::string abort()
-			{
-				return fAbort;
-			}
+		int32_t line;
+		int32_t column;
+		std::string filename;
+		std::string text;
+		std::string abort;
 
-		void *value()
-			{
-				return fValue;
-			}
+#ifdef OCLexTest_ValueDefined
+		union OCLexTestValue value;
+#endif
 
 		void setFile(std::string &file, int32_t line);
 		void setLine(int32_t line);
@@ -134,14 +110,6 @@ class OCLexTest : public OCLexInput
 		// State flags
 		uint64_t  states;
 
-		// File state
-		int32_t fLine;
-		int32_t fColumn;
-		std::string fFileName;
-		std::string fText;
-		std::string fAbort;
-		void *fValue;
-
 		// Internal Methods
 		void mark(void);
 		void reset(void);
@@ -150,9 +118,9 @@ class OCLexTest : public OCLexInput
 		bool atSOL(void);
 		uint16_t stateForClass(uint16_t charClass, uint16_t state);
 		uint16_t conditionalAction(uint16_t state);
-
 int checkType();
 	void skipComment();
 
 };
 
+#endif

@@ -3,18 +3,28 @@
  *	semicolons
  */
 
-%token <NSNumber> NUMBER
-%token <NSString> TOKEN
-
 %left '*' '/'
 %left '+' '-'
 %right '='
+
+%union {
+	int a;
+	long b;
+}
+
+%token <a> NUMBER
+%token <b> TOKEN
+
+%type <a> statements statement
+%type <b> assignment
+
+%lex OCLexTest
 
 %start statements
 
 %%
 
-statements : statement					{ }
+statements : statement					{ $$ = $1; }
 		   | statements statement		{ }
 		   ;
 

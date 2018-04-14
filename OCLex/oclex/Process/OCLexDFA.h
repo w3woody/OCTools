@@ -109,6 +109,7 @@ class OCLexDFA: public OCLexNFA
 		std::string classFinish;		// finish code to insert in init
 		std::string classGlobal;		// class declaration of .h
 		std::string endCode;			// code section of .m
+		std::string valueUnion;			// C++ specific value union decl
 
 		std::vector<OCCharSet> charClasses;
 		std::vector<CodeRule> codeRules;

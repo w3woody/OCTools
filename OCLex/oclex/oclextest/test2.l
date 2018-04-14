@@ -6,6 +6,8 @@ FS						(f|F|l|L)
 IS						(u|U|l|L)*
 
 %{
+#include "OCYaccTest.h"
+
 /* header */
 #define ABSTRACT                                      0x00110002
 #define ADD_ASSIGN                                    0x00110003
@@ -90,6 +92,15 @@ IS						(u|U|l|L)*
 	/* %init */
 }
 
+%finish {
+}
+
+%union {
+	int value;
+	long lvalue;
+}
+
+
 %%
 "/*"					{ skipComment(); }
 "//"[^\n]*\n			{ /* Skip C++ style comment */ }
@@ -158,7 +169,7 @@ IS						(u|U|l|L)*
 "!="					{ return NE_OP; }
 
 [ \t\v\n\f]				{ /* Skip whitespace */ }
-.						{ return fText[0]; }
+.						{ return text[0]; }
 
 %%
 

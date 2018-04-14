@@ -8,8 +8,11 @@
 
 #include "OCLexTest.h"
 #include <stdlib.h>
+#include <string.h>
 #include <new>
 
+
+#include "OCYaccTest.h"
 
  
 #define ABSTRACT                                      0x00110002
@@ -1416,6 +1419,7 @@ OCLexTest::~OCLexTest(void)
 	if (markBuffer) free(markBuffer);
 	if (readBuffer) free(readBuffer);
 	if (textBuffer) free(textBuffer);
+
 }
 
 /*
@@ -1603,7 +1607,7 @@ bool OCLexTest::atEOL()
 
 bool OCLexTest::atSOL()
 {
-	return fColumn == 0;
+	return column == 0;
 }
 
 /*
@@ -1639,7 +1643,7 @@ uint16_t OCLexTest::stateForClass(uint16_t charClass, uint16_t state)
 
 void OCLexTest::setFile(std::string &file, int32_t line)
 {
-	fFileName = file;
+	filename = file;
 	curLine = line;
 }
 
@@ -1702,7 +1706,9 @@ int32_t OCLexTest::lex(void)
 	uint16_t state;
 	uint16_t action = MAXACTIONS;
 
-	fValue = NULL;
+#ifdef OCLexTest_ValueDefined
+	memset(&value,0,sizeof(value));
+#endif
 
 	/*
 	 *	Run until we hit EOF or a production rule triggers a return
@@ -1716,8 +1722,8 @@ int32_t OCLexTest::lex(void)
 		state = 0;
 		textSize = 0;
 
-		fLine = curLine;
-		fColumn = curColumn;
+		line = curLine;
+		column = curColumn;
 
 		for (;;) {
 			int ch = input();
@@ -1783,7 +1789,7 @@ int32_t OCLexTest::lex(void)
 		 */
 
 		if (action == MAXACTIONS) {
-			fAbort = "Illegal character sequence";
+			abort = "Illegal character sequence";
 			return -1;
 		}
 
@@ -1793,7 +1799,7 @@ int32_t OCLexTest::lex(void)
 
 		reset();
 		if (textSize == 0) {
-			fAbort = "No characters read in sequence";
+			abort = "No characters read in sequence";
 			return -1;
 		}
 
@@ -1801,8 +1807,7 @@ int32_t OCLexTest::lex(void)
 		 *	Convert text sequence into string
 		 */
 
-		fText = std::string((char *)textBuffer,textSize);
-		fValue = (void *)fText.c_str();
+		text = std::string((char *)textBuffer,textSize);
 
 		/*
 		 *	Execute action
@@ -2050,7 +2055,7 @@ int32_t OCLexTest::lex(void)
                 break;
 
             case 60:
-                return fText[0]; 
+                return text[0]; 
                 break;
 
 			default:
