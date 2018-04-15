@@ -150,11 +150,11 @@ static const char *GSource1 =
 	"#include \"%s.h\"\n"                                                     \
 	"#include <stdlib.h>\n"                                                   \
 	"#include <string.h>\n"                                                   \
-	"#include <new>\n"                                                        \
-	"\n";
+	"#include <new>\n";
 
 // 4
 static const char *GSource2 =
+	"\n"                                                                      \
 	"/************************************************************************/\n" \
 	"/*                                                                      */\n" \
 	"/*  Construction/Destruction                                            */\n" \
@@ -876,9 +876,6 @@ void OCLexCPPGenerator::WriteOCHeader(const char *className, const char *outName
 {
 	fprintf(f,GHeader1,outName,outName,outName);
 
-	// Header declarations
-	fprintf(f,"%s\n\n",classHeader.c_str());
-
 	// If we define our union, generate the union definition
 	if (valueUnion.size() > 0) {
 		fprintf(f,"#ifndef %s_ValueDefined\n",className);
@@ -921,6 +918,9 @@ void OCLexCPPGenerator::WriteOCFile(const char *className, const char *outName, 
 {
 	// Standard header
 	fprintf(f,GSource1,outName,outName);
+
+	// Header declarations
+	fprintf(f,"%s\n\n",classHeader.c_str());
 
 	// Declarations
 	fprintf(f,"%s\n\n",declCode.c_str());

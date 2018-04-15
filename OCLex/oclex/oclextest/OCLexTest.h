@@ -12,8 +12,6 @@
 #include <stdint.h>
 #include <string>
 
-
-
 #ifndef OCLexTest_ValueDefined
 #define OCLexTest_ValueDefined
 
