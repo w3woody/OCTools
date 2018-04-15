@@ -516,7 +516,6 @@ bool OCYaccTest::parse()
 
 					OCYaccTestStack stmp;
 					stmp.state = action;
-					stmp.value = lex->value;
 					stmp.filename = lex->filename;
 					stmp.line = lex->line;
 					stmp.column = lex->column;
@@ -600,7 +599,6 @@ bool OCYaccTest::parse()
 
 				OCYaccTestStack stmp;
 				stmp.state = actionState;
-				stmp.value = lex->value;
 				stmp.filename = top.filename;
 				stmp.line = top.line;
 				stmp.column = top.column;
@@ -683,7 +681,6 @@ bool OCYaccTest::parse()
 			// Shift
 			OCYaccTestStack stmp;
 			stmp.state = action;
-			stmp.value = lex->value;
 			stmp.filename = lex->filename;
 			stmp.line = lex->line;
 			stmp.column = lex->column;

@@ -239,7 +239,7 @@ static const char *GSource6 = // 4
 	"\ttry {\n"                                                               \
 	"\t\tswitch (rule) {\n";
 
-static const char *GSource7 = // 10
+static const char *GSource7 = // 16
 	"\t\t\tdefault:\n"                                                        \
 	"\t\t\t\tbreak;\n"                                                        \
 	"\t\t}\n"                                                                 \
@@ -497,10 +497,9 @@ static const char *GSource7 = // 10
 	"\t\t\t\t\t */\n"                                                         \
 	"\n"                                                                      \
 	"\t\t\t\t\t%sStack stmp;\n"                                               \
-	"\t\t\t\t\tstmp.state = action;\n"                                        \
+	"\t\t\t\t\tstmp.state = action;\n";
 
-	"\t\t\t\t\tstmp.value = lex->value;\n"                                    \
-
+static const char *GSource8 = // 10
 	"\t\t\t\t\tstmp.filename = lex->filename;\n"                              \
 	"\t\t\t\t\tstmp.line = lex->line;\n"                                      \
 	"\t\t\t\t\tstmp.column = lex->column;\n"                                  \
@@ -583,10 +582,9 @@ static const char *GSource7 = // 10
 	"\t\t\t\t%sStack &top = stack.back();\n"                                  \
 	"\n"                                                                      \
 	"\t\t\t\t%sStack stmp;\n"                                                 \
-	"\t\t\t\tstmp.state = actionState;\n"                                     \
+	"\t\t\t\tstmp.state = actionState;\n";
 
-	"\t\t\t\tstmp.value = lex->value;\n"                                      \
-
+static const char *GSource9 = // 1
 	"\t\t\t\tstmp.filename = top.filename;\n"                                 \
 	"\t\t\t\tstmp.line = top.line;\n"                                         \
 	"\t\t\t\tstmp.column = top.column;\n"                                     \
@@ -668,8 +666,10 @@ static const char *GSource7 = // 10
 	"\n"                                                                      \
 	"\t\t\t// Shift\n"                                                        \
 	"\t\t\t%sStack stmp;\n"                                                   \
-	"\t\t\tstmp.state = action;\n"                                            \
-	"\t\t\tstmp.value = lex->value;\n"                                        \
+	"\t\t\tstmp.state = action;\n";
+
+
+static const char *GSource10 = // 0
 	"\t\t\tstmp.filename = lex->filename;\n"                                  \
 	"\t\t\tstmp.line = lex->line;\n"                                          \
 	"\t\t\tstmp.column = lex->column;\n"                                      \
@@ -803,7 +803,6 @@ void OCYaccCPPGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 					value = (value * 10) + *ptr++ - '0';
 				}
 
-				bool hasType = false;
 				if ((value < 1) || (value > rule.types.size())) {
 					value = 1;
 
@@ -856,7 +855,6 @@ void OCYaccCPPGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 					if (valueType.size() > 0) {
 						ret += ".";
 						ret += valueType;
-						hasType = true;
 					} else {
 						fprintf(stderr,"Warning: Rule %s, $%zu has no type\n",rule.prodDebug.c_str(),value);
 					}
@@ -1133,8 +1131,25 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	fprintf(f, GSource7, classname, classname, classname, classname,
 						 classname, classname, classname, classname,
 						 classname, classname, classname, classname,
-						 classname, classname, classname, classname,
 						 classname, classname, classname, classname);
+
+	if (parser.valueUnion.size() > 0) {
+		fprintf(f,"\t\t\t\t\tstmp.value = lex->value;\n");
+	}
+
+	fprintf(f, GSource8, classname, classname);
+
+	if (parser.valueUnion.size() > 0) {
+		fprintf(f,"\t\t\t\tstmp.value = lex->value;\n");
+	}
+
+	fprintf(f, GSource9, classname);
+
+	if (parser.valueUnion.size() > 0) {
+		fprintf(f,"\t\t\tstmp.value = lex->value;\n");
+	}
+
+	fprintf(f, "%s", GSource10);
 }
 
 /*	OCYaccCPPGenerator::WriteOCHeader

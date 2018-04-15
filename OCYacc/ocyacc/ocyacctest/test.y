@@ -7,10 +7,10 @@
 %left '+' '-'
 %right '='
 
-%union {
-	int a;
-	long b;
-}
+//%union {
+//	int a;
+//	long b;
+//}
 
 %token <a> NUMBER
 %token <b> TOKEN
