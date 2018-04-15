@@ -876,6 +876,12 @@ void OCLexCPPGenerator::WriteOCHeader(const char *className, const char *outName
 {
 	fprintf(f,GHeader1,outName,outName,outName);
 
+	// Declarations
+	fprintf(f,"%s\n\n",declCode.c_str());
+
+	// Header declarations
+	fprintf(f,"%s\n\n",classHeader.c_str());
+
 	// If we define our union, generate the union definition
 	if (valueUnion.size() > 0) {
 		fprintf(f,"#ifndef %s_ValueDefined\n",className);
@@ -918,12 +924,6 @@ void OCLexCPPGenerator::WriteOCFile(const char *className, const char *outName, 
 {
 	// Standard header
 	fprintf(f,GSource1,outName,outName);
-
-	// Header declarations
-	fprintf(f,"%s\n\n",classHeader.c_str());
-
-	// Declarations
-	fprintf(f,"%s\n\n",declCode.c_str());
 
 	// State declarations
 	WriteStates(f);
