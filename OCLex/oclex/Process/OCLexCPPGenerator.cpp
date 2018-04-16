@@ -771,9 +771,13 @@ void OCLexCPPGenerator::WriteActions(FILE *f)
 {
 	size_t i,len = codeRules.size();
 	for (i = 0; i < len; ++i) {
-		fprintf(f,"            case %zu:\n",i);
-		fprintf(f,"                %s\n",codeRules[i].code.c_str());
-		fprintf(f,"                break;\n\n");
+		if (codeRules[i].code.length() > 0) {
+			fprintf(f,"            case %zu:\n",i);
+			fprintf(f,"                {\n");
+			fprintf(f,"                %s\n",codeRules[i].code.c_str());
+			fprintf(f,"                }\n");
+			fprintf(f,"                break;\n\n");
+		}
 	}
 }
 

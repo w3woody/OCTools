@@ -1126,9 +1126,13 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 	size_t i,len = state.reductions.size();
 	for (i = 0; i < len; ++i) {
 		fprintf(f,"            // (%x) %s\n",state.reductions[i].production,state.reductions[i].prodDebug.c_str());
-		fprintf(f,"            case %zu:\n",i);
-		WriteRule(f, state.reductions[i]);
-		fprintf(f,"                break;\n\n");
+		if (state.reductions[i].code.length() > 0) {
+			fprintf(f,"            case %zu:\n",i);
+			fprintf(f,"                {\n");
+			WriteRule(f, state.reductions[i]);
+			fprintf(f,"                }\n");
+			fprintf(f,"                break;\n\n");
+		}
 	}
 	fprintf(f,"\n");
 

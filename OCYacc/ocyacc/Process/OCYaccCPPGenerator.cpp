@@ -1087,9 +1087,6 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 		fprintf(f,"#include \"%s\"\n",parser.lexerHeader.c_str());
 	}
 
-	// Header declarations
-	fprintf(f,"\n%s\n",parser.declCode.c_str());
-
 	// Print states, declarations and constants
 	fprintf(f,"%s",GSource2);
 
@@ -1121,9 +1118,13 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	size_t i,len = state.reductions.size();
 	for (i = 0; i < len; ++i) {
 		fprintf(f,"            // (%x) %s\n",state.reductions[i].production,state.reductions[i].prodDebug.c_str());
-		fprintf(f,"            case %zu:\n",i);
-		WriteRule(f, state.reductions[i]);
-		fprintf(f,"                break;\n\n");
+		if (state.reductions[i].code.length() > 0) {
+			fprintf(f,"            case %zu:\n",i);
+			fprintf(f,"                {\n");
+			WriteRule(f, state.reductions[i]);
+			fprintf(f,"                }\n");
+			fprintf(f,"                break;\n\n");
+		}
 	}
 	fprintf(f,"\n");
 
@@ -1169,8 +1170,11 @@ void OCYaccCPPGenerator::WriteOCHeader(const char *classname, const char *output
 	// Prefix
 	fprintf(f,GHeader1,outputName,outputName,outputName);
 
+	// Includes declarations
+	fprintf(f,"%s\n",parser.classHeader.c_str());
+
 	// Header declarations
-	fprintf(f,"\n%s\n",parser.classHeader.c_str());
+	fprintf(f,"%s\n",parser.declCode.c_str());
 
 	// Forwards
 	fprintf(f,GHeader2,classname);
