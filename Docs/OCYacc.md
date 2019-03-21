@@ -23,7 +23,7 @@ Thus, OCLex was born.
 
 Licensed under the open-source BSD license:
 
-Copyright 2017 William Woody and Glenview Software
+Copyright 2017-2019 William Woody and Glenview Software
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
