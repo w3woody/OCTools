@@ -1,0 +1,231 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		EF530B682243EB780061FFC6 /* OCTools */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = EF530B692243EB780061FFC6 /* Build configuration list for PBXAggregateTarget "OCTools" */;
+			buildPhases = (
+				EF530B7C2243F1E50061FFC6 /* Debug Information */,
+			);
+			dependencies = (
+				EF530B7B2243EB9B0061FFC6 /* PBXTargetDependency */,
+				EF530B792243EB990061FFC6 /* PBXTargetDependency */,
+			);
+			name = OCTools;
+			productName = OCTools;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		EF530B702243EB8A0061FFC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF530B6C2243EB8A0061FFC6 /* ocyacc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EF0111BE1F263FBA006FFFFB;
+			remoteInfo = ocyacc;
+		};
+		EF530B762243EB8F0061FFC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF530B722243EB8F0061FFC6 /* oclex.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EF0111AB1F263F91006FFFFB;
+			remoteInfo = oclex;
+		};
+		EF530B782243EB990061FFC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF530B722243EB8F0061FFC6 /* oclex.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EF0111AA1F263F91006FFFFB;
+			remoteInfo = oclex;
+		};
+		EF530B7A2243EB9B0061FFC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF530B6C2243EB8A0061FFC6 /* ocyacc.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EF0111BD1F263FBA006FFFFB;
+			remoteInfo = ocyacc;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		EF530B6C2243EB8A0061FFC6 /* ocyacc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ocyacc.xcodeproj; path = ../../OCYacc/ocyacc/ocyacc.xcodeproj; sourceTree = "<group>"; };
+		EF530B722243EB8F0061FFC6 /* oclex.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = oclex.xcodeproj; path = ../../OCLex/oclex/oclex.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		EF530B612243EB590061FFC6 = {
+			isa = PBXGroup;
+			children = (
+				EF530B722243EB8F0061FFC6 /* oclex.xcodeproj */,
+				EF530B6C2243EB8A0061FFC6 /* ocyacc.xcodeproj */,
+			);
+			sourceTree = "<group>";
+		};
+		EF530B6D2243EB8A0061FFC6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF530B712243EB8A0061FFC6 /* ocyacc */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EF530B732243EB8F0061FFC6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF530B772243EB8F0061FFC6 /* oclex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		EF530B622243EB590061FFC6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1010;
+				TargetAttributes = {
+					EF530B682243EB780061FFC6 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = EF530B652243EB590061FFC6 /* Build configuration list for PBXProject "octools" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EF530B612243EB590061FFC6;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EF530B732243EB8F0061FFC6 /* Products */;
+					ProjectRef = EF530B722243EB8F0061FFC6 /* oclex.xcodeproj */;
+				},
+				{
+					ProductGroup = EF530B6D2243EB8A0061FFC6 /* Products */;
+					ProjectRef = EF530B6C2243EB8A0061FFC6 /* ocyacc.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				EF530B682243EB780061FFC6 /* OCTools */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EF530B712243EB8A0061FFC6 /* ocyacc */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = ocyacc;
+			remoteRef = EF530B702243EB8A0061FFC6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EF530B772243EB8F0061FFC6 /* oclex */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = oclex;
+			remoteRef = EF530B762243EB8F0061FFC6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		EF530B7C2243F1E50061FFC6 /* Debug Information */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Debug Information";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Go to build products\ncd $BUILT_PRODUCTS_DIR\n\n# Make installation root\nmkdir -p pkg/usr/local/bin\ncp -R ocyacc pkg/usr/local/bin\ncp -R oclex pkg/usr/local/bin\n\n# Build tool installation package\npkgbuild --root pkg --identifier com.chaosinmotion.OCTools --version 1.0 --ownership recommended tools.pkg\n\n# Build the package\nproductbuild --distribution $SRCROOT/Package/distribution.xml --resources $SRCROOT/Package --package-path tools.pkg --version 1.0 octools.pkg\n\n# Move to package root\ncp octools.pkg $SRCROOT/../..\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EF530B792243EB990061FFC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = oclex;
+			targetProxy = EF530B782243EB990061FFC6 /* PBXContainerItemProxy */;
+		};
+		EF530B7B2243EB9B0061FFC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ocyacc;
+			targetProxy = EF530B7A2243EB9B0061FFC6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		EF530B662243EB590061FFC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		EF530B672243EB590061FFC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		EF530B6A2243EB780061FFC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EF530B6B2243EB780061FFC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EF530B652243EB590061FFC6 /* Build configuration list for PBXProject "octools" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF530B662243EB590061FFC6 /* Debug */,
+				EF530B672243EB590061FFC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF530B692243EB780061FFC6 /* Build configuration list for PBXAggregateTarget "OCTools" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF530B6A2243EB780061FFC6 /* Debug */,
+				EF530B6B2243EB780061FFC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EF530B622243EB590061FFC6 /* Project object */;
+}

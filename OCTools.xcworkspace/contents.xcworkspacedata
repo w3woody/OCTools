@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:OCTools/octools/octools.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:OCCommon/occommon/occommon.xcodeproj">
    </FileRef>
    <FileRef

@@ -7,35 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF0111C21F263FBA006FFFFB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111C11F263FBA006FFFFB /* main.cpp */; };
-		EF0111E01F264101006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0111DF1F264101006FFFFB /* liboccommon.a */; };
-		EF0111FA1F281103006FFFFB /* OCYaccParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111F81F281103006FFFFB /* OCYaccParser.cpp */; };
-		EF0112021F283240006FFFFB /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112011F283240006FFFFB /* test.cpp */; };
-		EF0112061F283265006FFFFB /* OCYaccParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111F81F281103006FFFFB /* OCYaccParser.cpp */; };
-		EF0112081F28327D006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0112071F28327D006FFFFB /* liboccommon.a */; };
-		EFBF289F1F3D14DC00935504 /* OCYaccTestLALR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF28971F3D14DC00935504 /* OCYaccTestLALR.cpp */; };
-		EFBF28A01F3D14DC00935504 /* OCYaccTestLR0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF28991F3D14DC00935504 /* OCYaccTestLR0.cpp */; };
-		EFBF28A11F3D14DC00935504 /* OCYaccTestLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF289B1F3D14DC00935504 /* OCYaccTestLR1.cpp */; };
-		EFBF28A21F3D14DC00935504 /* OCYaccTestSLR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF289D1F3D14DC00935504 /* OCYaccTestSLR.cpp */; };
-		EFCC76D42080261100EC2B55 /* OCYaccCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCC76D22080261100EC2B55 /* OCYaccCPPGenerator.cpp */; };
-		EFCC76D52080261700EC2B55 /* OCYaccCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCC76D22080261100EC2B55 /* OCYaccCPPGenerator.cpp */; };
-		EFF29F4F1F3D271D00024C76 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */; };
-		EFF29F501F3D271D00024C76 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */; };
-		EFF29F531F407B8200024C76 /* OCYaccGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */; };
-		EFF29F541F407B8200024C76 /* OCYaccGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */; };
+		EF530B282243E8540061FFC6 /* OCYaccCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B222243E8540061FFC6 /* OCYaccCPPGenerator.cpp */; };
+		EF530B292243E8540061FFC6 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B232243E8540061FFC6 /* OCYaccLR1.cpp */; };
+		EF530B2A2243E8540061FFC6 /* OCYaccGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B262243E8540061FFC6 /* OCYaccGenerator.cpp */; };
+		EF530B2D2243E86D0061FFC6 /* OCYaccParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B2C2243E86D0061FFC6 /* OCYaccParser.cpp */; };
+		EF530B2F2243E8830061FFC6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B2E2243E8830061FFC6 /* main.cpp */; };
+		EF530B332243E9A30061FFC6 /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF530B322243E9A30061FFC6 /* liboccommon.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EF530B5B2243EA9D0061FFC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF530B572243EA9D0061FFC6 /* occommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EF0111D21F264063006FFFFB;
+			remoteInfo = occommon;
+		};
+		EF530B5F2243EAAF0061FFC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF530B572243EA9D0061FFC6 /* occommon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EF0111D11F264063006FFFFB;
+			remoteInfo = occommon;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		EF0111BC1F263FBA006FFFFB /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-		EF0111FD1F283240006FFFFB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -48,35 +46,17 @@
 
 /* Begin PBXFileReference section */
 		EF0111BE1F263FBA006FFFFB /* ocyacc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ocyacc; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF0111C11F263FBA006FFFFB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		EF0111DF1F264101006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = ../../OCCommon/occommon/build/Debug/liboccommon.a; sourceTree = "<group>"; };
-		EF0111F81F281103006FFFFB /* OCYaccParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccParser.cpp; sourceTree = "<group>"; };
-		EF0111F91F281103006FFFFB /* OCYaccParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccParser.h; sourceTree = "<group>"; };
-		EF0111FF1F283240006FFFFB /* ocyacctest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ocyacctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF0112011F283240006FFFFB /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
-		EF0112071F28327D006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = "../../../../Library/Developer/Xcode/DerivedData/OCTools-alzzkwttbjtlkwgzhjspyeulqhwq/Build/Products/Debug/liboccommon.a"; sourceTree = "<group>"; };
-		EF0112091F28D829006FFFFB /* test.y */ = {isa = PBXFileReference; explicitFileType = sourcecode.yacc; path = test.y; sourceTree = "<group>"; };
-		EF01127A1F364219006FFFFB /* test2.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = test2.y; sourceTree = "<group>"; };
-		EF7369391F449B2C008CC168 /* tests.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = tests.y; sourceTree = "<group>"; };
-		EF92A88B1F38FF6300E27361 /* test3.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = test3.y; sourceTree = "<group>"; };
-		EF92A88C1F393ABF00E27361 /* test4.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = test4.y; sourceTree = "<group>"; };
-		EF92A8951F3A246000E27361 /* test5.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = test5.y; sourceTree = "<group>"; };
-		EFBF28951F3CA73800935504 /* test6.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = test6.y; sourceTree = "<group>"; };
-		EFBF28971F3D14DC00935504 /* OCYaccTestLALR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccTestLALR.cpp; sourceTree = "<group>"; };
-		EFBF28981F3D14DC00935504 /* OCYaccTestLALR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestLALR.h; sourceTree = "<group>"; };
-		EFBF28991F3D14DC00935504 /* OCYaccTestLR0.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccTestLR0.cpp; sourceTree = "<group>"; };
-		EFBF289A1F3D14DC00935504 /* OCYaccTestLR0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestLR0.h; sourceTree = "<group>"; };
-		EFBF289B1F3D14DC00935504 /* OCYaccTestLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccTestLR1.cpp; sourceTree = "<group>"; };
-		EFBF289C1F3D14DC00935504 /* OCYaccTestLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestLR1.h; sourceTree = "<group>"; };
-		EFBF289D1F3D14DC00935504 /* OCYaccTestSLR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccTestSLR.cpp; sourceTree = "<group>"; };
-		EFBF289E1F3D14DC00935504 /* OCYaccTestSLR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccTestSLR.h; sourceTree = "<group>"; };
-		EFCC76D22080261100EC2B55 /* OCYaccCPPGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccCPPGenerator.cpp; sourceTree = "<group>"; };
-		EFCC76D32080261100EC2B55 /* OCYaccCPPGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCYaccCPPGenerator.h; sourceTree = "<group>"; };
-		EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccLR1.cpp; sourceTree = "<group>"; };
-		EFF29F4E1F3D271D00024C76 /* OCYaccLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccLR1.h; sourceTree = "<group>"; };
-		EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCYaccGenerator.cpp; sourceTree = "<group>"; };
-		EFF29F521F407B8200024C76 /* OCYaccGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCYaccGenerator.h; sourceTree = "<group>"; };
-		EFF29F551F40E26A00024C76 /* test_c.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = test_c.y; sourceTree = "<group>"; };
+		EF530B222243E8540061FFC6 /* OCYaccCPPGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCYaccCPPGenerator.cpp; path = src/OCYaccCPPGenerator.cpp; sourceTree = "<group>"; };
+		EF530B232243E8540061FFC6 /* OCYaccLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCYaccLR1.cpp; path = src/OCYaccLR1.cpp; sourceTree = "<group>"; };
+		EF530B242243E8540061FFC6 /* OCYaccCPPGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCYaccCPPGenerator.h; path = src/OCYaccCPPGenerator.h; sourceTree = "<group>"; };
+		EF530B252243E8540061FFC6 /* OCYaccLR1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCYaccLR1.h; path = src/OCYaccLR1.h; sourceTree = "<group>"; };
+		EF530B262243E8540061FFC6 /* OCYaccGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCYaccGenerator.cpp; path = src/OCYaccGenerator.cpp; sourceTree = "<group>"; };
+		EF530B272243E8540061FFC6 /* OCYaccGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCYaccGenerator.h; path = src/OCYaccGenerator.h; sourceTree = "<group>"; };
+		EF530B2B2243E86D0061FFC6 /* OCYaccParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCYaccParser.h; path = src/OCYaccParser.h; sourceTree = "<group>"; };
+		EF530B2C2243E86D0061FFC6 /* OCYaccParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCYaccParser.cpp; path = src/OCYaccParser.cpp; sourceTree = "<group>"; };
+		EF530B2E2243E8830061FFC6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
+		EF530B322243E9A30061FFC6 /* liboccommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = liboccommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF530B572243EA9D0061FFC6 /* occommon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = occommon.xcodeproj; path = ../../OCCommon/occommon/occommon.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,15 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF0111E01F264101006FFFFB /* liboccommon.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EF0111FC1F283240006FFFFB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EF0112081F28327D006FFFFB /* liboccommon.a in Frameworks */,
+				EF530B332243E9A30061FFC6 /* liboccommon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,10 +74,9 @@
 		EF0111B51F263FBA006FFFFB = {
 			isa = PBXGroup;
 			children = (
-				EF0112411F3148E0006FFFFB /* Process */,
-				EF0111F71F2810E2006FFFFB /* Compiler */,
-				EF0111C01F263FBA006FFFFB /* ocyacc */,
-				EF0112001F283240006FFFFB /* ocyacctest */,
+				EF530B1F2243E8190061FFC6 /* Process */,
+				EF530B202243E8200061FFC6 /* Compiler */,
+				EF530B212243E8290061FFC6 /* ocyacc */,
 				EF0111BF1F263FBA006FFFFB /* Products */,
 				EF0111DE1F264101006FFFFB /* Frameworks */,
 			);
@@ -115,72 +86,55 @@
 			isa = PBXGroup;
 			children = (
 				EF0111BE1F263FBA006FFFFB /* ocyacc */,
-				EF0111FF1F283240006FFFFB /* ocyacctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		EF0111C01F263FBA006FFFFB /* ocyacc */ = {
-			isa = PBXGroup;
-			children = (
-				EF0111C11F263FBA006FFFFB /* main.cpp */,
-			);
-			path = ocyacc;
 			sourceTree = "<group>";
 		};
 		EF0111DE1F264101006FFFFB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EF0112071F28327D006FFFFB /* liboccommon.a */,
-				EF0111DF1F264101006FFFFB /* liboccommon.a */,
+				EF530B572243EA9D0061FFC6 /* occommon.xcodeproj */,
+				EF530B322243E9A30061FFC6 /* liboccommon.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		EF0111F71F2810E2006FFFFB /* Compiler */ = {
+		EF530B1F2243E8190061FFC6 /* Process */ = {
 			isa = PBXGroup;
 			children = (
-				EF0111F91F281103006FFFFB /* OCYaccParser.h */,
-				EF0111F81F281103006FFFFB /* OCYaccParser.cpp */,
+				EF530B222243E8540061FFC6 /* OCYaccCPPGenerator.cpp */,
+				EF530B242243E8540061FFC6 /* OCYaccCPPGenerator.h */,
+				EF530B262243E8540061FFC6 /* OCYaccGenerator.cpp */,
+				EF530B272243E8540061FFC6 /* OCYaccGenerator.h */,
+				EF530B232243E8540061FFC6 /* OCYaccLR1.cpp */,
+				EF530B252243E8540061FFC6 /* OCYaccLR1.h */,
 			);
-			path = Compiler;
+			name = Process;
 			sourceTree = "<group>";
 		};
-		EF0112001F283240006FFFFB /* ocyacctest */ = {
+		EF530B202243E8200061FFC6 /* Compiler */ = {
 			isa = PBXGroup;
 			children = (
-				EFBF28971F3D14DC00935504 /* OCYaccTestLALR.cpp */,
-				EFBF28981F3D14DC00935504 /* OCYaccTestLALR.h */,
-				EFBF28991F3D14DC00935504 /* OCYaccTestLR0.cpp */,
-				EFBF289A1F3D14DC00935504 /* OCYaccTestLR0.h */,
-				EFBF289B1F3D14DC00935504 /* OCYaccTestLR1.cpp */,
-				EFBF289C1F3D14DC00935504 /* OCYaccTestLR1.h */,
-				EFBF289D1F3D14DC00935504 /* OCYaccTestSLR.cpp */,
-				EFBF289E1F3D14DC00935504 /* OCYaccTestSLR.h */,
-				EF0112011F283240006FFFFB /* test.cpp */,
-				EF0112091F28D829006FFFFB /* test.y */,
-				EF01127A1F364219006FFFFB /* test2.y */,
-				EF92A88B1F38FF6300E27361 /* test3.y */,
-				EF92A88C1F393ABF00E27361 /* test4.y */,
-				EF92A8951F3A246000E27361 /* test5.y */,
-				EFBF28951F3CA73800935504 /* test6.y */,
-				EFF29F551F40E26A00024C76 /* test_c.y */,
-				EF7369391F449B2C008CC168 /* tests.y */,
+				EF530B2C2243E86D0061FFC6 /* OCYaccParser.cpp */,
+				EF530B2B2243E86D0061FFC6 /* OCYaccParser.h */,
 			);
-			path = ocyacctest;
+			name = Compiler;
 			sourceTree = "<group>";
 		};
-		EF0112411F3148E0006FFFFB /* Process */ = {
+		EF530B212243E8290061FFC6 /* ocyacc */ = {
 			isa = PBXGroup;
 			children = (
-				EFF29F4E1F3D271D00024C76 /* OCYaccLR1.h */,
-				EFF29F4D1F3D271D00024C76 /* OCYaccLR1.cpp */,
-				EFF29F521F407B8200024C76 /* OCYaccGenerator.h */,
-				EFF29F511F407B8200024C76 /* OCYaccGenerator.cpp */,
-				EFCC76D32080261100EC2B55 /* OCYaccCPPGenerator.h */,
-				EFCC76D22080261100EC2B55 /* OCYaccCPPGenerator.cpp */,
+				EF530B2E2243E8830061FFC6 /* main.cpp */,
 			);
-			path = Process;
+			name = ocyacc;
+			sourceTree = "<group>";
+		};
+		EF530B582243EA9D0061FFC6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF530B5C2243EA9D0061FFC6 /* liboccommon.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,27 +151,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				EF530B602243EAAF0061FFC6 /* PBXTargetDependency */,
 			);
 			name = ocyacc;
 			productName = ocyacc;
 			productReference = EF0111BE1F263FBA006FFFFB /* ocyacc */;
-			productType = "com.apple.product-type.tool";
-		};
-		EF0111FE1F283240006FFFFB /* ocyacctest */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EF0112031F283240006FFFFB /* Build configuration list for PBXNativeTarget "ocyacctest" */;
-			buildPhases = (
-				EF0111FB1F283240006FFFFB /* Sources */,
-				EF0111FC1F283240006FFFFB /* Frameworks */,
-				EF0111FD1F283240006FFFFB /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = ocyacctest;
-			productName = ocyacctest;
-			productReference = EF0111FF1F283240006FFFFB /* ocyacctest */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -234,11 +172,6 @@
 						DevelopmentTeam = MUUNEV88XL;
 						ProvisioningStyle = Automatic;
 					};
-					EF0111FE1F283240006FFFFB = {
-						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = MUUNEV88XL;
-						ProvisioningStyle = Automatic;
-					};
 				};
 			};
 			buildConfigurationList = EF0111B91F263FBA006FFFFB /* Build configuration list for PBXProject "ocyacc" */;
@@ -251,44 +184,51 @@
 			mainGroup = EF0111B51F263FBA006FFFFB;
 			productRefGroup = EF0111BF1F263FBA006FFFFB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EF530B582243EA9D0061FFC6 /* Products */;
+					ProjectRef = EF530B572243EA9D0061FFC6 /* occommon.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				EF0111BD1F263FBA006FFFFB /* ocyacc */,
-				EF0111FE1F283240006FFFFB /* ocyacctest */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EF530B5C2243EA9D0061FFC6 /* liboccommon.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liboccommon.a;
+			remoteRef = EF530B5B2243EA9D0061FFC6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EF0111BA1F263FBA006FFFFB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFF29F4F1F3D271D00024C76 /* OCYaccLR1.cpp in Sources */,
-				EF0111FA1F281103006FFFFB /* OCYaccParser.cpp in Sources */,
-				EFF29F531F407B8200024C76 /* OCYaccGenerator.cpp in Sources */,
-				EF0111C21F263FBA006FFFFB /* main.cpp in Sources */,
-				EFCC76D42080261100EC2B55 /* OCYaccCPPGenerator.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EF0111FB1F283240006FFFFB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EFBF289F1F3D14DC00935504 /* OCYaccTestLALR.cpp in Sources */,
-				EF0112061F283265006FFFFB /* OCYaccParser.cpp in Sources */,
-				EFF29F541F407B8200024C76 /* OCYaccGenerator.cpp in Sources */,
-				EFBF28A01F3D14DC00935504 /* OCYaccTestLR0.cpp in Sources */,
-				EFBF28A21F3D14DC00935504 /* OCYaccTestSLR.cpp in Sources */,
-				EF0112021F283240006FFFFB /* test.cpp in Sources */,
-				EFBF28A11F3D14DC00935504 /* OCYaccTestLR1.cpp in Sources */,
-				EFF29F501F3D271D00024C76 /* OCYaccLR1.cpp in Sources */,
-				EFCC76D52080261700EC2B55 /* OCYaccCPPGenerator.cpp in Sources */,
+				EF530B292243E8540061FFC6 /* OCYaccLR1.cpp in Sources */,
+				EF530B2A2243E8540061FFC6 /* OCYaccGenerator.cpp in Sources */,
+				EF530B2D2243E86D0061FFC6 /* OCYaccParser.cpp in Sources */,
+				EF530B2F2243E8830061FFC6 /* main.cpp in Sources */,
+				EF530B282243E8540061FFC6 /* OCYaccCPPGenerator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EF530B602243EAAF0061FFC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = occommon;
+			targetProxy = EF530B5F2243EAAF0061FFC6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EF0111C31F263FBA006FFFFB /* Debug */ = {
@@ -344,7 +284,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				SYSTEM_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/occommon $(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/macosx/occommon";
+				SYSTEM_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/occommon/** $(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/macosx/occommon";
 				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
@@ -395,7 +335,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				SYSTEM_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/occommon $(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/macosx/occommon";
+				SYSTEM_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/occommon/** $(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/macosx/occommon";
 				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Release;
@@ -424,22 +364,6 @@
 			};
 			name = Release;
 		};
-		EF0112041F283240006FFFFB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEVELOPMENT_TEAM = MUUNEV88XL;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		EF0112051F283240006FFFFB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEVELOPMENT_TEAM = MUUNEV88XL;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -457,15 +381,6 @@
 			buildConfigurations = (
 				EF0111C61F263FBA006FFFFB /* Debug */,
 				EF0111C71F263FBA006FFFFB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EF0112031F283240006FFFFB /* Build configuration list for PBXNativeTarget "ocyacctest" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EF0112041F283240006FFFFB /* Debug */,
-				EF0112051F283240006FFFFB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF0111DC1F264093006FFFFB /* OCLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111DA1F264093006FFFFB /* OCLexer.cpp */; };
-		EF0111DD1F264093006FFFFB /* OCLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = EF0111DB1F264093006FFFFB /* OCLexer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EF0112131F2955E3006FFFFB /* OCUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = EF0112111F2955E3006FFFFB /* OCUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EF01121C1F2963E5006FFFFB /* OCAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */; };
-		EF01121E1F2B744D006FFFFB /* OCIntegerSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */; };
-		EF0112691F33ED7F006FFFFB /* OCCompressStates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112681F33ED7F006FFFFB /* OCCompressStates.cpp */; };
+		EF530B152243E46A0061FFC6 /* OCLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = EF530B132243E46A0061FFC6 /* OCLexer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EF530B162243E46A0061FFC6 /* OCLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B142243E46A0061FFC6 /* OCLexer.cpp */; };
+		EF530B1B2243E4720061FFC6 /* OCUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = EF530B172243E4720061FFC6 /* OCUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EF530B1C2243E4720061FFC6 /* OCCompressStates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B182243E4720061FFC6 /* OCCompressStates.cpp */; };
+		EF530B1D2243E4720061FFC6 /* OCAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B192243E4720061FFC6 /* OCAlloc.cpp */; };
+		EF530B1E2243E4720061FFC6 /* OCIntegerSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B1A2243E4720061FFC6 /* OCIntegerSet.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		EF0111D21F264063006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liboccommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF0111DA1F264093006FFFFB /* OCLexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexer.cpp; sourceTree = "<group>"; };
-		EF0111DB1F264093006FFFFB /* OCLexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexer.h; sourceTree = "<group>"; };
-		EF0112111F2955E3006FFFFB /* OCUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUtilities.h; sourceTree = "<group>"; };
-		EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCAlloc.cpp; sourceTree = "<group>"; };
-		EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCIntegerSet.cpp; sourceTree = "<group>"; };
-		EF0112681F33ED7F006FFFFB /* OCCompressStates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCCompressStates.cpp; sourceTree = "<group>"; };
+		EF530B132243E46A0061FFC6 /* OCLexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCLexer.h; path = src/OCLexer.h; sourceTree = "<group>"; };
+		EF530B142243E46A0061FFC6 /* OCLexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCLexer.cpp; path = src/OCLexer.cpp; sourceTree = "<group>"; };
+		EF530B172243E4720061FFC6 /* OCUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCUtilities.h; path = src/OCUtilities.h; sourceTree = "<group>"; };
+		EF530B182243E4720061FFC6 /* OCCompressStates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCCompressStates.cpp; path = src/OCCompressStates.cpp; sourceTree = "<group>"; };
+		EF530B192243E4720061FFC6 /* OCAlloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCAlloc.cpp; path = src/OCAlloc.cpp; sourceTree = "<group>"; };
+		EF530B1A2243E4720061FFC6 /* OCIntegerSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCIntegerSet.cpp; path = src/OCIntegerSet.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,8 +39,8 @@
 		EF0111C91F264063006FFFFB = {
 			isa = PBXGroup;
 			children = (
-				EF01120F1F2955C5006FFFFB /* Utilities */,
-				EF0111D91F264070006FFFFB /* Lexer */,
+				EF530B112243E4470061FFC6 /* Utilities */,
+				EF530B122243E4510061FFC6 /* Lexer */,
 				EF0111D31F264063006FFFFB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -53,24 +53,24 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		EF0111D91F264070006FFFFB /* Lexer */ = {
+		EF530B112243E4470061FFC6 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				EF0111DB1F264093006FFFFB /* OCLexer.h */,
-				EF0111DA1F264093006FFFFB /* OCLexer.cpp */,
+				EF530B192243E4720061FFC6 /* OCAlloc.cpp */,
+				EF530B182243E4720061FFC6 /* OCCompressStates.cpp */,
+				EF530B1A2243E4720061FFC6 /* OCIntegerSet.cpp */,
+				EF530B172243E4720061FFC6 /* OCUtilities.h */,
 			);
-			path = Lexer;
+			name = Utilities;
 			sourceTree = "<group>";
 		};
-		EF01120F1F2955C5006FFFFB /* Utilities */ = {
+		EF530B122243E4510061FFC6 /* Lexer */ = {
 			isa = PBXGroup;
 			children = (
-				EF0112111F2955E3006FFFFB /* OCUtilities.h */,
-				EF01121B1F2963E5006FFFFB /* OCAlloc.cpp */,
-				EF01121D1F2B744D006FFFFB /* OCIntegerSet.cpp */,
-				EF0112681F33ED7F006FFFFB /* OCCompressStates.cpp */,
+				EF530B142243E46A0061FFC6 /* OCLexer.cpp */,
+				EF530B132243E46A0061FFC6 /* OCLexer.h */,
 			);
-			path = Utilities;
+			name = Lexer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -80,8 +80,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF0111DD1F264093006FFFFB /* OCLexer.h in Headers */,
-				EF0112131F2955E3006FFFFB /* OCUtilities.h in Headers */,
+				EF530B152243E46A0061FFC6 /* OCLexer.h in Headers */,
+				EF530B1B2243E4720061FFC6 /* OCUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,10 +143,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF0111DC1F264093006FFFFB /* OCLexer.cpp in Sources */,
-				EF01121E1F2B744D006FFFFB /* OCIntegerSet.cpp in Sources */,
-				EF01121C1F2963E5006FFFFB /* OCAlloc.cpp in Sources */,
-				EF0112691F33ED7F006FFFFB /* OCCompressStates.cpp in Sources */,
+				EF530B1D2243E4720061FFC6 /* OCAlloc.cpp in Sources */,
+				EF530B1C2243E4720061FFC6 /* OCCompressStates.cpp in Sources */,
+				EF530B1E2243E4720061FFC6 /* OCIntegerSet.cpp in Sources */,
+				EF530B162243E46A0061FFC6 /* OCLexer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

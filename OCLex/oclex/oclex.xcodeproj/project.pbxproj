@@ -7,37 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF0111AF1F263F91006FFFFB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111AE1F263F91006FFFFB /* main.cpp */; };
-		EF0111E31F264109006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0111E21F264109006FFFFB /* liboccommon.a */; };
-		EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */; };
-		EF0111EE1F2789CD006FFFFB /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111ED1F2789CD006FFFFB /* test.cpp */; };
-		EF0111F21F2789DA006FFFFB /* OCLexParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */; };
-		EF0111F41F2789ED006FFFFB /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF0111F31F2789ED006FFFFB /* liboccommon.a */; };
-		EF01120D1F295580006FFFFB /* OCLexNFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01120B1F295580006FFFFB /* OCLexNFA.cpp */; };
-		EF01120E1F295584006FFFFB /* OCLexNFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01120B1F295580006FFFFB /* OCLexNFA.cpp */; };
-		EF0112191F295BEF006FFFFB /* OCCharSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112171F295BEF006FFFFB /* OCCharSet.cpp */; };
-		EF01121A1F295C36006FFFFB /* OCCharSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0112171F295BEF006FFFFB /* OCCharSet.cpp */; };
-		EF0112211F2CFAEB006FFFFB /* OCLexDFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */; };
-		EF0112221F2D5840006FFFFB /* OCLexDFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */; };
-		EF01123C1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */; };
-		EF01123D1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */; };
-		EF1B68561FB8A6A500EAFBB7 /* OCStartState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */; };
-		EF7B22282080F470002B0ADB /* OCStartState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */; };
-		EFCC76BA207FDE3000EC2B55 /* OCLexCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCC76B8207FDE3000EC2B55 /* OCLexCPPGenerator.cpp */; };
-		EFCC76BB207FDE3000EC2B55 /* OCLexCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCC76B8207FDE3000EC2B55 /* OCLexCPPGenerator.cpp */; };
+		EF530B3C2243EA0F0061FFC6 /* OCCharSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B392243EA0F0061FFC6 /* OCCharSet.cpp */; };
+		EF530B3D2243EA0F0061FFC6 /* OCStartState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B3B2243EA0F0061FFC6 /* OCStartState.cpp */; };
+		EF530B402243EA330061FFC6 /* OCLexParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B3E2243EA330061FFC6 /* OCLexParser.cpp */; };
+		EF530B422243EA420061FFC6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B412243EA420061FFC6 /* main.cpp */; };
+		EF530B4B2243EA640061FFC6 /* OCLexNFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B432243EA630061FFC6 /* OCLexNFA.cpp */; };
+		EF530B4C2243EA640061FFC6 /* OCLexDFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B442243EA630061FFC6 /* OCLexDFA.cpp */; };
+		EF530B4D2243EA640061FFC6 /* OCLexCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B452243EA630061FFC6 /* OCLexCPPGenerator.cpp */; };
+		EF530B4E2243EA640061FFC6 /* OCLexGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B4A2243EA630061FFC6 /* OCLexGenerator.cpp */; };
+		EF530B502243EA7E0061FFC6 /* liboccommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF530B4F2243EA7E0061FFC6 /* liboccommon.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EF530B552243EA970061FFC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF530B512243EA970061FFC6 /* occommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EF0111D21F264063006FFFFB;
+			remoteInfo = occommon;
+		};
+		EF530B5D2243EAA30061FFC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF530B512243EA970061FFC6 /* occommon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EF0111D11F264063006FFFFB;
+			remoteInfo = occommon;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		EF0111A91F263F91006FFFFB /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-		EF0111E91F2789CD006FFFFB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -50,27 +49,23 @@
 
 /* Begin PBXFileReference section */
 		EF0111AB1F263F91006FFFFB /* oclex */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oclex; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF0111AE1F263F91006FFFFB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		EF0111E21F264109006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = ../../OCCommon/occommon/build/Debug/liboccommon.a; sourceTree = "<group>"; };
-		EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexParser.cpp; sourceTree = "<group>"; };
-		EF0111E51F26CBB3006FFFFB /* OCLexParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexParser.h; sourceTree = "<group>"; };
-		EF0111EB1F2789CD006FFFFB /* oclextest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oclextest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF0111ED1F2789CD006FFFFB /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
-		EF0111F31F2789ED006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboccommon.a; path = "../../../../Library/Developer/Xcode/DerivedData/OCTools-alzzkwttbjtlkwgzhjspyeulqhwq/Build/Products/Debug/liboccommon.a"; sourceTree = "<group>"; };
-		EF0111F51F278AB4006FFFFB /* test.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = test.l; sourceTree = "<group>"; };
-		EF01120B1F295580006FFFFB /* OCLexNFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexNFA.cpp; sourceTree = "<group>"; };
-		EF01120C1F295580006FFFFB /* OCLexNFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexNFA.h; sourceTree = "<group>"; };
-		EF0112171F295BEF006FFFFB /* OCCharSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCCharSet.cpp; sourceTree = "<group>"; };
-		EF0112181F295BEF006FFFFB /* OCCharSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCharSet.h; sourceTree = "<group>"; };
-		EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexDFA.cpp; sourceTree = "<group>"; };
-		EF0112201F2CFAEB006FFFFB /* OCLexDFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexDFA.h; sourceTree = "<group>"; };
-		EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexGenerator.cpp; sourceTree = "<group>"; };
-		EF01123B1F2E47E7006FFFFB /* OCLexGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLexGenerator.h; sourceTree = "<group>"; };
-		EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OCStartState.cpp; sourceTree = "<group>"; };
-		EF1B68551FB8A6A500EAFBB7 /* OCStartState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCStartState.h; sourceTree = "<group>"; };
-		EF7369341F43DD11008CC168 /* test2.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = test2.l; sourceTree = "<group>"; };
-		EFCC76B8207FDE3000EC2B55 /* OCLexCPPGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OCLexCPPGenerator.cpp; sourceTree = "<group>"; };
-		EFCC76B9207FDE3000EC2B55 /* OCLexCPPGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCLexCPPGenerator.h; sourceTree = "<group>"; };
+		EF530B382243EA0F0061FFC6 /* OCCharSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCCharSet.h; path = src/OCCharSet.h; sourceTree = "<group>"; };
+		EF530B392243EA0F0061FFC6 /* OCCharSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCCharSet.cpp; path = src/OCCharSet.cpp; sourceTree = "<group>"; };
+		EF530B3A2243EA0F0061FFC6 /* OCStartState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCStartState.h; path = src/OCStartState.h; sourceTree = "<group>"; };
+		EF530B3B2243EA0F0061FFC6 /* OCStartState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCStartState.cpp; path = src/OCStartState.cpp; sourceTree = "<group>"; };
+		EF530B3E2243EA330061FFC6 /* OCLexParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCLexParser.cpp; path = src/OCLexParser.cpp; sourceTree = "<group>"; };
+		EF530B3F2243EA330061FFC6 /* OCLexParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCLexParser.h; path = src/OCLexParser.h; sourceTree = "<group>"; };
+		EF530B412243EA420061FFC6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
+		EF530B432243EA630061FFC6 /* OCLexNFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCLexNFA.cpp; path = src/OCLexNFA.cpp; sourceTree = "<group>"; };
+		EF530B442243EA630061FFC6 /* OCLexDFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCLexDFA.cpp; path = src/OCLexDFA.cpp; sourceTree = "<group>"; };
+		EF530B452243EA630061FFC6 /* OCLexCPPGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCLexCPPGenerator.cpp; path = src/OCLexCPPGenerator.cpp; sourceTree = "<group>"; };
+		EF530B462243EA630061FFC6 /* OCLexCPPGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCLexCPPGenerator.h; path = src/OCLexCPPGenerator.h; sourceTree = "<group>"; };
+		EF530B472243EA630061FFC6 /* OCLexDFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCLexDFA.h; path = src/OCLexDFA.h; sourceTree = "<group>"; };
+		EF530B482243EA630061FFC6 /* OCLexGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCLexGenerator.h; path = src/OCLexGenerator.h; sourceTree = "<group>"; };
+		EF530B492243EA630061FFC6 /* OCLexNFA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCLexNFA.h; path = src/OCLexNFA.h; sourceTree = "<group>"; };
+		EF530B4A2243EA630061FFC6 /* OCLexGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCLexGenerator.cpp; path = src/OCLexGenerator.cpp; sourceTree = "<group>"; };
+		EF530B4F2243EA7E0061FFC6 /* liboccommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = liboccommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF530B512243EA970061FFC6 /* occommon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = occommon.xcodeproj; path = ../../OCCommon/occommon/occommon.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,15 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF0111E31F264109006FFFFB /* liboccommon.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EF0111E81F2789CD006FFFFB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EF0111F41F2789ED006FFFFB /* liboccommon.a in Frameworks */,
+				EF530B502243EA7E0061FFC6 /* liboccommon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,11 +83,10 @@
 		EF0111A21F263F91006FFFFB = {
 			isa = PBXGroup;
 			children = (
-				EF0112161F295BCF006FFFFB /* Utilities */,
-				EF0111C81F263FDA006FFFFB /* Compiler */,
-				EF01120A1F2954EC006FFFFB /* Process */,
-				EF0111AD1F263F91006FFFFB /* oclex */,
-				EF0111EC1F2789CD006FFFFB /* oclextest */,
+				EF530B372243E9F00061FFC6 /* Utilities */,
+				EF530B362243E9E90061FFC6 /* Compiler */,
+				EF530B352243E9E40061FFC6 /* Process */,
+				EF530B342243E9DA0061FFC6 /* oclex */,
 				EF0111AC1F263F91006FFFFB /* Products */,
 				EF0111E11F264109006FFFFB /* Frameworks */,
 			);
@@ -110,71 +96,68 @@
 			isa = PBXGroup;
 			children = (
 				EF0111AB1F263F91006FFFFB /* oclex */,
-				EF0111EB1F2789CD006FFFFB /* oclextest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		EF0111AD1F263F91006FFFFB /* oclex */ = {
-			isa = PBXGroup;
-			children = (
-				EF0111AE1F263F91006FFFFB /* main.cpp */,
-			);
-			path = oclex;
-			sourceTree = "<group>";
-		};
-		EF0111C81F263FDA006FFFFB /* Compiler */ = {
-			isa = PBXGroup;
-			children = (
-				EF0111E51F26CBB3006FFFFB /* OCLexParser.h */,
-				EF0111E41F26CBB3006FFFFB /* OCLexParser.cpp */,
-			);
-			path = Compiler;
 			sourceTree = "<group>";
 		};
 		EF0111E11F264109006FFFFB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EF0111F31F2789ED006FFFFB /* liboccommon.a */,
-				EF0111E21F264109006FFFFB /* liboccommon.a */,
+				EF530B512243EA970061FFC6 /* occommon.xcodeproj */,
+				EF530B4F2243EA7E0061FFC6 /* liboccommon.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		EF0111EC1F2789CD006FFFFB /* oclextest */ = {
+		EF530B342243E9DA0061FFC6 /* oclex */ = {
 			isa = PBXGroup;
 			children = (
-				EF0111ED1F2789CD006FFFFB /* test.cpp */,
-				EF0111F51F278AB4006FFFFB /* test.l */,
-				EF7369341F43DD11008CC168 /* test2.l */,
+				EF530B412243EA420061FFC6 /* main.cpp */,
 			);
-			path = oclextest;
+			name = oclex;
 			sourceTree = "<group>";
 		};
-		EF01120A1F2954EC006FFFFB /* Process */ = {
+		EF530B352243E9E40061FFC6 /* Process */ = {
 			isa = PBXGroup;
 			children = (
-				EF01120C1F295580006FFFFB /* OCLexNFA.h */,
-				EF01120B1F295580006FFFFB /* OCLexNFA.cpp */,
-				EF0112201F2CFAEB006FFFFB /* OCLexDFA.h */,
-				EF01121F1F2CFAEB006FFFFB /* OCLexDFA.cpp */,
-				EF01123B1F2E47E7006FFFFB /* OCLexGenerator.h */,
-				EF01123A1F2E47E7006FFFFB /* OCLexGenerator.cpp */,
-				EFCC76B9207FDE3000EC2B55 /* OCLexCPPGenerator.h */,
-				EFCC76B8207FDE3000EC2B55 /* OCLexCPPGenerator.cpp */,
+				EF530B452243EA630061FFC6 /* OCLexCPPGenerator.cpp */,
+				EF530B462243EA630061FFC6 /* OCLexCPPGenerator.h */,
+				EF530B442243EA630061FFC6 /* OCLexDFA.cpp */,
+				EF530B472243EA630061FFC6 /* OCLexDFA.h */,
+				EF530B4A2243EA630061FFC6 /* OCLexGenerator.cpp */,
+				EF530B482243EA630061FFC6 /* OCLexGenerator.h */,
+				EF530B432243EA630061FFC6 /* OCLexNFA.cpp */,
+				EF530B492243EA630061FFC6 /* OCLexNFA.h */,
 			);
-			path = Process;
+			name = Process;
 			sourceTree = "<group>";
 		};
-		EF0112161F295BCF006FFFFB /* Utilities */ = {
+		EF530B362243E9E90061FFC6 /* Compiler */ = {
 			isa = PBXGroup;
 			children = (
-				EF0112181F295BEF006FFFFB /* OCCharSet.h */,
-				EF0112171F295BEF006FFFFB /* OCCharSet.cpp */,
-				EF1B68551FB8A6A500EAFBB7 /* OCStartState.h */,
-				EF1B68541FB8A6A500EAFBB7 /* OCStartState.cpp */,
+				EF530B3E2243EA330061FFC6 /* OCLexParser.cpp */,
+				EF530B3F2243EA330061FFC6 /* OCLexParser.h */,
 			);
-			path = Utilities;
+			name = Compiler;
+			sourceTree = "<group>";
+		};
+		EF530B372243E9F00061FFC6 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EF530B392243EA0F0061FFC6 /* OCCharSet.cpp */,
+				EF530B382243EA0F0061FFC6 /* OCCharSet.h */,
+				EF530B3B2243EA0F0061FFC6 /* OCStartState.cpp */,
+				EF530B3A2243EA0F0061FFC6 /* OCStartState.h */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
+		EF530B522243EA970061FFC6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF530B562243EA970061FFC6 /* liboccommon.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -191,27 +174,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				EF530B5E2243EAA30061FFC6 /* PBXTargetDependency */,
 			);
 			name = oclex;
 			productName = oclex;
 			productReference = EF0111AB1F263F91006FFFFB /* oclex */;
-			productType = "com.apple.product-type.tool";
-		};
-		EF0111EA1F2789CD006FFFFB /* oclextest */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EF0111EF1F2789CD006FFFFB /* Build configuration list for PBXNativeTarget "oclextest" */;
-			buildPhases = (
-				EF0111E71F2789CD006FFFFB /* Sources */,
-				EF0111E81F2789CD006FFFFB /* Frameworks */,
-				EF0111E91F2789CD006FFFFB /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = oclextest;
-			productName = oclextest;
-			productReference = EF0111EB1F2789CD006FFFFB /* oclextest */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -228,11 +195,6 @@
 						DevelopmentTeam = MUUNEV88XL;
 						ProvisioningStyle = Automatic;
 					};
-					EF0111EA1F2789CD006FFFFB = {
-						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = MUUNEV88XL;
-						ProvisioningStyle = Automatic;
-					};
 				};
 			};
 			buildConfigurationList = EF0111A61F263F91006FFFFB /* Build configuration list for PBXProject "oclex" */;
@@ -245,46 +207,54 @@
 			mainGroup = EF0111A21F263F91006FFFFB;
 			productRefGroup = EF0111AC1F263F91006FFFFB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EF530B522243EA970061FFC6 /* Products */;
+					ProjectRef = EF530B512243EA970061FFC6 /* occommon.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				EF0111AA1F263F91006FFFFB /* oclex */,
-				EF0111EA1F2789CD006FFFFB /* oclextest */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EF530B562243EA970061FFC6 /* liboccommon.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liboccommon.a;
+			remoteRef = EF530B552243EA970061FFC6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EF0111A71F263F91006FFFFB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF0111E61F26CBB3006FFFFB /* OCLexParser.cpp in Sources */,
-				EF0112221F2D5840006FFFFB /* OCLexDFA.cpp in Sources */,
-				EF1B68561FB8A6A500EAFBB7 /* OCStartState.cpp in Sources */,
-				EFCC76BA207FDE3000EC2B55 /* OCLexCPPGenerator.cpp in Sources */,
-				EF0111AF1F263F91006FFFFB /* main.cpp in Sources */,
-				EF01123C1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */,
-				EF01121A1F295C36006FFFFB /* OCCharSet.cpp in Sources */,
-				EF01120E1F295584006FFFFB /* OCLexNFA.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EF0111E71F2789CD006FFFFB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EF0112191F295BEF006FFFFB /* OCCharSet.cpp in Sources */,
-				EFCC76BB207FDE3000EC2B55 /* OCLexCPPGenerator.cpp in Sources */,
-				EF7B22282080F470002B0ADB /* OCStartState.cpp in Sources */,
-				EF0112211F2CFAEB006FFFFB /* OCLexDFA.cpp in Sources */,
-				EF0111F21F2789DA006FFFFB /* OCLexParser.cpp in Sources */,
-				EF01123D1F2E47E7006FFFFB /* OCLexGenerator.cpp in Sources */,
-				EF0111EE1F2789CD006FFFFB /* test.cpp in Sources */,
-				EF01120D1F295580006FFFFB /* OCLexNFA.cpp in Sources */,
+				EF530B402243EA330061FFC6 /* OCLexParser.cpp in Sources */,
+				EF530B4C2243EA640061FFC6 /* OCLexDFA.cpp in Sources */,
+				EF530B422243EA420061FFC6 /* main.cpp in Sources */,
+				EF530B4D2243EA640061FFC6 /* OCLexCPPGenerator.cpp in Sources */,
+				EF530B4B2243EA640061FFC6 /* OCLexNFA.cpp in Sources */,
+				EF530B3D2243EA0F0061FFC6 /* OCStartState.cpp in Sources */,
+				EF530B4E2243EA640061FFC6 /* OCLexGenerator.cpp in Sources */,
+				EF530B3C2243EA0F0061FFC6 /* OCCharSet.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EF530B5E2243EAA30061FFC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = occommon;
+			targetProxy = EF530B5D2243EAA30061FFC6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EF0111B01F263F91006FFFFB /* Debug */ = {
@@ -418,22 +388,6 @@
 			};
 			name = Release;
 		};
-		EF0111F01F2789CD006FFFFB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEVELOPMENT_TEAM = MUUNEV88XL;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		EF0111F11F2789CD006FFFFB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEVELOPMENT_TEAM = MUUNEV88XL;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -451,15 +405,6 @@
 			buildConfigurations = (
 				EF0111B31F263F91006FFFFB /* Debug */,
 				EF0111B41F263F91006FFFFB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EF0111EF1F2789CD006FFFFB /* Build configuration list for PBXNativeTarget "oclextest" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EF0111F01F2789CD006FFFFB /* Debug */,
-				EF0111F11F2789CD006FFFFB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
