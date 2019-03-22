@@ -1085,6 +1085,11 @@ void OCYaccGenerator::WriteOCFile(const char *classname, const char *outputName,
 	// Prefix
 	fprintf(f,GSource1,outputName,outputName);
 
+	// If we define a lex header, insert it
+	if (parser.lexerHeader.size() > 0) {
+		fprintf(f,"#import \"%s\"\n",parser.lexerHeader.c_str());
+	}
+
 	// Header declarations
 	fprintf(f,"\n%s\n",parser.declCode.c_str());
 

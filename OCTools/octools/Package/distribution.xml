@@ -2,7 +2,6 @@
 <installer-gui-script minSpecVersion="1">
     <title>OCTools Installer</title>
     <organization>com.chaosinmotion</organization>
-    <domains enable_localSystem="true"/>
     <options customize="never" require-scripts="true" rootVolumeOnly="true" />
     <!-- Define documents displayed at various steps -->
     <welcome    file="welcome.html"    mime-type="text/html" />
@@ -11,7 +10,7 @@
     <!-- List all component packages -->
     <pkg-ref id="com.chaosinmotion.octools"
              version="0"
-             auth="root">output.pkg</pkg-ref>
+             auth="root">tools.pkg</pkg-ref>
     <!-- List them again here. They can now be organized
          as a hierarchy if you want. -->
     <choices-outline>

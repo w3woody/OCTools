@@ -56,12 +56,17 @@
 /* Begin PBXFileReference section */
 		EF530B6C2243EB8A0061FFC6 /* ocyacc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ocyacc.xcodeproj; path = ../../OCYacc/ocyacc/ocyacc.xcodeproj; sourceTree = "<group>"; };
 		EF530B722243EB8F0061FFC6 /* oclex.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = oclex.xcodeproj; path = ../../OCLex/oclex/oclex.xcodeproj; sourceTree = "<group>"; };
+		EF530B7E224541C20061FFC6 /* conclusion.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = conclusion.html; sourceTree = "<group>"; };
+		EF530B7F224541C20061FFC6 /* license.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = license.html; sourceTree = "<group>"; };
+		EF530B80224541C20061FFC6 /* welcome.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = welcome.html; sourceTree = "<group>"; };
+		EF530B81224541C20061FFC6 /* distribution.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = distribution.xml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		EF530B612243EB590061FFC6 = {
 			isa = PBXGroup;
 			children = (
+				EF530B7D224541C20061FFC6 /* Package */,
 				EF530B722243EB8F0061FFC6 /* oclex.xcodeproj */,
 				EF530B6C2243EB8A0061FFC6 /* ocyacc.xcodeproj */,
 			);
@@ -81,6 +86,17 @@
 				EF530B772243EB8F0061FFC6 /* oclex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		EF530B7D224541C20061FFC6 /* Package */ = {
+			isa = PBXGroup;
+			children = (
+				EF530B7E224541C20061FFC6 /* conclusion.html */,
+				EF530B7F224541C20061FFC6 /* license.html */,
+				EF530B80224541C20061FFC6 /* welcome.html */,
+				EF530B81224541C20061FFC6 /* distribution.xml */,
+			);
+			path = Package;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
