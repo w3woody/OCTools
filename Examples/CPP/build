@@ -1,1 +1,2 @@
 ocyacc -l cpp Example.y
+oclex -l cpp Example2.l

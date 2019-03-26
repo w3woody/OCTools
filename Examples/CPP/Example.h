@@ -26,15 +26,15 @@
 
 #define NUMBER                                        0x00110002
 
-#ifndef OCLexInput_ValueDefined
-#define OCLexInput_ValueDefined
+#ifndef Example2_ValueDefined
+#define Example2_ValueDefined
 
-/*  OCLexInputValue
+/*  Example2Value
  *
  *      Internally defined value.
  */
 
-union OCLexInputValue {
+union Example2Value {
     
     int value;
 };
@@ -53,30 +53,7 @@ union OCLexInputValue {
 #define ERROR_MISSINGTOKENS		0x0003	// { @"tokens": array of token strings }
 #define ERROR_STARTERRORID		0x0100	// Your errors should start with this
 
-/*	OCLexInput
- *
- *		The protocol for our lex reader file that the lex stream must
- *	provide. This is the same as the protocol generated as part of the lex
- *	output, and allows us to glue the Lexer and Parser together.
- */
-
-#ifndef OCLexInputProtocol
-#define OCLexInputProtocol
-
-class OCLexInput
-{
-	public:
-		int32_t line;
-		int32_t column;
-		std::string filename;
-		std::string text;
-		std::string abort;
-
-		virtual int32_t lex() = 0;
-		union OCLexInputValue value;
-};
-
-#endif
+class Example2;
 
 /*
  *	Internal parser stack
@@ -88,7 +65,7 @@ struct ExampleStack
 	int32_t line;
 	int32_t column;
 	std::string filename;
-	union OCLexInputValue value;
+	union Example2Value value;
 };
 
 /*	Example
@@ -99,7 +76,7 @@ struct ExampleStack
 class Example
 {
 	public:
-		Example(OCLexInput *lexer);
+		Example(Example2 *lexer);
 		virtual ~Example(void);
 
 		virtual void error(int32_t line, int32_t col, std::string fname, int32_t errCode, std::map<std::string,std::string> &map);
@@ -111,7 +88,7 @@ class Example
 
 	private:
 		std::vector<ExampleStack> stack;
-		OCLexInput *lex;
+		Example2 *lex;
 		bool success;
 		int32_t errorCount;
 

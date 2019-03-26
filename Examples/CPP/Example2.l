@@ -1,13 +1,12 @@
-%start Test
+%{
+    %%
+%}
 
-%token <value> NUMBER
-%type <value> add
+N       [0-9]
 
 %union {
     int value;
 }
-
-%lex Example2
 
 /* Test placement */
 %global {
@@ -25,19 +24,14 @@
 %finish {
     %finish
 }
-%{
-    %%
-%}
 
-%start add
+%start Test
+
 
 %%
 
-add: NUMBER '+' NUMBER 
-        { 
-            $$ = $1 + $3; 
-        } 
-   ;
+N   { return 1; }
+.   {}
 
 %%
 CODE
