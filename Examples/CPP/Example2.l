@@ -4,9 +4,11 @@
 
 N       [0-9]
 
+/*
 %union {
     int value;
 }
+*/
 
 /* Test placement */
 %global {

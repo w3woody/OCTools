@@ -1,0 +1,1123 @@
+<html>
+	<head>
+		<title>Using OCTools</title>
+		<style type="text/css"><!--
+			/* Page rules for printing */
+			@page {
+				size: letter portrait;
+				margin: 1in;
+				orphans: 4;
+				widows: 2;
+			}
+			
+			@media not print {
+				body {
+					margin-top: 1em;
+					margin-bottom: 1em;
+					margin-left: auto;
+					margin-right: auto;
+					padding-left: 1em;
+					padding-right: 1em;
+					max-width: 6in;
+				}
+				
+				section {
+					padding-bottom: 3em;
+					margin-bottom: 3em;
+				}
+				
+				footer {
+					margin-top: 4em;
+				}
+
+				codeblock i {
+					color: #888888;
+				}
+			}
+			
+			@media print {
+				html * {
+					font-size: 11pt;
+				}
+				section {
+					page-break-after: always;
+				}
+				
+				footer {
+					position: absolute;
+					margin-top: auto;
+					bottom: 0;
+				}
+
+				a {
+					color: black;
+					text-decoration: none;
+				}
+			}
+			
+			/* Rules for special content */
+			.title {
+				font-size: 2em;
+				font-family: Helvetica, sans-serif;
+				font-weight: bold;
+				text-align: right;
+				margin-top: 1em;
+				margin-bottom: 1em;
+			}
+			
+			.author {
+				font-size: 1.1em;
+				font-family: Helvetica, sans-serif;
+				text-align: right;
+				margin-top: 1em;
+				margin-bottom: 2em;
+			}
+			
+			/* Copyright block */
+			.copyright {
+				font-size: 0.8em;
+				font-family: Times, serif;
+				font-style: italic;
+				border: 1px solid gray;
+			}
+		
+			.copyright p {
+				margin: 1em;
+			}
+			
+			.bsdcopyright {
+				font-size: 0.9em;
+				margin-left: 3em;
+				margin-right: 3em;
+				font-style: italic;
+			}
+			
+			.bsdcopyright li {
+				margin-top: 1em;
+				margin-bottom: 1em;
+			}
+			
+			.abstract {
+				font-size: 1.2em;
+				font-family: Helvetica, sans-serif;
+				font-weight: bold;
+				margin-top: 3em;
+				margin-bottom: 1em;
+			}
+			
+			.usage {
+				margin-left: 3em;
+			}
+			.usage dt {
+				margin-top: 1em;
+				margin-bottom: 1em;
+				font-family: Menlo, Courier, monospace;
+				font-size: 0.8em;
+			}
+			.usage dd {
+				margin-top: 1em;
+				margin-bottom: 1em;
+			}
+			
+			/* Standard content formatting */
+			p {
+				margin-top: 1em;
+				margin-bottom: 1em;
+				line-height: 1.4em;
+				font-family: Times, sans-serif;
+			}
+			h1 {
+				font-size: 1.8em;
+				font-family: Helvetica, sans-serif;
+				font-weight: bold;
+				margin-top: 2em;
+				margin-bottom: 1em;
+			}
+			h2 {
+				font-size: 1.4em;
+				font-family: Helvetica, sans-serif;
+				font-weight: normal;
+				margin-top: 2em;
+				margin-bottom: 1em;
+			}
+			h3 {
+				font-size: 1.1em;
+				font-family: Helvetica, sans-serif;
+				font-weight: bold;
+				margin-top: 2em;
+				margin-bottom: 1em;
+			}
+			h4 {
+				font-size: 1em;
+				font-family: Times, serif;
+				font-weight: bold;
+				margin-top: 1.5em;
+				margin-bottom: 1em;
+			}
+			
+			note {
+				display: block;
+				font-size: 0.9em;
+				margin-left: 3em;
+				margin-top: 1em;
+				margin-bottom: 1em;
+				font-style: italic;
+			}
+			
+			code {
+				display: inline;
+				background-color: #F6F6F6;
+				font-family: Menlo, Courier, monospace;
+				font-size: 0.9em;
+				padding-left: 2px;
+				padding-right: 2px;
+			}
+			
+			codeblock {
+				display: block;
+				font-family: Menlo, Courier, monospace;
+				font-size: 0.8em;
+				margin-left: 3em;
+				white-space: pre-wrap;
+			}
+			
+			codedef {
+				display: block;
+				font-family: Menlo, Courier, monospace;
+				font-size: 0.8em;
+				white-space: pre-wrap;
+				border-left: 1px solid #CCCCCC;
+				padding-left: 10px;
+				margin-left: -10px;
+			}
+			
+			img {
+				max-width: 5.5in;
+				height: auto;
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+				margin-top: 1em;
+				margin-bottom: 1em;
+			}
+			
+			/* Table */
+			.summary {
+				margin-left: 2em;
+			}
+			
+			.summary td {
+				display: table-cell;
+				vertical-align: text-top;
+			}
+			
+			.summary td:first-child {
+				font-family: Menlo, Courier, monospace;
+				font-size: 0.8em;
+			}
+			
+			.summaryprefix {
+				color: red;
+				width: 6em;
+			}
+
+		--></style>
+	</head>
+	<body>
+		<section>
+			<p class="title">Using OCTools</p>
+			<p class="author">William Woody<br/>Glenview Software<br/><a href="mailto:woody@alumni.caltech.edu">woody@alumni.caltech.edu</a></p>
+			<p class="abstract">Abstract</p>
+			<p>This document gives an overview of the OCLex/OCYacc command line tools, including how to install them into XCode, and how to build lexers and parsers using these tools. OCLex and OCYacc both generate Objective-C and C++ runtime files, which allow them to be used in MacOS and iOS applications relatively easily.</p>
+			<footer class="copyright">
+				<p>Copyright &copy; 2019 William Edward Woody, Glenview Software, all rights reserved.</p>
+				<p>Permission to make digital or hard copies of all or part of this work for personal or for in-person classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. To copy otherwise, or republish, or post on servers or redistribute to lists requires prior specific written permission.</p>
+			</footer>
+		</section>
+		
+		<section>
+			<h1>About OCTools</h1>
+			<p>The OCTools command-line programs OCYacc and OCLex are tools which can be used as rough substitutes for yacc and lex in generating file tokenizers and file parsers. The goal is to provide roughly source-compatible substitutes for yacc and lex that can generate re-entrant parsers in Objective-C code or C++ code.</p>
+			<p>The suite of tools generate a re-entrant Objective-C or C++ class which can be used to tokenize and parse an input file. The system generates LR1 grammars, which means they are limited to the family of grammars which require only one look-ahead. (LR1 grammars operate in linear time and can be quite fast.)</p>
+			<p>OCTools were built to be incorporated into Xcode, and instructions as to how to do that is later in this paper.</p>
+			<p>It's worth noting at this point that the original yacc and lex tools incorporate C code in their files, to allow the user to create C parsers and include code to execute as parts of a file are successfully parsed. This inline code (generated when part of a language is reduced) may not be compatible with Objective-C or with C++. Thus, while you cannot use the exact same yacc or lex file to generate an Objective-C or C++ parser as you would use with yacc or lex, the changes mostly revolve around the requirements for building an Objective-C or C++ file.</p>
+			
+			<h2>About This Document</h2>
+			<p>This document provides several examples for building complex parsers using OCLex and OCYacc, including how to write .y and .l files that include code snippets that work with Objective-C and C++.</p>
+			<p>Examples include example code for building tokenizers, for building parsers that take a custom tokenizer not built using OCLex, and for building complete parsers that take as its input a stream of characters and produce a complete parser/tokenizer stack.</p>
+
+			<h2>Assumptions</h2>
+			<p>This document assumes that you are a developer who has access to a Macintosh system with Xcode installed. (This is required in order to build the OCTools packages from the source kit, and for installing the tools into Xcode.) Of course you can also compile the C++ source kit using the included makefile.</p>
+			<h2>Copyright</h2>
+			<p>The OCTools stack is licensed under the open-source BSD license:</p>
+			<div class="bsdcopyright">
+				<p>Copyright &copy; 2017-2019 William Woody and Glenview Software</p>
+				<p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p>
+				<ol>
+					<li>Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.</li>
+					<li>Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.</li>
+				</ol>
+				<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+			</div>
+		</section>
+		
+		<section>
+			<h1>Installing OCTools</h1>
+			<p>You can, of course, use the OCTools software suite as a stand-alone command-line tool. OCTools can also be installed into Xcode.</p>
+			<h2>Installation</h2>
+			<p>The latest version of OCTools can be downloaded as an installable package from GitHub at the link:</p>
+			<note><a href="https://github.com/w3woody/OCTools/blob/master/octools.pkg">https://github.com/w3woody/OCTools/blob/master/octools.pkg</a></note>
+			<p>Download the file and double-click the package to install.</p>
+			
+			<h2>Building from GitHub</h2>
+			<p>You can also clone the source kit on GitHub. Open the <code>OCTools.xcworkspace</code> file in Xcode, select the OCTools project and build. This will generate the package file above, which can then be used to install the built tools.</p>
+
+			<h2>Using in an Xcode Project</h2>
+			<p>For each project's target you need to add a number of custom build rules in order to compile <code>.y</code> and <code>.l</code> files. Select the target in your project file, select "Build Rules", then add two custom rules by using the "+" icon next to the "All"/"Custom" list.</p>
+			<p>For the first rule select "Lex source files", the second "Yacc source files." You can then specify the custom script for each: for Lex enter:</p>
+			<codeblock>/usr/local/bin/oclex -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"</codeblock>
+			<p>for Yacc, enter:</p>
+			<codeblock>/usr/local/bin/ocyacc -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"</codeblock>
+			<p>If you're building a C++ file you may wish to add the appropriate flags.</p>
+			<p>For both you also need to add the following output files:</p>
+<codeblock>$($DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).m
+$($DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).h</codeblock>
+			<p>(or .cpp if a C++ file).</p>
+			<p>The result should look like the following:</p>
+			<img src="images/xcode10.png" />
+			<note>Note: The above instructions assume you are using Xcode 10. Earlier versions of Xcode seemed to work with the output files omitting the <code>$(DERIVED_SOURCES_DIR)/</code> prefix.
+		</section>
+		
+		<section>
+			<h1>OCYacc Usage</h1>
+			
+			<p>This is a brief overview and quick reference guide to using OCYacc, including the specification for the <code>.y</code> file as well as how to invoke OCYacc from the command line. More detailed examples of using the ocyacc command line tool and building applications with ocyacc can be found in later chapters.</p>
+			<h2>OCYacc Command Line Arguments</h2>
+			<codeblock>ocyacc [-h] [-l [oc|cpp]] [-o filename] [-c classname] inputfile</codeblock>
+
+			<p>Where:</p>
+			<dl class="usage">
+			<dt>-h</dt>
+			<dd>Print a help file giving a summary of the command-line arguments.</dd>
+			<dt>-l [oc|cpp]</dt>
+			<dd>Choose output language. By default Objective-C is generated. This can generate re-entrant C++  code file by using the cpp option.</dd>
+			<dt>-o <i>filename</i></dt>
+			<dd>Uses the file name as the base name for the file. (So <code>-o foo</code> outputs <code>foo.m</code> and <code>foo.h</code> for Objective-C files.)</dd>
+			<dt>-c <i>classname</i></dt>	
+			<dd>Uses the specified class name for the generated class. (By default the input file name is used to generate the class name.)</dd>
+			</dl>
+This program by default takes an input file of form <code>MyFile.y</code>, and will generate a class <code>MyFile</code> with two output files <code>MyFile.m</code> and <code>MyFile.h</code> for an Objective-C output file.
+
+			<h2>The OCYacc Input File</h2>
+			<p>The input file for OCYacc is similar to the input file used by yacc or bison, but with some very important differences.</p>
+			<p>First, because the output file is being generated for use in Objective C or C++, the code snippets you add should be written for Objective C or C++.</p>
+			<p>Second, some elements of the <code>.y</code> file need to be modified to handle a re-entrant tokenizer, and some of the error processing methods have different names.</p>
+
+			<h3>The Basic Input File</h3>
+			<p>Like Yacc, the OCYacc input file has the following format:</p>
+			
+<codeblock>Declarations
+%%
+Rules
+%%
+Code</codeblock>
+
+			<p>The declarations section provide basic declarations used in generating the parser file. The rules are a list of parsing rules, and the last code section contains additional code which will be written into the parser class file.</p>
+			<h3>The Rules Section</h3>
+			<p>Production rules in OCYacc are similar to Yacc: they represent a collection of components which reduce down to a single logical statement.</p>
+			<p>Each rule in the list of production rules have the format:</p>
+			<codeblock>result : components ... ;</codeblock>
+			<p>where "result" is the production symbol this rule describes, and "components" is a list of tokens or other production rule results that describe this rule.</p>
+			<p>Multiple production rules that produce the same result can be written:</p>
+			
+<codeblock>result : rule1-components ...
+       | rule2-components ...
+       ;</codeblock>
+       
+			<p>When a rule is matched--for example, when the following rule:</p>
+			<codeblock>add : NUMBER '+' NUMBER ;</codeblock>
+			<p>matches against the string of tokens</p>
+			<codeblock>1 + 2</codeblock>
+			<p>the rule is <b>"reduced",</b> the string of tokens is replaced with the rule 'add' in the list of tokens.</p>
+			<p>When a rule is reduced, it can execute an optional chunk of code as part of the reduction. The code is inserted at the end of the list of components in curly braces:</p>
+			
+<codeblock>result : rule1_components ... { code_1 }
+       | rule2_components ... { code_2 }
+       ;</codeblock>
+       
+			<p>Each matched token or rule may have an associated value attached to it, which can be accessed in the code segment using the pseudovariables <code>$1...$n</code>, representing the first to the last components in the list of components. The rule being reduced can have its value assigned by assigning to the pseudovariable <code>$$</code>.</p>
+			<p>So, from the example above, we can change our addition rule to read:</p>
+			<codeblock>add : NUMBER '+' NUMBER { $$ = $1 + $3 } ;</codeblock>
+			<p>Assuming the tokens are properly defined, then when we encounter the string of tokens</p>
+			<codeblock>1 + 2</codeblock>
+			<p>after the reduction the list of tokens are replaced with the rule 'add' with the value 3.</p>
+			<h3>%prec</h3>
+			<p>The <code>%prec</code> declaration following a list of components gives the relative precedence of a rule and can be used to resolve the if/else problem.</p>
+			<p>Suppose we write a rule for parsing if/else statements in C:</p>
+			
+<codeblock>if_statement : IF '(' expression ')' statement
+             | IF '(' expression ')' statement ELSE statement
+             ;</codeblock>
+             
+			<p>These rules create a shift/reduce conflict, since if the user were to write the statement:</p>
+			<codeblock>if (a) if (b) c else d</codeblock>
+			<p>does the user mean:</p>
+			
+<codeblock>if (a) {
+    if (b) c
+    else d
+}</codeblock>
+
+			<p>or</p>
+			
+<codeblock>if (a) {
+    if (b) c
+} else d</codeblock>
+				
+			<p>That is, is the else associated with the first if or the second?</p>
+			<p>For C, where the else ties with the closest if (that is, the second if, making the first solution the correct one), this conflict can be resolved using the <code>%prec</code> declaration:</p>
+			<p>This is done by first creating in the list of association statements a non-associated precedence symbol with a lower precedence than the else token:</p>
+
+<codeblock>%nonassoc IFSTATEMENT
+%nonassoc ELSE
+%%</codeblock>
+
+			<p>(See the documentation about precedence below.)</p>
+			<p>By adding the <code>%prec</code> statement after the rule:</p>
+
+<codeblock>if_statement : IF '(' expression ')' statement %prec IFSTATEMENT
+             | IF '(' expression ')' statement ELSE statement
+             ;</codeblock>
+	
+			<p>We can make the else statement have higher precedence, which means when we encounter the else statement, it is associated with the closest if statement.</p>
+			
+			<h3>The Declarations Section</h3>
+			<p>There are a number of declarations that can optionally be added to a OCYacc file. </p>
+			
+			<h4>Tokens and Types</h4>
+			
+<codedef>%token symbols
+%token &lt;type&gt; symbols</codedef>
+			<p>Defines a comma-separated list of symbols as terminal tokens that are returned by the lexer. The symbols are copied as <code>#define</code> statements in the generated header file, and can be used by the lexer as the integer value to return when these token are found.</p>
+			<p>The type is optional. If provided it indicates the type of value that is associated with the token.</p>
+			
+			<codedef>%type &lt;type&gt; symbols</codedef>
+			<p>This defines the type associated with the production rules listed in the list of symbols. The <code>%type</code> declaration is optional, and is only required when a production rule has a value associated with it.</p>
+			<p>Both the <code>%token</code> and <code>%type</code> declarations can be used to associate a type with a terminal token or with a production rule. The type defines the value of the <code>$$</code>, and <code>$0</code> through <code>$n</code> pseudovariables used in writing the code associated with a production rule.</p>
+			<p>How the type parameter is interpreted depends on the target language.</p>
+			<p>For Objective C, the type parameter is the Objective C class type that defines the value of an object. The Objective C type must be an NSObject or descendant of an NSObject class. For example, if you have a rule whose value is an array of strings you would write:</p>
+			<codeblock>%type &lt;NSMutableArray&lt;NSString *&gt;&gt; rule</codeblock>
+			<p>This implies that with Objective C, there is no %union declaration. As all the types are interpreted as class declarations, this implies during error handling excess memory can be automatically released. It also allows you to use certain built-in classes without additional declarations.</p>
+			<p>For C++, the type parameter indicates the variable name in the %union declaration.</p>
+			
+<codeblock>%union {
+    ...
+}</codeblock>
+			
+			<p>The <code>%union</code> declaration should declare a union type, which is used as the stack of objects managed during the rule reduction phase. The type parameter in the <code>%type</code> and <code>%token</code> values are the union field names of the fields used to store the results.</p>
+			<p>For example, with the add rule above:</p>
+			<codeblock>add : NUMBER '+' NUMBER { $$ = $1 + $3 } ;</codeblock>
+			<p>we can declare</p>
+			
+<codeblock>%union {
+    int value;
+}
+
+%token &lt;value&gt; NUMBER
+%type &lt;value&gt; add</codeblock>
+	
+			<p>The values of the <code>$$</code>, <code>$1</code> and <code>$3</code> pseudovariables turn into references into the union field value.</p>
+			<note>Note: One implication of this is that you cannot implement class deallocation in C++ on parsing cleanup or during error handling. This implies that if you wish to construct a syntax tree in C++, you need to allocate the structures of your tree using an allocation strategy that allows cleanup of all allocated structures at the conclusion of parsing. See the tutorials below for a further elaboration of this in practice.</note>
+			<note>Note: if the <code>%union</code> declaration is used in an OCYacc file used to generate Objective C, the declaration and its contents are silently ignored.</note>
+			<h4>Precedence</h4>
+			
+<codedef>%left symbols
+%left &lt;type&gt; symbols
+%right symbols
+%right &lt;type&gt; symbols
+%nonassoc symbols
+%nonassoc &lt;type&gt; symbols</codedef>
+
+			<p>These tokens set the precedence and associativity of a group of tokens. Tokens declared on the same line have the same precedence, and are treated with left associativity, right associativity, or made non-associative if they show up in the same statement. Later declarations have higher precedence than earlier declarations.</p>
+			<p>For example, if we set the associativity of basic math operators as:</p>
+			
+<codeblock>%left '+' '-'
+%left '*' '/'</codeblock>
+
+			<p>The last two symbols (multiply and divide) are treated with higher precedence, so the following grammar will evaluate the statement <code>1 + 2 * 3 + 4</code> correctly:</p>
+			
+<codeblock>expression : expression '*' expression
+           | expression '/' expression
+           | expression '+' expression
+           | expression '/' expression
+           ;</codeblock>
+
+			<p>The type is optional, and provides a way to specify the type of the symbol; see the discussion about tokens and types above.</p>
+			
+			<h4>Start Symbol</h4>
+			<codedef>%start symbol</codedef>
+			<p>Defines the production rule that is the start of the parsing grammar. </p>
+			<note>Note: This declaration is required by OCYacc.</note>
+
+			<h4>Embedded Code</h4>
+			<p>Unlike yacc, OCYacc has a number of places where code can be declared. This ties directly in with the fact that the target code generated by OCYacc is a class rather than non-re-entrant procedural code. For a class generated in Objective-C by OCYacc, the header declaration for our generated class looks like:</p>
+			
+<codeblock>/* MyYacc.h */
+#import &lt;Foundation/Foundation.h&gt;
+
+// %header code inserted here
+
+<i>... Other OCYacc generated declarations ...</i>
+
+@interface MyYacc : NSObject
+
+    <i>... Other OCYacc generated class declarations ...</i>
+
+- (instancetype)initWithLexer:(id&lt;OCLexInput&gt;)lexer;
+
+- (BOOL)parse;
+
+// %global code inserted here
+
+@end</codeblock>
+
+<p>The generated class, meanwhile, looks like:</p>
+
+<codeblock>/* MyYacc.m */
+#import "MyYacc.h"
+
+// %{...%} code inserted here
+
+<i>... Other OCYacc generated declarations ...</i>
+
+@interface MyYacc ()
+    <i>... Other OCYacc generated private declarations ...</i>
+
+    // %local code inserted here
+@end
+
+@implementation MyYacc
+
+- (instancetype)initWithLexer:(id&lt;OCLexInput&gt;)lexer
+{
+    if (nil != (self = [super init])) {
+        <i>... Other OCYacc generated initialization code ...</i>
+
+        // %init code inserted here
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    // %finish code inserted here
+}
+
+<i>... OCYacc generated parser declarations ...</i>
+
+// code_block from bottom of file goes here
+
+- (BOOL)parse
+{
+    <i>... OCYacc generated parser code ...</i>
+}
+
+@end</codeblock>
+			
+			<p>For code generated in C++, the layout of the classes are similar. For a C++ header file, the declaration looks like:</p>
+			
+<codeblock>/* MyYacc.h */
+
+#ifndef MyYacc_h
+#define MyYacc_h
+
+#include &lt;stdint.h&gt;
+#include &lt;map&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+// %header code inserted here
+
+// %{...%} code inserted here
+
+... Other OCYacc generated declarations ...
+
+class Example
+{
+    public:
+        ... Other OCYacc generated class declarations ...
+
+        Example( /* lex class declaration */ );
+        virtual ~Example(void);
+
+        bool parse(void);
+
+        // %global code inserted here
+
+    private:
+        ... Other OCYacc generated private state information here ...
+
+        // %local code inserted here
+};</codeblock>
+
+<p>And the C++ source code looks like:</p>
+
+<codeblock>/* MyYacc.cpp */
+
+#include "MyYacc.h"
+
+... Other OCYacc generated declarations ...
+
+MyYacc::MyYacc(OCLexInput *lexer)
+{
+    ... Other OCYacc generated initialization code ...
+
+    // %init code inserted here
+}
+
+MyYacc::~MyYacc()
+{
+    // %finish code inserted here
+}
+
+// code_block from bottom of file goes here
+
+... OCYacc generated parser declarations ...
+
+bool MyYacc::parse()
+{
+    ... OCYacc generated parser code ...
+}
+
+@end</codeblock>
+			
+			<p>The placement of each segment of code implies certain blocks of code have certain defined purposes. That's given below, though note this can be "abused" if you know where the code you're writing will be inserted into the generated file.</p>
+			
+<codedef>%{
+    <i>code</i>
+}%</codedef>
+			
+			<p>The traditional yacc-style <code>%{...%}</code> block of code is used to declare inline structure declarations that are used internally by the generated class. The contents of this code block are not exposed on Objective C, but are on C++ (by the nature of how C++ classes are declared).</p>
+
+<codedef>%header {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%header</code> code block is used to declare <code>#include</code> or <code>#import</code> declarations and other inline structure declarations which are to be declared in the header of the generated class. This would be used, for example, to include a header file that is required to compile a structure that is used by users of the generated parser class.</p>
+			
+<codedef>%init {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%init</code> code block is inserted into the class constructor, and is used to initialize any internal structures that have been added to the custom class you're building.</p>
+			
+<codedef>%finish {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%finish</code> code block is inserted into the destructor or dealloc method associated with the class, and is used to release any resources used by the custom class you're building.</p>
+			
+<codedef>%global {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%global</code> code block is used to insert declarations into the class that are publicly visible to users of this class. This can be used to declare methods that are accessible by users of this class.</p>
+			
+<codedef>%local {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%local</code> code block is used to insert private declarations into the class that are only visible within the class itself. This would be used to declare internal method or fields that are required by your custom class.</p>
+			
+<codedef>%%
+Code</codedef>
+
+			<p>The third part of the overall ocyacc file contains a block of optional code at the bottom of the file. This is where you would declare methods that are internal to your custom class which provide additional functionality required by your application. This is where the C++ or Objective-C style methods would be added. The methods are guaranteed to be written in such a way so that they are accessible by any inline code associated with your production rules.</p>
+			
+			<h4>C++ and Lex Files</h4>
+			<p>The Objective C version of OCYacc will produce a protocol declaration <code>OCLexInput</code>, which defines all the fields required by the generated parser class to read tokenized data. OCLex generated tokenizers will properly implement this class, and the value associated with each token corresponds to the <code>value</code> field in the protocol.</p>
+			<p>If you choose not to use OCLex to build the tokenizer, you can instead build your own custom tokenizer that corresponds to the <code>OCLexInput</code> protocol.</p>
+			<p>In order for the C++ version to work properly, the OCYacc tool generates a unique name for the <code>%union</code> declaration and can generate two possible types of interfaces depending on if you're using OCLex to generate the tokenizer. The type of interface generated is determined by if you use the <code>%lex</code> declaration in the OCYacc file.</p>
+			<p>The first, generated without the <code>%lex</code> declaration, generates an abstract <code>OCLexInput</code> class in the output header file. This class can then be overridden by your tokenizer class in order to provide the proper interface to provide tokens to your C++ based parser. That <code>OCLexInput</code> class has the following format:</p>
+			
+<codeblock>class OCLexInput
+{
+    public:
+        int32_t line;
+        int32_t column;
+        std::string filename;
+        std::string text;
+        std::string abort;
+
+        virtual int32_t lex() = 0;
+        union OCLexInputValue value;
+};</codeblock>
+
+			<p>Note that the <code>%union</code> value generated by the OCYacc code has the union name <code>OCLexInputValue</code>.</p>
+			<p>If, however, you plan to use the OCYacc generated parser with an OCLex generated token, you need to use the <code>%lex</code> declaration:</p>
+			<codedef>%lex class-name [ header-name ]</codedef>
+			<p>The first parameter, <code>class-name</code> is required and gives the name of the OCLex-generated class. The second parameter <code>header-name</code> is optional, and can be either a string or a token. If it is a string, it should be the name of the header file the class is declared in. If a token, it is turned into a header name by having the extension .h post-pended.</p>
+			<p>When the <code>%lex</code> declaration is used, the <code>OCLexInput</code> abstract class is not defined. Instead, the OCYacc code generator will write a forward declaration for the lexer class. The union generated by the <code>%union</code> token will have the name <code><i>class-name</i>Value</code>. And the header in the <code>%lex</code> declaration will be included in the generated C++ source file.</p>
+			<p>Examples of this are shown later in this document.</p>
+			
+			<h2>Error Handling</h2>
+			<p>Internally when an error is encountered during parsing, the parser will call one of two internal methods to report the error. For Objective C, the methods are:</p>
+
+<codeblock>- (void)errorWithCode:(NSInteger)code data:(NSDictionary<NSString *, id<NSObject>> *)data;
+- (void)errorWithCode:(NSInteger)code</codeblock>
+
+			<p>For C++, the methods are:</p>
+
+<codeblock>void errorWithCode(int32_t code, std::map<std::string,std::string> &data);
+void errorWithCode(int32_t code);</codeblock>
+
+			<p>For both methods, the first parameter <code>code</code> is an error value which translates to a specific error in your parser. Several error values are predefined in the generated header file; for both, the values <code>ERROR_SYNTAX</code>, <code>ERROR_MISSINGTOKEN</code> and <code>ERROR_MISSINGTOKENS</code> are defined. Your own error tokens should begin with the value <code>ERROR_STARTERRORID</code>, and warnings can have the <code>ERRORMASK_WARNING</code> bit set.</p>
+			<p>The second parameter in the first version of each is an optional set of key/value pairs that your error can return for more information. The second version of each method simply passes an empty set of key/value pairs to the error handler.</p>
+			
+			<!-- FINISH ME -->
+			<p>### Finish discussion</p>
+			
+			
+			
+			<h2>Using The Generated Class</h2>
+			<p>The Objective C and C++ generation code will both generate a stand-alone parser file. Both classes also generate an optional protocol (or abstract class in C++) which define the lexer that provides a string of tokens (and their value) to the parser.</p>
+			<p>Assuming you've built a lexer class which conforms to the OCLexInput protocol, in Objective C you would use your parser by writing:</p>
+			
+<codeblock>MyLexer *lexer = [[MyLexer alloc] init...];
+MyYacc *parser = [[MyYacc alloc] initWithLexer:lexer];
+if ([parser parse]) {
+    // use results
+} else {
+    // figure out and present error
+}</codeblock>
+
+			<p>Using a C++ generated class is similar:</p>
+
+<codeblock>MyLexer lexer;
+MyYacc parser(&lexer);
+if (parser.parse()) {
+    // use results
+} else {
+    // handle error
+}</codeblock>
+			
+			<p>Typically the results are stored in the class itself in custom code you provide. That is, in order to get the results (say, in the form of a parse tree), you would declare a %global section which presents the results, and access the results through that declaration.</p>
+			<p>More information about how to do this is contained in later chapters.</p>
+		</section>
+					
+		<section>
+			<h1>OCLex Usage</h1>
+			<p>This is a brief overview and quick reference guide to using OCLex, including the specification for the .l file as well as how to invoke OCLex from the command line. More detailed examples of using the oclex command line tool and building applications with oclex can be found in later chapters.</p>
+			<note>Note: The command line arguments and many parameters of the input lex file are similar to the OCYacc input files.</note>
+			
+			<h2>OCLex Command Line Arguments</h2>
+			<codeblock>oclex [-h] [-l [oc|cpp]] [-o filename] [-c classname] inputfile</codeblock>
+			
+			<p>Where:</p>
+			<dl class="usage">
+			<dt>-h</dt>
+			<dd>Print a help file giving a summary of the command-line arguments.</dd>
+			<dt>-l [oc|cpp]</dt>
+			<dd>Choose output language. By default Objective-C is generated. This can generate re-entrant C++  code file by using the cpp option.</dd>
+			<dt>-o <i>filename</i></dt>
+			<dd>Uses the file name as the base name for the file. (So <code>-o foo</code> outputs <code>foo.m</code> and <code>foo.h</code> for Objective-C files.)</dd>
+			<dt>-c <i>classname</i></dt>	
+			<dd>Uses the specified class name for the generated class. (By default the input file name is used to generate the class name.)</dd>
+			</dl>
+
+			<p>This program by default takes an input file of form <code>MyFile.l</code>, and will generate a class <code>MyFile</code> with two output files <code>MyFile.m</code> and <code>MyFile.h</code> for an Objective-C output file.</p>
+			
+			<h2>The OCLex Input File</h2>
+			<p>The input file for OCYacc is similar to the input file used by lex or flex, but with some very important differences.</p>
+			<p>First, because the output file is being generated for use in Objective C or C++, the code snippets you add should be written for Objective C or C++.</p>
+			<p>Second, some elements of the <code>.l</code> file need to be modified to handle a re-entrant tokenizer, and some of the error processing methods have different names.</p>
+			<p>Third, internal variables have different names than the ones used by lex.</p>
+			
+			<h2>The Basic Input File</h2>
+			<p>Like Lex, the OCLex input file has the following format:</p>
+
+<codeblock>Declarations
+%%
+Rules
+%%
+Code</codeblock>
+
+			<p>The declarations section provide basic declarations used in generating the parser file. The rules are a list of parsing rules, and the last code section contains additional code which will be written into the parser class file.</p>
+			
+			<h3>Regular Expressions</h3>
+			<p>Rules and name declarations within OCLex use regular expressions to match a sequence of characters and symbols forming a character token. Patterns are matched using a greedy algorithm, meaning the longest matching subsequence of characters are always matched. Each time a pattern of characters is matched, the corresponding section of code is triggered, which often parses the value of the token and returns a token identifier for that token.</p>
+			
+			<h3>The Declarations Section</h3>
+			<p>Like OCYacc, OCLex has multiple different declarations that are used to define the parts of the resulting lexer class. OCLex also allows <b>name declarations</b> to simplify the scanner specification.</p>
+			
+			<h4>Name Declarations</h4>
+			<p>A name declaration allows the simplification of a scanner. A name declaration has the following format:</p>
+			<codeblock>name    pattern</codeblock>
+			<p>The name specifies the name of the declaration, and the pattern identifies a pattern matching a regular expression that matches one or more characters.</p>
+			<p>For example:</p>
+			
+<codeblock>DIGIT   [0-9]                  // Matches a single digit from 0 through 9
+LETTER  [A-Za-z]               // Matches a single alphabetical letter
+IDENT   [A-Za-z_][A-Za-z0-9]*  // Matches ay acceptable C style lexical token</codeblock>
+			
+			<p>Each named identifier can be used in a rule (below) by writing {name}. So, for example, an integer rule may look like:</p>
+			<codeblock>{DIGIT}+      { return INTEGER; }</codeblock>
+			<p>More about defining lexical rules below.</p>
+			
+			<h4>Optional Rules Support</h4>
+			<p>Rules (described below) may be optionally triggered by a start flag. You declare start flags by using the %start declaration:</p>
+			<codeblock>%start TOKEN TOKEN ...</codeblock>
+			<p>Individual start state flags can be activated or deactivated by using the statement such as <code>BEGIN TOKEN;</code> or <code>END TOKEN;</code> as described in the optional rules section below.</p>
+
+			<h4>Token Value Support (C++)</h4>
+			<p>A token may have a value. In Objective C, values must be an object stored in an id<NSObject> value, and can be set as described below.</p>
+			<p>For C++, values are stored in a union, similar to that in OCYacc (above). To declare the union for a stand-alone tokenizer (that is, one not used with an OCYacc generated parser), you can declare it using a %union declaration:</p>
+<codeblock>%union {
+    ...
+}</codeblock>
+
+			<h4>Embedded Code</h4>
+			<p>Like OCYacc above, OCLex has a number of places where code can be declared. This ties directly in with the fact that the target code generated by OCLex is a class rather than non-re-entrant procedural code. For a class generated in Objective-C by OCLex, the header declaration for our generated class looks like:</p>
+			
+<codeblock>/* MyLex.h */
+#import &lt;Foundation/Foundation.h&gt;
+
+// %header code inserted here
+
+<i>... Other OCLex generated declarations ...</i>
+
+@interface MyLex : NSObject &lt;OCLexInput&gt;
+
+- (instancetype)initWithStream:(id&lt;OCFileInput&gt;)file;
+
+    <i>... Other OCLex generated class declarations ...</i>
+
+- (NSInteger)lex;
+
+// %global code inserted here
+
+@end</codeblock>
+
+<p>The generated class, meanwhile, looks like:</p>
+
+<codeblock>/* MyLex.m */
+#import "MyLex.h"
+
+// %{...%} code inserted here
+
+<i>... Other OCLex generated declarations ...</i>
+
+@interface MyLex ()
+    <i>... Other OCYacc generated private declarations ...</i>
+
+    // %local code inserted here
+@end
+
+@implementation MyLex
+
+- (instancetype)initWithStream:(id&lt;OCFileInput&gt;)file
+{
+    if (nil != (self = [super init])) {
+        <i>... Other OCLex generated initialization code ...</i>
+
+        // %init code inserted here
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    <i>... Other OCLex generated deallocation code ...</i>
+    // %finish code inserted here
+}
+
+<i>... OCLex generated parser declarations ...</i>
+
+// code_block from bottom of file goes here
+
+- (NSInteger)lex
+{
+    <i>... OCYacc generated parser code ...</i>
+}
+
+@end</codeblock>
+
+<p>For code generated in C++, the layout of the classes are similar. For a C++ header file, the declaration looks like:</p>
+
+<codeblock>/* MyLex.h */
+
+#ifndef MyLex_h
+#define MyLex_h
+
+#include &lt;stdint.h&gt;
+#include &lt;string&gt;
+
+// %header code inserted here
+
+// %{...%} code inserted here
+
+<i>... Other OCLex generated declarations ...</i>
+
+class Example
+{
+    public:
+        <i>... Other OCLex generated class declarations ...</i>
+        Example2(OCFileInput *file);
+        ~Example2(void);
+
+        int32_t lex(void);
+
+        // %global code inserted here
+
+    private:
+        <i>... Other OCLex generated private state information here ...</i>
+
+        // %local code inserted here
+};</codeblock>
+
+<p>And the C++ source code looks like:</p>
+
+<codeblock>/* MyLex.cpp */
+
+#include "MyLex.h"
+
+<i>... Other OCLex generated declarations ...</i>
+
+MyLex::MyLex(OCFileInput *f)
+{
+    <i>... Other OCLex generated initialization code ...</i>
+
+    // %init code inserted here
+}
+
+MyLex::~MyLex()
+{
+    <i>... Other OCLex generated destructor code ...</i>
+
+    // %finish code inserted here
+}
+
+// code_block from bottom of file goes here
+
+<i>... OCLex generated parser declarations ...</i>
+
+int32_t Example2::lex(void)
+{
+    <i>... OCLex generated parser code ...</i>
+}
+
+@end</codeblock>
+			
+			<p>The placement of each segment of code implies certain blocks of code have certain defined purposes. That's given below, though note this can be "abused" if you know where the code you're writing will be inserted into the generated file.</p>
+
+<codedef>%{
+    <i>code</i>
+}%</codedef>
+
+			<p>The traditional lex-style <code>%{...%}</code> block of code is used to declare inline structure declarations that are used internally by the generated class. The contents of this code block are not exposed on Objective C, but are on C++ (by the nature of how C++ classes are declared).</p>
+
+<codedef>%header {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%header</code> code block is used to declare <code>#include</code> or <code>#import</code> declarations and other inline structure declarations which are to be declared in the header of the generated class. This would be used, for example, to include a header file that is required to compile a structure that is used by users of the generated parser class.</p>
+
+<codedef>%init {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%init</code> code block is inserted into the class constructor, and is used to initialize any internal structures that have been added to the custom class you're building.</p>
+
+<codedef>%finish {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%finish</code> code block is inserted into the destructor or dealloc method associated with the class, and is used to release any resources used by the custom class you're building.</p>
+
+<codedef>%global {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%global</code> code block is used to insert declarations into the class that are publicly visible to users of this class. This can be used to declare methods that are accessible by users of this class.</p>
+
+<codedef>%local {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%local</code> code block is used to insert private declarations into the class that are only visible within the class itself. This would be used to declare internal method or fields that are required by your custom class.</p>
+
+<codedef>%%
+Code</codedef>
+
+			<p>The third part of the overall oclex file contains a block of optional code at the bottom of the file. This is where you would declare methods that are internal to your custom class which provide additional functionality required by your application. This is where the C++ or Objective-C style methods would be added. The methods are guaranteed to be written in such a way so that they are accessible by any inline code associated with your production rules.</p>
+			
+			<h3>The Lex Rules Section</h3>
+			<p>The rules section contains one or more rules of the form:</p>
+			<codeblock>pattern     { code }</codeblock>
+			<p>Like lex or flex, the code inside the curly braces following a pattern is executed as soon as the pattern is successfully matched. Generally on matching a pattern you can either return an integer value representing the matched token, or you can execute some internal code.</p>
+			<p>Patterns are then matched until we reach the end of the file.</p>
+			<p>Patterns are written using regular expressions. The regular expressions recognized by OCLex are:</p>
+			
+			<table class="summary">
+				<colgroup>
+					<col class="summaryprefix"/>
+					<col/>
+				</colgroup>
+				<tr>
+					<td>x</td>
+					<td>The character "x".</td>
+				</tr>
+				<tr>
+					<td>"x"</td>
+					<td>The string of characters "x", even if x contains an operator.</td>
+				</tr>
+				<tr>
+					<td>[xz]</td>
+					<td>The character x or z.</td>
+				</tr>
+				<tr>
+					<td>[x-z]</td>
+					<td>The characters in the range of characters. (In this case, the letters x, y or z.)</td>
+				</tr>
+				<tr>
+					<td>[^x]</td>
+					<td>Any character but x.</td>
+				</tr>
+				<tr>
+					<td>.</td>
+					<td>Any character but newline.</td>
+				</tr>
+				<tr>
+					<td>^</td>
+					<td>(If at the start) matches the start of a line.</td>
+				</tr>
+				<tr>
+					<td>$</td>
+					<td>(If at the end) matches the end of a line.</td>
+				</tr>
+				<tr>
+					<td>x?</td>
+					<td>Character x is optional.</td>
+				</tr>
+				<tr>
+					<td>x*</td>
+					<td>Zero or more instances of x.</td>
+				</tr>
+				<tr>
+					<td>x+</td>
+					<td>One or more instances of x.</td>
+				</tr>
+				<tr>
+					<td>x|y</td>
+					<td>Either x or y.</td>
+				</tr>
+				<tr>
+					<td>(x)</td>
+					<td>The pattern x. (Can be used in combination with other patterns above to group patterns.)</td>
+				</tr>
+				<tr>
+					<td>{name}</td>
+					<td>The translation of name in the declarations section.</td>
+				</tr>
+				<tr>
+					<td>&lt;token&gt;x</td>
+					<td>(If &lt;token&gt; is at the start) match pattern x only if OCLex is in start condition token.)</td>
+				</tr>
+			</table>
+						
+			<p>When the generated scanner is run, it scans the input looking for the longest substring which match the provided patterns. If multiple patterns match, the first rule in the list of rules is used.</p>
+			<p>Note that because this scans for the longest input pattern, certain rules may not behave as expected. For example, the following rule to eliminate C comments will not behave as expected:</p>
+			<codeblock>"/*".*"*/"     { /* Skip comment */ }</codeblock>
+			<p>This is because the rule will continue to scan until it finds the very last close comment in the file. That is, the entire example below will be ignored by your rule:</p>
+			
+<codeblock>/* Hello.c */
+
+#include &lt;stdio.h&gt;
+int main()
+{
+    printf("Hello world.\n"):
+    return 0;
+}
+/* Done. */</codeblock>
+			
+			<p>That's because the scanner will find the longest substring which matches the rule--and the longest substring matches all the way from the very first "/" of the first comment all the way down to the last "/" of the "Done" comment.</p>
+			<p><b>Unlike Lex or Flex,</b> you must provide rules for matching all possible substrings; there is no implicit rule to ignore illegal characters. If you wish to emulate this behavior, you must provide the following as the last rule in your rule set:</p>
+			<codeblock>.            { /* Ignore illegal characters */ }</codeblock>
+			<p>Also note that code executed when a rule is matched must be included in curly braces. Thus, the following, legal in Lex or Flex, is illegal in oclex:</p>
+			<codeblock>{DIGIT}+     return INTEGER;</codeblock>
+			<p>Instead, this must be written:</p>
+			<codeblock>{DIGIT}+     { return INTEGER; }</codeblock>
+			<p>When the code segment is written to the Objective C file, the curly braces are stripped. So if you need to declare a local variable in your action code segment, you will need to write:</p>
+
+<codeblock>{DIGIT}+     { 
+                 { 
+                     int tmp;
+                     ... do something with tmp;
+                     return INTEGER;
+                 }
+             }</codeblock>
+
+			<p>Note that actions may span multiple lines.</p>
+			
+			<h4>Optional rules</h4>
+			<p>A rule may be made optional by adding the <code>&tl;START&gt;</code> prefix, with <code>START</code> as one of the states previously declared in the <code>%start</code> declaration section. If is added, then the rule is only executed if the <code>START</code> state is true.</p>
+			<p>A rule state may be activated by adding the code <code>BEGIN START;</code>--this is translated to code which sets the state associated with <code>START</code>. If the statement <code>BEGIN 0;</code> is found, all states are cleared. The code <code>END START;</code> is used to clear the specific state associated with <code>START</code>.</p>
+			
+			<h4>Token Values associated with Rules</h4>
+			<p>OCLex uses a slightly different mechanism for passing values to OCYacc than used by Lex and Yacc. To review, Yacc uses the <code>%union</code> directive to specify a union structure in C to represent the potential values of symbols and tokens. This structure is exposed to Lex via the <code>yylval</code> global, which is a union object declared with the contents of the <code>%union</code> declaration.</p>
+			<p>Thus, if you wish to pass back an integer value associated with a token (such as returning the integer value of a string of digits), you can declare in Yacc a union like:</p>
+
+<codeblock>%union {
+    int tokenValue;
+}
+%token <tokenValue> INTEGER</codeblock>
+
+			<p>And in your Lex production rule, write:</p>
+			<codeblock>[0-9]+    { yylval.tokenValue = atoi(yytext); return INTEGER; }</codeblock>
+			<p>Objective-C does not provide unions, so OCLex and OCYacc uses a different mechanism. Each token in OCYacc may have an associated type; the type represents a class that stores the value. No <code>%union</code> declaration is required.</p>
+			<p>Thus, in OCYacc, you'd replace the above with:</p>
+			<codeblock>%token &lt;NSNumber&gt; INTEGER</codeblock>
+			<p>This indicates our integer value is returned in an NSNumber object. You would then set the value self.value to the value in your Lex production rule:</p>
+			<codeblock>[0-9]+    { self.value = @( self.text.intValue ); return INTEGER; }</codeblock>
+			<p>See the OCYacc documentation for more information.</p>
+			<p>For C++, the method used to return a value to from an OCLex generated tokenizer is through the <code>%union</code> directive. How you would use this directive depends on how you intend to use the OCLex generated class: either as a stand-alone class or as a plug-in to a OCYacc generated class.</p>
+			<p><b>For a stand-alone OCLex generated tokenizer</b> that will not be used with an OCYacc generated parser, you would declare the %union declaration within the .l file. So, for example:</p>
+			
+<codeblock>%union {
+    int integerValue;
+}</codeblock>
+			
+			<p>Then within your production rule you can write:</p>
+			<codeblock>[0-9]+    { self.value.integerValue = atoi(self.text.c_ptr()); return INTEGER; }</codeblock>
+			<p>See the examples below for more information.</p>
+			<p><b>For an OCLex tokenizer that is used with an OCYacc parser,</b> the <code>%union</code> declaration would be created as part of the OCYacc header file in the <code>%union</code> declaration in the <code>.y</code> file. You would then include the header file generated by the OCYacc compiler as part of your <code>%header</code> declaration:</p>
+			
+<codeblock>%header {
+    #include "MyYacc.h"
+}</codeblock>
+			
+			<p>You then can write the production rules as:</p>
+			<codeblock>[0-9]+    { self.value.integerValue = atoi(self.text.c_ptr()); return INTEGER; }</codeblock>
+			
+			<h2>Using the OCLex Generated Classes</h2>
+			<p>The resulting OCLex generated class in Objective C and C++ both use the protocol (abstract class) OCFileInput to read data from. The OCFileInput protocol has the following specification in an OCLex file:</p>
+			
+<codeblock>@protocol OCFileInput &lt;NSObject&gt;
+- (int)readByte;
+- (int)peekByte;
+@end</codeblock>
+
+<p>In C++, it has the declaration:</p>
+
+<codeblock>class OCFileInput
+{
+    public:
+        virtual int readByte() = 0;
+        virtual int peekByte() = 0;
+};</codeblock>
+
+			<p>In both cases, <code>readByte</code> reads the next byte and advances the file reader to the next byte position in the file, returning <code>-1</code> if the end of file has been reached. And <code>peekByte</code> reads the next byte in the file but does not advance the position in the file. (This is used to peek at the next byte in the file without reading it.)</p>
+			<p>You need to provide the file input class yourself. Examples of this can be found later in this document.</p>
+		</section>
+	</body>
+</html>
