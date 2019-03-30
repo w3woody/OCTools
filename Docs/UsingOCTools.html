@@ -661,6 +661,7 @@ Code</codedef>
 			<p>Examples of this are shown later in this document.</p>
 			
 			<h2>Error Handling</h2>
+			
 			<p>Internally when an error is encountered during parsing, the parser will call one of two internal methods to report the error. For Objective C, the methods are:</p>
 
 <codeblock>- (void)errorWithCode:(NSInteger)code data:(NSDictionary<NSString *, id<NSObject>> *)data;
@@ -674,10 +675,50 @@ void errorWithCode(int32_t code);</codeblock>
 			<p>For both methods, the first parameter <code>code</code> is an error value which translates to a specific error in your parser. Several error values are predefined in the generated header file; for both, the values <code>ERROR_SYNTAX</code>, <code>ERROR_MISSINGTOKEN</code> and <code>ERROR_MISSINGTOKENS</code> are defined. Your own error tokens should begin with the value <code>ERROR_STARTERRORID</code>, and warnings can have the <code>ERRORMASK_WARNING</code> bit set.</p>
 			<p>The second parameter in the first version of each is an optional set of key/value pairs that your error can return for more information. The second version of each method simply passes an empty set of key/value pairs to the error handler.</p>
 			
-			<!-- FINISH ME -->
-			<p>### Finish discussion</p>
+			<p>OCYacc uses error codes rather than text strings in order to simplify internationalization: by passing up an identifier, the author of the parser can then look up the appropriate error message and display it based on an identifier.</p>
 			
+			<h3>Handling Errors</h3>
 			
+			<p>When an error is triggered either by your code calling the error handling methods above, or internally when the parser encounters a syntax error, the parser code makes a best faith effort to recover from the error.</p>
+			<p>When your code triggers the error, the parser goes into a state where it will refuse to show any additional errors until at least three tokens have been successfully parsed. This prevents the user of your parser from being flooded with a ton of spurious errors.</p>
+			<p>When the parser triggers the error because of a syntax error, the following steps are taken:</p>
+			<p><b>First,</b> the parser attempts to unwind the parse context stack until it finds a rule declaration that includes the <code>error</code> special processing token. This special rule matches against any error, and should be followed by a token.</p>
+			<p>For example, if your language includes statements which are all terminated with a semicolon, you could write the rule:</p>
+			
+<codeblock>statement : <i>...stuff...</i> ';'
+          | error ';' { [self errorWithFormat:@"Syntax error"]; }
+          ;</codeblock>
+          
+          <p>If there is a syntax error inside the statement, in the <code><i>...stuff...</i></code> area, then the stack will unwind to the <code>error</code> statement. The parser will then scan forward, skipping tokens until it finds the next semicolon, or reaches the end of the file. At that point, parsing is resumed.</p>
+          <p>If there is no <code>error</code> token, then the OCYacc parser attempts to do its best to resync and continue parsing. The ad-hoc algorithm operates as follows:</p>
+          <ul><li><b>If the rule only has one valid shift token,</b> the shift is taken as if the token was encountered.</li>
+	          <li><b>If there is only one valid reduce action,</b> the reduce action is tried.</li>
+	          <li><b>If the rule has five or less possible tokens that could follow the current state,</b> the list of possible tokens are reported, and the rule shifts as if the first of the five tokens are followed.</li>
+	          <li>Otherwise, the token is skipped and parsing resumes at the current state.</li>
+	    	</ul>
+	    	<p>Regardless of which method winds up being employed, errors stop being presented to the user until after 3 successful tokens are shifted.</p>
+	    	
+	    	<h3>Receiving errors.</h3>
+	    	<p>Errors are reported by the parser class, through a delegate (in Objective-C), or through method inheritance (in C++). For Objective C, you would create a class which instantiates the <code><i>class</i>Error</code> protocol, with "class" being the class name of the generated parser:</p>
+	    	
+<codeblock>@protocol MyClassError &lt;NSObject&gt;
+- (void)errorFrom:(MyClass *)yacc 
+             line:(NSInteger)line 
+           column:(NSInteger)column
+	      filename:(NSString *)fname 
+	  errorMessage:(NSString *)error;
+@end</codeblock>
+	          
+	    	<p>For C++, you would create a custom class which inherits from the generated parser class, and override the method:</p>
+	    	<codeblock>	virtual void error(int32_t line, 
+	    	           int32_t col, 
+	    	           std::string fname, 
+	    	           int32_t errCode, 
+	    	           std::map&lt;std::string,std::string&gt; &map);</codeblock>
+		    <p>The default C++ implementation does nothing.</p>
+		    
+		    <p>In both cases the line number, column number and file name of the input token is returned. The file name, line number and column number of the input token is taken from the lexer input stream.</p>
+			<p>Examples of error processing can be found in the examples below.</p>
 			
 			<h2>Using The Generated Class</h2>
 			<p>The Objective C and C++ generation code will both generate a stand-alone parser file. Both classes also generate an optional protocol (or abstract class in C++) which define the lexer that provides a string of tokens (and their value) to the parser.</p>
@@ -1118,6 +1159,17 @@ int main()
 
 			<p>In both cases, <code>readByte</code> reads the next byte and advances the file reader to the next byte position in the file, returning <code>-1</code> if the end of file has been reached. And <code>peekByte</code> reads the next byte in the file but does not advance the position in the file. (This is used to peek at the next byte in the file without reading it.)</p>
 			<p>You need to provide the file input class yourself. Examples of this can be found later in this document.</p>
+			<h3>File and line handling</h3>
+			<p>The generated lexer class provides the Objective-C method:</p>
+			<codeblock>- (void)setFile:(NSString *)file line:(NSInteger)line;</codeblock>
+			<p>This method can be used to set the current file and line number of the input file, and can be used to set the current file name or the file name and line number during parsing. (For example, you may use this method when writing a compiler that handles <code>#include</code> preprocessor directives.)</p>
+			<p>For C++, the same method is:</p>
+			<codeblock>void setFile(std::string &file, int32_t line);</codeblock>
+		</section>
+		
+		<section>
+			<h1>Tutoruals</h1> 
+			###
 		</section>
 	</body>
 </html>
