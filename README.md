@@ -21,6 +21,12 @@ Unlike the rest of the source kit, this paper is freely available and reproducib
 
 ---
 
+_Update March 29, 2019:_ I'm currently working on an [updated document](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html) which gives more up-to-date instructions for downloading, installing and using OCTools. This is a work in progress, but it is more up to date than the documentation that follows.
+
+Over the next few weeks all the documentation will be revised, and hopefully will make it easier to integrate and use OCTools.
+
+---
+
 Each of these tools produce a re-entrant* Objective C class which can be used to
 parse an input text file using a specification similar to the input files for 
 [Lex and YACC.](http://dinosaur.compilertools.net)
