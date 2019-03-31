@@ -15,7 +15,7 @@ The suite of tools include:
 
 This source kit also contains a detailed document on how YACC-style LR parser-generators work, and hopefully at a sufficient degree of detail to allow a beginning Computer Science student to understand how it works. This document includes a description of LR(0), SLR and LALR grammars. 
 
-[The paper can be downloaded from here.](OCYacc/OCYacc%20Building%20LR1%20GLR.pdf)
+[The paper can be downloaded from here.](OCYacc/Docs/OCYacc%20Building%20LR1%20GLR.pdf)
 
 Unlike the rest of the source kit, this paper is freely available and reproducible for non-commercial purposes only, such as use in a classroom setting. For reproduction for the purpose of commercial gain (such as including in a larger book that is sold), please contact me for permission.
 
