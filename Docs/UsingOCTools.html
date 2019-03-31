@@ -57,7 +57,7 @@
 			
 			/* Rules for special content */
 			.title {
-				font-size: 2em;
+				font-size: 200%;
 				font-family: Helvetica, sans-serif;
 				font-weight: bold;
 				text-align: right;
@@ -65,8 +65,48 @@
 				margin-bottom: 1em;
 			}
 			
+			.tocLevel1 {
+				font-size: 120%;
+				font-family: Helvetica, sans-serif;
+				font-weight: bold;
+				display: block;
+			}
+			
+			.tocLevel1 li {
+				margin-top: 1em;
+				margin-bottom: 1em;
+			}
+			
+			.tocLevel2 {
+				font-size: 80%;
+				font-family: Helvetica, sans-serif;
+				font-weight: normal;
+			}
+			
+			.tocLevel2 li {
+				margin-top: 0.5em;
+				margin-bottom: 0.5em;
+			}
+
+			.tocLevel3 {
+				font-family: Helvetica, sans-serif;
+				font-weight: normal;
+			}
+			
+			.tocLevel3 li {
+				margin-top: 0;
+				margin-bottom: 0;
+			}
+
+
+			.tocLevel4 {
+				font-family: Helvetica, sans-serif;
+				font-weight: normal;
+				font-style: italic;
+			}
+			
 			.author {
-				font-size: 1.1em;
+				font-size: 110%;
 				font-family: Helvetica, sans-serif;
 				text-align: right;
 				margin-top: 1em;
@@ -75,7 +115,7 @@
 			
 			/* Copyright block */
 			.copyright {
-				font-size: 0.8em;
+				font-size: 80%;
 				font-family: Times, serif;
 				font-style: italic;
 				border: 1px solid gray;
@@ -86,7 +126,7 @@
 			}
 			
 			.bsdcopyright {
-				font-size: 0.9em;
+				font-size: 90%;
 				margin-left: 3em;
 				margin-right: 3em;
 				font-style: italic;
@@ -98,7 +138,7 @@
 			}
 			
 			.abstract {
-				font-size: 1.2em;
+				font-size: 120%;
 				font-family: Helvetica, sans-serif;
 				font-weight: bold;
 				margin-top: 3em;
@@ -112,10 +152,18 @@
 				margin-top: 1em;
 				margin-bottom: 1em;
 				font-family: Menlo, Courier, monospace;
-				font-size: 0.8em;
+				font-size: 80%;
 			}
 			.usage dd {
 				margin-top: 1em;
+				margin-bottom: 1em;
+			}
+			
+			.tocheader {
+				font-size: 180%;
+				font-family: Helvetica, sans-serif;
+				font-weight: bold;
+				margin-top: 2em;
 				margin-bottom: 1em;
 			}
 			
@@ -127,28 +175,28 @@
 				font-family: Times, sans-serif;
 			}
 			h1 {
-				font-size: 1.8em;
+				font-size: 180%;
 				font-family: Helvetica, sans-serif;
 				font-weight: bold;
 				margin-top: 2em;
 				margin-bottom: 1em;
 			}
 			h2 {
-				font-size: 1.4em;
+				font-size: 140%;
 				font-family: Helvetica, sans-serif;
 				font-weight: normal;
 				margin-top: 2em;
 				margin-bottom: 1em;
 			}
 			h3 {
-				font-size: 1.1em;
+				font-size: 110%;
 				font-family: Helvetica, sans-serif;
 				font-weight: bold;
 				margin-top: 2em;
 				margin-bottom: 1em;
 			}
 			h4 {
-				font-size: 1em;
+				font-size: 100%;
 				font-family: Times, serif;
 				font-weight: bold;
 				margin-top: 1.5em;
@@ -157,7 +205,7 @@
 			
 			note {
 				display: block;
-				font-size: 0.9em;
+				font-size: 90%;
 				margin-left: 3em;
 				margin-top: 1em;
 				margin-bottom: 1em;
@@ -168,7 +216,7 @@
 				display: inline;
 				background-color: #F6F6F6;
 				font-family: Menlo, Courier, monospace;
-				font-size: 0.9em;
+				font-size: 90%;
 				padding-left: 2px;
 				padding-right: 2px;
 			}
@@ -176,7 +224,7 @@
 			codeblock {
 				display: block;
 				font-family: Menlo, Courier, monospace;
-				font-size: 0.8em;
+				font-size: 80%;
 				margin-left: 3em;
 				white-space: pre-wrap;
 			}
@@ -184,7 +232,7 @@
 			codedef {
 				display: block;
 				font-family: Menlo, Courier, monospace;
-				font-size: 0.8em;
+				font-size: 80%;
 				white-space: pre-wrap;
 				border-left: 1px solid #CCCCCC;
 				padding-left: 10px;
@@ -213,7 +261,7 @@
 			
 			.summary td:first-child {
 				font-family: Menlo, Courier, monospace;
-				font-size: 0.8em;
+				font-size: 80%;
 			}
 			
 			.summaryprefix {
@@ -223,7 +271,7 @@
 
 		--></style>
 	</head>
-	<body>
+	<body onload="buildTOC()">
 		<section>
 			<p class="title">Using OCTools</p>
 			<p class="author">William Woody<br/>Glenview Software<br/><a href="mailto:woody@alumni.caltech.edu">woody@alumni.caltech.edu</a></p>
@@ -233,6 +281,89 @@
 				<p>Copyright &copy; 2019 William Edward Woody, Glenview Software, all rights reserved.</p>
 				<p>Permission to make digital or hard copies of all or part of this work for personal or for in-person classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. To copy otherwise, or republish, or post on servers or redistribute to lists requires prior specific written permission.</p>
 			</footer>
+		</section>
+		
+		<section id="toc">
+			<p class="tocheader">Table Of Contents</p>
+			<script type="text/javascript">
+				/*
+				 *	The following code scans the DOM tree for H1 through H4 flags, and
+				 *	builds a table of contents with links to each of the header blocks,
+				 *	building it at the end of the element with the "toc" id.
+				 */
+				
+				var tocElems = new Array();
+				
+				function scanElement(e)
+				{
+					var nodeList = e.childNodes;
+					var i;
+					for (i = 0; i < nodeList.length; ++i) {
+						var elem = nodeList.item(i);
+						if (elem.nodeType != Node.ELEMENT_NODE) continue;
+						var tag = elem.tagName.toLowerCase();
+						if ((tag == "h1") || (tag == "h2") || (tag == "h3") || (tag == "h4")) {
+							tocElems.push(elem);
+						}
+						
+						scanElement(elem);
+					}
+				}
+				
+				/*
+				 *	Build array of elements
+				 */
+				 
+				function buildTOC() 
+				{
+					scanElement(document.documentElement);
+					
+					var i;
+					var section = document.getElementById("toc");
+					var level = new Array();
+
+					for (i = 0; i < tocElems.length; ++i) {
+						// Update ID as jump target
+						var elem = tocElems[i];
+						elem.setAttribute("id", "link"+i);
+						
+						// Get the level number
+						var levelIndex = Number(elem.tagName.substr(1));
+						
+						var text = elem.textContent;
+						var alink = document.createElement("a");
+						alink.setAttribute("href", "#link"+i);
+						var textNode = document.createTextNode(text);
+						alink.appendChild(textNode);
+						
+						// Build the tree. If the levelIndex > level.length, add new child
+						if (levelIndex > level.length) {
+							/* Build a new UL and add to list */
+							var ul = document.createElement("ul");
+							level.push(ul);
+							ul.setAttribute("class", "tocLevel" + levelIndex);
+							
+							if (levelIndex > 1) {
+								/* Insert into last child */
+								var lastUL = level[levelIndex-2];
+								var lastLL = lastUL.lastChild;
+								lastLL.appendChild(ul);
+							}
+						} else while (levelIndex < level.length) {
+							level.pop();
+						}
+						
+						var ll = document.createElement("li");
+						ll.appendChild(alink);
+						level[level.length-1].appendChild(ll);
+					}
+					
+					if (level.length > 0) {
+						section.appendChild(level[0]);
+					}
+				}
+				
+			</script>
 		</section>
 		
 		<section>
