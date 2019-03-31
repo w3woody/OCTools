@@ -2,7 +2,7 @@
 
 A suite of tools which serve as a plug-in replacement for yacc and lex. The goal
 is to provide a (roughly) source compatible tool which can convert yacc and lex
-grammars into Objective C output for building parsers that run on MacOS and iOS.
+grammars into Objective C or C++ for building parsers that run on MacOS and iOS.
 
 The suite of tools include:
 
@@ -21,7 +21,7 @@ Unlike the rest of the source kit, this paper is freely available and reproducib
 
 ---
 
-_Update March 29, 2019:_ I'm currently working on an [updated document](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html) which gives more up-to-date instructions for downloading, installing and using OCTools. This is a work in progress, but it is more up to date than the documentation that follows.
+_Update March 29, 2019:_ I'm currently working on an [updated document](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html) which gives more up-to-date instructions for downloading, installing and using OCTools. This is a work in progress, and will eventually include various tutorials showing off how to use OCYacc and OCLex to generate Objective-C and C++ parsers.
 
 Over the next few weeks all the documentation will be revised, and hopefully will make it easier to integrate and use OCTools.
 
@@ -38,34 +38,15 @@ threads at the same time.)
 
 ## Using with Xcode
 
-To build and incorporate the OCTools into Xcode, you need to build the OCYacc tool and the OCLex tool as command-line tools, copy into a known location (such as `/usr/local/bin`), add the path to your shell $PATH setting (if needed), and modify the settings for each Xcode project where you use the tools.
+To use the OCTools in Xcode, you need to install the files on your computer and update the build rules of your Xcode project to use them.
 
-### Step 1: Build the tools
+### Step 1: Install the tools.
 
-This can be done by opening the OCTools workspace, selecting "oclex" and running "Archive", then selecting "ocyacc" and running Archive. In both cases this will produce an archive with the individual tools oclex and ocyacc as command-line tools. 
+Download the [installer](https://github.com/w3woody/OCTools/raw/master/octools.pkg) from GitHub. This file is a MacOS X file which will install two files to /usr/local/bin: the `ocyacc` command-line tool and the `oclex` command line tool.
 
-(After each archive process is complete, the "Archives" window will open, showing the archive of the tool. Right-click and select "Show In Finder" to show the *xcarchive* bundle. Right-click on the bundle and select "Show Package Contents." The command line tool will be in the directory Products/usr/local/bin.)
+**NOTE:** to uninstall, you can simply use the MacOS Terminal to delete these two tools: with the terminal open type `sudo rm /usr/local/bin/oclex` and `sudo rm /usr/local/bin/ocyacc`. The installer does not install any other files.
 
-### Step 2: Copy to a known path location.
-
-I usually copy the tools to `/usr/local/bin`; you may choose somewhere else if you wish.
-
-Open Terminal. Create `/usr/local/bin` if necessary; this can be done by executing commands like:
-
-    cd /usr
-    sudo mkdir local
-    cd local
-    sudo mkdir bin
-
-(After each sudo command you may need to enter your password.)
-
-Now with the current path of the Terminal at `/usr/local/bin`, execute:
-
-    open .
-
-This will open a finder window at the location `/usr/local/bin`. You can then drag and drop the tool located in the *xcarchive* bundle using Finder. (Finder may ask for a password before copying the tool into place.)
-
-### Step 3: Update your $PATH settings. (Optional)
+### Step 2: Update your $PATH settings. (Optional)
 
 This step is strictly not necessary but comes in handy if you wish to run the oclex/ocyacc tool from the command line.
 
@@ -77,7 +58,7 @@ In the file, add the following line:
 
 Save and close the file. The next terminal window that is opened will have the $PATH variable set appropriately. You can test this by opening a new terminal window and entering the command `ocyacc` or `oclex`; this will print version and copyright information for each of the tools.
 
-### Step 4: Include support into your project.
+### Step 3: Include support into your project.
 
 For Xcode to use the tools you must update the *Build Rules* setting under the target for the project you are building.
 
@@ -97,8 +78,8 @@ For **OCLex** and **OCYacc**, the build rule uses the built-in lex and yacc sour
         /usr/local/bin/oclex -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"
     
     Output Files:
-        $(INPUT_FILE_BASE).m
-        $(INPUT_FILE_BASE).h
+        $DERIVED_SOURCES_DIR/$(INPUT_FILE_BASE).m
+        $DERIVED_SOURCES_DIR/$(INPUT_FILE_BASE).h
 
 For OCYacc:
 
@@ -108,8 +89,8 @@ For OCYacc:
         /usr/local/bin/ocyacc -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"
     
     Output Files:
-        $(INPUT_FILE_BASE).m
-        $(INPUT_FILE_BASE).h
+        $DERIVED_SOURCES_DIR/$(INPUT_FILE_BASE).m
+        $DERIVED_SOURCES_DIR/$(INPUT_FILE_BASE).h
 
 After this is done, yacc and lex files will be compiled to .h and .m files of the same name.
 
@@ -120,7 +101,25 @@ After this is done, yacc and lex files will be compiled to .h and .m files of th
 
 This would create two Objective-C classes with names MyLangLex and MyLangParser. (If you give them the same name, you'll create two classes with the same name, and this is the path to ruin. Or at least confusion.)
 
+**NOTE:** If you wish to generate C++, you would add the `-l cpp` argument to the command-line, and change the output to `.cpp` from `.m`. Thus, for OCYacc, you'd enter:
+
+    Process      Yacc source files
+    Using        Custom script:
+    
+        /usr/local/bin/ocyacc -l cpp -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"
+    
+    Output Files:
+        $DERIVED_SOURCES_DIR/$(INPUT_FILE_BASE).cpp
+        $DERIVED_SOURCES_DIR/$(INPUT_FILE_BASE).h
+
+
 ## New Features
+
+### March-April 2019
+
+* Added MacOS installer and code to build an installer.
+  * To build the installer yourself, download the source kit, open the OCTools workspace, and build the "OCTools" aggregate target. This will run the scripts necessary to build the installer package.
+* Started complete reworking of source kit and documentation set to make this more useful. Clean up some minor issues with C++ code generation. Started adding code examples.
 
 ### April 15, 2018
 
