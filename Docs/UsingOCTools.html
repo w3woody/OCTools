@@ -1459,9 +1459,9 @@ D       [0-9]
           | '(' expression ')'              { $$ = $2; }
           ;</codeblock>
 
-		<p>What this collection of rules say is that if we encounter a number token (from our lexer), that this is in fact an expression whose value is the value of the token. It also says if we encounter addition, subtraction, multiplication or division, then the value of the overall expression is found by adding, subtracting, multiplying or dividing the subexpressions of that rule. Finally we have a rule to handle parenthesis: the value of an expression in parenthesis is the value of the subexpression inside the parenthesis.</p>
+		  <p>What this collection of rules say is that if we encounter a number token (from our lexer), that this is in fact an expression whose value is the value of the token. It also says if we encounter addition, subtraction, multiplication or division, then the value of the overall expression is found by adding, subtracting, multiplying or dividing the subexpressions of that rule. Finally we have a rule to handle parenthesis: the value of an expression in parenthesis is the value of the subexpression inside the parenthesis.</p>
 		
-		<p>The rest of our <code>.y</code> OCYacc file is relatively simple.</p>
+		  <p>The rest of our <code>.y</code> OCYacc file is relatively simple.</p>
 		
 <codeblock>/*  CalcParser.y
  *
@@ -1496,37 +1496,37 @@ expression: NUMBER                          { $$ = $1; }
 equation: expression                        { self.result = $1; }
         ;</codeblock>
 
-		<p>The first part declares our list of tokens and their values. Recall that for Objective C, all token and type values are Objective-C classes, and for this parser we use the <code>NSNumber</code> class to store our values. The first statement declares our lone token, <code>NUMBER</code> with the value <code>NSNumber</code>:</p>
-		<codeblock>%token &lt;NSNumber&gt; NUMBER</codeblock>
-		<p>The next statement indicates that our rule <code>expression</code> also uses <code>NSNumber</code> as its value:</p>
-		<codeblock>%type &lt;NSNumber&gt; expression</codeblock>
-		<note>Note: Not all rules have to have a value. However, if a rule does not have a value, assigning to <code>$$</code> during reduction is undefined and will trigger compiler errors.</note>
-		<p>The next section establishes the precedence of our operators and the order in which they are evaluated. For addition and subtraction, they have a lower precedence than multiplication and division (that means <code>1 + 2 * 3</code> is interpreted as <code>1 + (2 * 3)</code> and not <code>(1 + 2) * 3</code>. However, addition and subtraction have the same precedence. And they are evaluated left to right. Multiplication and division, having higher precedence, appears after addition and subtraction. Like addition and subtraction, multiplication and division is evaluated left to right.</p>
+			<p>The first part declares our list of tokens and their values. Recall that for Objective C, all token and type values are Objective-C classes, and for this parser we use the <code>NSNumber</code> class to store our values. The first statement declares our lone token, <code>NUMBER</code> with the value <code>NSNumber</code>:</p>
+			<codeblock>%token &lt;NSNumber&gt; NUMBER</codeblock>
+			<p>The next statement indicates that our rule <code>expression</code> also uses <code>NSNumber</code> as its value:</p>
+			<codeblock>%type &lt;NSNumber&gt; expression</codeblock>
+			<note>Note: Not all rules have to have a value. However, if a rule does not have a value, assigning to <code>$$</code> during reduction is undefined and will trigger compiler errors.</note>
+			<p>The next section establishes the precedence of our operators and the order in which they are evaluated. For addition and subtraction, they have a lower precedence than multiplication and division (that means <code>1 + 2 * 3</code> is interpreted as <code>1 + (2 * 3)</code> and not <code>(1 + 2) * 3</code>. However, addition and subtraction have the same precedence. And they are evaluated left to right. Multiplication and division, having higher precedence, appears after addition and subtraction. Like addition and subtraction, multiplication and division is evaluated left to right.</p>
 
 <codeblock>/* Establish precedence of our operators */
 %left '+' '-'
 %left '*' '/'</codeblock>
 
-		<p>We need a way to return the result of our math operation on success. So we declare a global property in our parser class which can store the results, <code>result:</code></p>
+			<p>We need a way to return the result of our math operation on success. So we declare a global property in our parser class which can store the results, <code>result:</code></p>
 
 <codeblock>%global {
     @property (strong) NSNumber *result;
 }</codeblock>
 
-		<p>Finally, we need to indicate which rule is evaluated first in our parser. For our parser, the first rule we evaluate in our grammar is the <code>equation</code> rule.</p>
+			<p>Finally, we need to indicate which rule is evaluated first in our parser. For our parser, the first rule we evaluate in our grammar is the <code>equation</code> rule.</p>
 		
-		<p>The <code>%%</code> token marks the end of our declaration and the start of our rules. The first rule describes an expression as noted above. The second rule is the starting rule of our grammer.</p>
+			<p>The <code>%%</code> token marks the end of our declaration and the start of our rules. The first rule describes an expression as noted above. The second rule is the starting rule of our grammer.</p>
 		
 <codeblock>equation: expression                        { self.result = $1; }
         ;</codeblock>
 
-		<p>This rule is special, because it marks the start of our grammar. It also takes the value of the expression we just evaluated, and puts the results in the <code>self.result</code> global we just defined above.</p>
-		<p>When this file is compiled by OCYacc, it will generate a class <code>CalcParser</code> which can parse our file, evaluating the expressions encountered, and return the value of the math operation.</p>
+			<p>This rule is special, because it marks the start of our grammar. It also takes the value of the expression we just evaluated, and puts the results in the <code>self.result</code> global we just defined above.</p>
+			<p>When this file is compiled by OCYacc, it will generate a class <code>CalcParser</code> which can parse our file, evaluating the expressions encountered, and return the value of the math operation.</p>
 		
-		<h2>Support classes</h2>
+			<h2>Support classes</h2>
 		
-		<p>We're not quite done. We're missing the class which can return the stream of characters as we parse our file.</p>
-		<p>For this class we will create a very simple utility class, <code>CalcStream</code>, which takes a string and returns the individual characters inside of that string. This class implements both the <code>peekByte</code> and <code>readByte</code> methods as follows:</p>
+			<p>We're not quite done. We're missing the class which can return the stream of characters as we parse our file.</p>
+			<p>For this class we will create a very simple utility class, <code>CalcStream</code>, which takes a string and returns the individual characters inside of that string. This class implements both the <code>peekByte</code> and <code>readByte</code> methods as follows:</p>
 <codeblock>- (int)peekByte
 {
     if (pos >= input.length) return -1;
@@ -1538,31 +1538,119 @@ equation: expression                        { self.result = $1; }
     if (pos >= input.length) return -1;
     return [input characterAtIndex:pos++];
 }</codeblock>
-		<p>Both routines are relatively similar; the only difference is that <code>readByte</code> advances the read position, while <code>peekByte</code> does not.</p>
-		<p>The full source kit can be found in GitHub.</p>
-		<h2>Putting it all together.</h2>
-		<p>Now that we have all the pieces of our parser, we can assemble them in our <code>main.m</code> class. The first thing our code does is initialize the input stream with the string we wish to parse:</p>
-		<codeblock>CalcStream *stream = [[CalcStream alloc] initWithString:@"11 + 2 * 3 - 4 / (1 + 1)"];</codeblock>
-		<p>The next thing we do is create our lexical tokenizer using our stream as input.</p>
-		<codeblock>CalcLex *lex = [[CalcLex alloc] initWithStream:stream];</codeblock>
-		<p>At this point, if there were additional fields to initialize (such as the name of the file that was being read), we would set them in the <code>lex</code> variable. However, for this example, we don't need to do any additional initialization.</p>
-		<p>Once we have our lexer, we can initialize our parser:</p>
-		<codeblock>CalcParser *parser = [[CalcParser alloc] initWithLexer:lex];</codeblock>
-		<p>At this point if there were additional fields to initialize or if we wanted to set the delegate to handle errors, we would set them in the <code>parser</code> variable. For this example, however, we don't need to do any additional initialization.</p>
-		<p>Now we can run our parser, which will return <code>YES</code> if the parser succeeded, and <code>NO</code> if there was an error:</p>
-		<codeblock>if ([parser parse]) {</codeblock>
-		<p>On success, our results are placed by the <code>equation</code> rule into the <code>result</code> field, so we fetch the contents of the <code>result</code> field and present them:</p>
-		<codeblock>    // YES indicates success. Get our results and present them.
+			<p>Both routines are relatively similar; the only difference is that <code>readByte</code> advances the read position, while <code>peekByte</code> does not.</p>
+			<p>The full source kit can be found in GitHub.</p>
+			<h2>Putting it all together.</h2>
+			<p>Now that we have all the pieces of our parser, we can assemble them in our <code>main.m</code> class. The first thing our code does is initialize the input stream with the string we wish to parse:</p>
+			<codeblock>CalcStream *stream = [[CalcStream alloc] initWithString:@"11 + 2 * 3 - 4 / (1 + 1)"];</codeblock>
+			<p>The next thing we do is create our lexical tokenizer using our stream as input.</p>
+			<codeblock>CalcLex *lex = [[CalcLex alloc] initWithStream:stream];</codeblock>
+			<p>At this point, if there were additional fields to initialize (such as the name of the file that was being read), we would set them in the <code>lex</code> variable. However, for this example, we don't need to do any additional initialization.</p>
+			<p>Once we have our lexer, we can initialize our parser:</p>
+			<codeblock>CalcParser *parser = [[CalcParser alloc] initWithLexer:lex];</codeblock>
+			<p>At this point if there were additional fields to initialize or if we wanted to set the delegate to handle errors, we would set them in the <code>parser</code> variable. For this example, however, we don't need to do any additional initialization.</p>
+			<p>Now we can run our parser, which will return <code>YES</code> if the parser succeeded, and <code>NO</code> if there was an error:</p>
+			<codeblock>if ([parser parse]) {</codeblock>
+			<p>On success, our results are placed by the <code>equation</code> rule into the <code>result</code> field, so we fetch the contents of the <code>result</code> field and present them:</p>
+<codeblock>    // YES indicates success. Get our results and present them.
     NSNumber *n = parser.result;
     NSLog(@"Answer: %d",n.intValue);</codeblock>
-		<p>Of course, if there was an error, we print "Error.":</p>
-		<codeblock>} else {
+			<p>Of course, if there was an error, we print "Error.":</p>
+<codeblock>} else {
     // NO indicate an error.
     NSLog(@"Error.");
 }</codeblock>
-		<p>Once you compile and run this example, you should see the output</p>
-		<codeblock>Answer: 15</codeblock>
-		<p>which is the answer for the equation <code>11 + 2 * 3 - 4 / (1 + 1)</code></p>
+			<p>Once you compile and run this example, you should see the output</p>
+			<codeblock>Answer: 15</codeblock>
+			<p>which is the answer for the equation <code>11 + 2 * 3 - 4 / (1 + 1)</code></p>
+		</section>
+		<section>
+			<h1>A simple calculator in C++</h1>
+			<p>This next example is essentially a rewrite of the previous example, except using C++ instead of Objective C. Rather than repeat the documentation in the prior section, this will only highlight the differences with the <code>.y</code> and <code>.l</code> files in order to make this example work.</p>
+			<p>The example is in GitHub at</p>
+			<note><a href="https://github.com/w3woody/OCTools/tree/master/Examples/SimpleCalculator">https://github.com/w3woody/OCTools/tree/master/Examples/SimpleCalculator</a></note>
+			<p>The project itself was set up adding the OCLex and OCYacc tools, as described in the section <a href="#installtools">Installing OCTools.</a></p>
+			<h2>The OCLex Class CalcLex.l</h2>
+			<p>While the two <code>.l</code> files (between the prior example and the current example) are nearly identical, there are some important differences in how we write the code sections of our files. This is to deal with the fact that we're now targeting C++ instead of Objective C.</p>
+			<p>Note first that our <code>%{...%}</code> declaration uses <code>#include</code> instead of <code>#import</code>. This is a relatively minor (and somewhat unimportant) change in the code base, as the C++ compiler on Xcode will handle either declaration.</p>
+			<p>The second difference is in how we write the code for our number rule:</p>
+<codeblock>{D}+        {
+                /* Number */
+                value.integer = atoi(text.c_str());
+                return NUMBER;
+            }</codeblock>
+           <p>There are three differences. First, the string that we matched with our regular expression is no longer stored in an <code>NSNumber</code> class <code>self.text</code>, but in a <code>std::string</code> field <code>text</code>. Second, our <code>value</code> field is no longer an <code>id&lt;NSObject&gt;</code> pointer, but a union defined in our <code>.y</code> file which defines a single field:</p>
+
+<codeblock>%union {
+    int integer;
+}</codeblock>
+
+	        <p>That means for us to store the integer we parsed, we need to assign it to the field <code>value.integer</code>. And since we're using C++, we can use the function <code>atoi</code> to convert from a string to an integer value.</p>
+	        
+	        <p>The third difference is in how we handle our final rule:</p>
+<codeblock>.           {
+                /* All else, return character value as token ID. */
+                return text[0];
+            }</codeblock>
+            <p>In both the Objective C and the C++ case, the matched string contains one character. But for C++, we need to write <code>text[0]</code> to get the first (and only) character in our matched string.</p>
+            <h2>The OCYacc Class CalcParser.y</h2>
+            <p>Like our <code>.l</code> file, the <code>.y</code> has few differences from our Objective-C counterpart--mostly code changes. However, we need to supply two extra declarations in order to make our C++ code generator generate the correct code.</p>
+            <p>The first thing we need to declare is the name of the lexical tokenizer class, if we're using one generated by OCLex. This will modify the declarations of our parser: to generate the appropriate union name for our lexer, and to generate the correct initializer for our parser.</p>
+            <codeblock>%lex CalcLex</codeblock>
+            <p>The next thing we need to do is declare the value types for the values used by our parser. Similar to yacc, we need to declare a <code>%union</code> declaration with the different value types that may be used by our parser. For our calculator there is only one type we use: an integer, which we declare as:</p>
+
+<codeblock>%union {
+    int integer;
+}</codeblock>
+
+			<p>Because we're using the keyword <code>integer</code> (the name of the field in the union) to specify the type of value that we're using during parsing, we need to change our <code>%token</code> and <code>%type</code> declarations:</p>
+
+<codeblock>%token &lt;integer&gt; NUMBER
+%type &lt;integer&gt; expression</codeblock>
+
+			<p>This also changes our <code>%global</code> declaration:</p>
+
+<codeblock>%global {
+    int result;
+}</codeblock>
+
+			<p>And because our values are integers instead of <code>NSNumber</code> objects, our reduction code in our rules are greatly simplified.</p>
+			
+<codeblock>expression: NUMBER                          { $$ = $1; }
+          | expression '+' expression       { $$ = $1 + $3; }
+          | expression '-' expression       { $$ = $1 - $3; }
+          | expression '*' expression       { $$ = $1 * $3; }
+          | expression '/' expression       { $$ = $1 / $3; }
+          | '(' expression ')'              { $$ = $2; }
+          ;
+
+equation: expression                        { result = $1; }
+        ;</codeblock>
+        
+			<h2>Support classes</h2>
+			
+			<p>Like our Objective C example above, our C++ code requires that we declare a class <code>CalcStream</code> which inherits from the abstract class <code>OCFileInput</code> and provides the <code>readByte()</code> and <code>peekByte()</code> methods. That code is part of the source kit in GitHub, and aside from the different language used, both methods do roughly the same thing as the Objective C counterpart.</p>
+			<h2>Putting it all together.</h2>
+			<p>Now that we have all the pieces of our parser, we can assemble them in our <code>main.m</code> class. The first thing our code does is initialize the input stream with the string we wish to parse:</p>
+			<codeblock>CalcStream stream("11 + 2 * 3 - 4 / (1 + 1)");</codeblock>
+			<p>The next thing we do is create our lexical tokenizer using our stream as input.</p>
+			<codeblock>CalcLex lex(&stream);</codeblock>
+			<p>At this point, if there were additional fields to initialize (such as the name of the file that was being read), we would set them in the <code>lex</code> variable. However, for this example, we don't need to do any additional initialization.</p>
+			<p>Once we have our lexer, we can initialize our parser:</p>
+			<codeblock>CalcParser parser(&lex);</codeblock>
+			<p>At this point if there were additional fields to initialize, we would set them in the <code>parser</code> variable. For this example, however, we don't need to do any additional initialization.</p>
+			<note>Unlike Objective C, the C++ version of the parser requires inheritance to override the error handling method.</note>
+			<p>Now we can run our parser, which will return <code>YES</code> if the parser succeeded, and <code>NO</code> if there was an error:</p>
+			<codeblock>if (parser.parse()) {</codeblock>
+			<p>On success, our results are placed by the <code>equation</code> rule into the <code>result</code> field, so we fetch the contents of the <code>result</code> field and present them:</p>
+			<codeblock>    printf("Answer: %d\n",parser.result);</codeblock>
+			<p>Of course, if there was an error, we print "Error.":</p>
+<codeblock>} else {
+    printf("Error.");
+}</codeblock>
+			<p>Once you compile and run this example, you should see the output</p>
+			<codeblock>Answer: 15</codeblock>
+			<p>which is the answer for the equation <code>11 + 2 * 3 - 4 / (1 + 1)</code></p>
 		</section>
 	</body>
 </html>

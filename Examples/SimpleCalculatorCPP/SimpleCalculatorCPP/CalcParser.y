@@ -9,11 +9,11 @@
 
 // Establish our types
 %union {
-	int value;
+	int integer;
 }
 
-%token <value> NUMBER
-%type <value> expression
+%token <integer> NUMBER
+%type <integer> expression
 
 /* Establish precedence of our operators */
 %left '+' '-'

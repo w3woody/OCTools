@@ -16,7 +16,7 @@ D		[0-9]
 
 {D}+		{
 				/* Number */
-				value.value = atoi(text.c_str());
+				value.integer = atoi(text.c_str());
 				return NUMBER;
 			}
 
