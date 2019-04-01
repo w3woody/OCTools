@@ -52,7 +52,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		EF1DC7632252A173003C478C /* Calculator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Calculator; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF1DC7632252A173003C478C /* CalculatorError */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CalculatorError; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF1DC7662252A173003C478C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EF1DC77D2252A924003C478C /* CalcErrorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CalcErrorDelegate.h; sourceTree = "<group>"; };
 		EF1DC77E2252A924003C478C /* CalcErrorDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalcErrorDelegate.m; sourceTree = "<group>"; };
@@ -76,7 +76,7 @@
 		EF1DC75A2252A173003C478C = {
 			isa = PBXGroup;
 			children = (
-				EF1DC7652252A173003C478C /* Calculator */,
+				EF1DC7652252A173003C478C /* CalculatorError */,
 				EF1DC7642252A173003C478C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -84,12 +84,12 @@
 		EF1DC7642252A173003C478C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EF1DC7632252A173003C478C /* Calculator */,
+				EF1DC7632252A173003C478C /* CalculatorError */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		EF1DC7652252A173003C478C /* Calculator */ = {
+		EF1DC7652252A173003C478C /* CalculatorError */ = {
 			isa = PBXGroup;
 			children = (
 				EF1DC7662252A173003C478C /* main.m */,
@@ -100,15 +100,15 @@
 				EF1DC77D2252A924003C478C /* CalcErrorDelegate.h */,
 				EF1DC77E2252A924003C478C /* CalcErrorDelegate.m */,
 			);
-			path = Calculator;
+			path = CalculatorError;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EF1DC7622252A173003C478C /* Calculator */ = {
+		EF1DC7622252A173003C478C /* CalculatorError */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EF1DC76A2252A173003C478C /* Build configuration list for PBXNativeTarget "Calculator" */;
+			buildConfigurationList = EF1DC76A2252A173003C478C /* Build configuration list for PBXNativeTarget "CalculatorError" */;
 			buildPhases = (
 				EF1DC75F2252A173003C478C /* Sources */,
 				EF1DC7602252A173003C478C /* Frameworks */,
@@ -120,9 +120,9 @@
 			);
 			dependencies = (
 			);
-			name = Calculator;
+			name = CalculatorError;
 			productName = Calculator;
-			productReference = EF1DC7632252A173003C478C /* Calculator */;
+			productReference = EF1DC7632252A173003C478C /* CalculatorError */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -139,7 +139,7 @@
 					};
 				};
 			};
-			buildConfigurationList = EF1DC75E2252A173003C478C /* Build configuration list for PBXProject "Calculator" */;
+			buildConfigurationList = EF1DC75E2252A173003C478C /* Build configuration list for PBXProject "CalculatorError" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -151,7 +151,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EF1DC7622252A173003C478C /* Calculator */,
+				EF1DC7622252A173003C478C /* CalculatorError */,
 			);
 		};
 /* End PBXProject section */
@@ -304,7 +304,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EF1DC75E2252A173003C478C /* Build configuration list for PBXProject "Calculator" */ = {
+		EF1DC75E2252A173003C478C /* Build configuration list for PBXProject "CalculatorError" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF1DC7682252A173003C478C /* Debug */,
@@ -313,7 +313,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EF1DC76A2252A173003C478C /* Build configuration list for PBXNativeTarget "Calculator" */ = {
+		EF1DC76A2252A173003C478C /* Build configuration list for PBXNativeTarget "CalculatorError" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF1DC76B2252A173003C478C /* Debug */,
