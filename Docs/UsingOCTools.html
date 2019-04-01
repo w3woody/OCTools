@@ -304,10 +304,12 @@
 				font-family: Helvetica, sans-serif;
 				font-size: 90%;
 				font-weight: bold;
+				vertical-align: top;
 			}
 			.tokentable tr {
 				font-family: Menlo, Courier, monospace;
 				font-size: 70%;
+				vertical-align: top;
 			}
 			.tokentable td:first-child {
 				padding-right: 2em;
@@ -1655,6 +1657,81 @@ equation: expression                        { result = $1; }
 			<p>Once you compile and run this example, you should see the output</p>
 			<codeblock>Answer: 15</codeblock>
 			<p>which is the answer for the equation <code>11 + 2 * 3 - 4 / (1 + 1)</code></p>
+		</section>
+		<section>
+			<h1>Error Handling</h1>
+			<p>Error handling is the process of gracefully dealing with errors that are encountered as a file is parsed by OCYacc-generated grammar.</p>
+			<p>OCYacc-generated grammars assume that if there is an error with the input language, that the input is corrupt and needs to be reworked by the user. However, it would be unacceptable if the user was writing a 1,000 line input file and the parser halted on the first detected error. This is why OCYacc makes a reasonable attempt to resynchronize the input stream with the parser state, so as to continue reporting further errors as they are encountered during parsing.</p>
+			<p>There are three major mechanisms by which OCYacc can handle errors. The first is a callback mechanism (using a delegate in Objective C; inheritance in C++) to report the file position of an error, and the nature of that error. This can be used to print or record the location of errors for reporting to the user.</p>
+			<p>The second is a special rule, the <code>error</code> token, which matches errors in a rule. This special rule can be used to help resynchronize the parser during error processing. For example, if it's known that statements in a language are separated by a semicolon, you can use the matching rule tokens <code>error ';'</code> to trap all errors, and resynchronize the parser by scanning ahead for a semicolon, in order to resume parsing.</p>
+			<p>The third are the internal methods <code>errorWithCode</code> and <code>errorOK</code> to indicate that a semantic error was encountered (such as a statement where a variable is undefined), and to indicate that error processing was successfully handled.</p>
+			<h2>Error Reporting</h2>
+			<p>You can obtain reports from the parser in Objective C by implementing the <code><i>class</i>Error</code> delegate, with the class name the one used when building the OCYacc class.</p>
+			<p>For our example above, we've added an error reporting delegate to the previous example, which means our delegate class <code>CalcErrorDelegate</code> must implement the protocol <code>CalcParserError</code>.</p>
+			<p>This example can be found in GitHub at:</p>
+			<note><a href="https://github.com/w3woody/OCTools/tree/master/Examples/CalculatorError">https://github.com/w3woody/OCTools/tree/master/Examples/CalculatorError</a></note>
+			<p>Our delegate implements the <code>- errorFrom:...</code> method:</p>
+
+<codeblock>- (void)errorFrom:(CalcParser *)yacc line:(NSInteger)line
+        column:(NSInteger)column filename:(NSString *)fname
+        errorCode:(NSInteger)errorCode
+        data:(NSDictionary&lt;NSString *, id&lt;NSObject&gt;&gt; *)data
+{
+    NSString *err;
+
+    switch (errorCode) {
+        case ERROR_SYNTAX:
+            err = @"Syntax Error";
+            break;
+        case ERROR_MISSINGTOKEN:
+            err = [NSString stringWithFormat:@"Missing token (%@)",data[@"token"]];
+            break;
+        case ERROR_MISSINGTOKENS:
+            err = [NSString stringWithFormat:@"Missing tokens (%@)",[data[@"tokens"] description]];
+            break;
+        default:
+            err = @"Unknown error";
+            break;
+    }
+
+    NSLog(@"%@ at %d:%d",err,(int)line,(int)column);
+}</codeblock>
+
+			<p>Because we don't define any new custom errors, the only errors we need to deal with are the standard errors generated with our parser generator.</p>
+			<p>There are three different errors that can be reported:</p>
+			<table class="tokentable">
+				<tr><td>Symbol</td><td>Value</td></tr>
+				<tr><td>ERROR_SYNTAX</td><td>A general syntax error was detected.</td></tr>
+				<tr><td>ERROR_MISSINGTOKEN</td><td>An error was encountered in a rule that had only one possible token that should follow. (The missing token is returned in data[@"token"].)</td></tr>
+				<tr><td>ERROR_MISSINGTOKENS</td><td>An error was encountered in a rule that had a limited number of possible tokens that could follow. (The array of possible tokens is returned in data[@"tokens"].)</td></tr>
+			</table>
+			
+			<p>We handle each of these in our example code above.</p>
+			<p>When we run this against our parser, but we modify the input string to read:</p>
+			<codeblock>11 + 2 * x 3 - 4 / (1 + 1)</codeblock>
+			<p>We get the following results:</p>
+<codeblock>Missing tokens ((
+    "(",
+    NUMBER
+)) at 0:7
+
+Missing tokens ((
+    ")",
+    "*",
+    "+",
+    "-",
+    "/"
+)) at 0:25
+
+Error.</codeblock>
+			<p>The first error states that roughly seven characters in we find an expression that is missing either a '(' or a NUMBER following it. This makes sense when you consider that by this point in the parser we've read:</p>
+			<codeblock>11 + 2 *</codeblock>
+			<p>The following token is 'x', which is neither one of our four operators, nor is it a number. So what our parser is telling us is that following the '*' operator, we would expect either a number, or an open parenthesis.</p>
+			<p>The second error makes sense when you consider the corrective action taken by the first error. For our first error, we insert the first token in our list of tokens and act as if we performed a shift of the '(' token rather than the 'x' token we found.</p>
+			<p>This means as far as our parser is concerned, we found <code>11 + 2 * (</code>, and once we reach the end of the string, rather than the end of file marker, we are expecting a close parenthesis or another operator.</p>
+			<h2>The <code>error</code> token</h2>
+			<p>This sort of ad-hoc processing is adequate for smaller grammars, but can be insufficient for more complex languages. For more complex languages we use the <code>error</code> token, a special token which matches any error.</p>
+			<p>The idea is straight forward: when a syntax error is encountered, ### rethink error handling.</p>
 		</section>
 	</body>
 </html>
