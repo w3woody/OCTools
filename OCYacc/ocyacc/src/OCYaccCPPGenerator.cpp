@@ -522,7 +522,7 @@ static const char *GSource8 = // 10
 	"\n"                                                                      \
 	"\t\t\t\t\t\t\tcontinue;\n"                                               \
 	"\n"                                                                      \
-	"\t\t\t\t\t\t} else if (action == K_EOFTOKEN) {\n"                        \
+	"\t\t\t\t\t\t} else if ((a == K_EOFTOKEN) || (a == -1)) {\n"              \
 	"\t\t\t\t\t\t\t/*\n"                                                      \
 	"\t\t\t\t\t\t\t *\tWe ran out of tokens. At this point all\n"             \
 	"\t\t\t\t\t\t\t *\twe can do is print an error and force quit.\n"         \
