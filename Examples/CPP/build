@@ -1,4 +1,0 @@
-ocyacc -l cpp -o ExampleC -c ExampleC Example.y
-oclex -l cpp -o ExampleLC -c ExampleLC Example2.l
-ocyacc -l oc -o ExampleOC -c ExampleOC Example.y
-oclex -l oc -o ExampleLOC -c ExampleLOC Example2.l
