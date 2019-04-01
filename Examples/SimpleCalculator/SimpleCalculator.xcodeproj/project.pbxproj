@@ -1,0 +1,328 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EF0645D42251316F001527C4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0645D32251316F001527C4 /* main.m */; };
+		EF0645DD22514A21001527C4 /* CalcParser.y in Sources */ = {isa = PBXBuildFile; fileRef = EF0645DC22514A21001527C4 /* CalcParser.y */; };
+		EF0645DF22514D44001527C4 /* CalcLex.l in Sources */ = {isa = PBXBuildFile; fileRef = EF0645DE22514D44001527C4 /* CalcLex.l */; };
+		EF0645E222514FB7001527C4 /* CalcStream.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0645E122514FB7001527C4 /* CalcStream.m */; };
+		EF0645E5225150C4001527C4 /* CalcErrorDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0645E4225150C4001527C4 /* CalcErrorDelegate.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		EF0645DA22513179001527C4 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			fileType = sourcecode.yacc;
+			isEditable = 1;
+			outputFiles = (
+				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).m",
+				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).h",
+			);
+			script = "/usr/local/bin/ocyacc -o \"$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE\" \"$INPUT_FILE_PATH\"\n";
+		};
+		EF0645DB225131CD001527C4 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			fileType = sourcecode.lex;
+			isEditable = 1;
+			outputFiles = (
+				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).m",
+				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).h",
+			);
+			script = "/usr/local/bin/oclex -o \"$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE\" \"$INPUT_FILE_PATH\"\n";
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EF0645CE2251316F001527C4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		EF0645D02251316F001527C4 /* SimpleCalculator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SimpleCalculator; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF0645D32251316F001527C4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EF0645DC22514A21001527C4 /* CalcParser.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = CalcParser.y; sourceTree = "<group>"; };
+		EF0645DE22514D44001527C4 /* CalcLex.l */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.lex; path = CalcLex.l; sourceTree = "<group>"; };
+		EF0645E022514FB7001527C4 /* CalcStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CalcStream.h; sourceTree = "<group>"; };
+		EF0645E122514FB7001527C4 /* CalcStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalcStream.m; sourceTree = "<group>"; };
+		EF0645E3225150C4001527C4 /* CalcErrorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CalcErrorDelegate.h; sourceTree = "<group>"; };
+		EF0645E4225150C4001527C4 /* CalcErrorDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalcErrorDelegate.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EF0645CD2251316F001527C4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EF0645C72251316F001527C4 = {
+			isa = PBXGroup;
+			children = (
+				EF0645D22251316F001527C4 /* SimpleCalculator */,
+				EF0645D12251316F001527C4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EF0645D12251316F001527C4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF0645D02251316F001527C4 /* SimpleCalculator */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EF0645D22251316F001527C4 /* SimpleCalculator */ = {
+			isa = PBXGroup;
+			children = (
+				EF0645D32251316F001527C4 /* main.m */,
+				EF0645DC22514A21001527C4 /* CalcParser.y */,
+				EF0645DE22514D44001527C4 /* CalcLex.l */,
+				EF0645E022514FB7001527C4 /* CalcStream.h */,
+				EF0645E122514FB7001527C4 /* CalcStream.m */,
+				EF0645E3225150C4001527C4 /* CalcErrorDelegate.h */,
+				EF0645E4225150C4001527C4 /* CalcErrorDelegate.m */,
+			);
+			path = SimpleCalculator;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EF0645CF2251316F001527C4 /* SimpleCalculator */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF0645D72251316F001527C4 /* Build configuration list for PBXNativeTarget "SimpleCalculator" */;
+			buildPhases = (
+				EF0645CC2251316F001527C4 /* Sources */,
+				EF0645CD2251316F001527C4 /* Frameworks */,
+				EF0645CE2251316F001527C4 /* CopyFiles */,
+			);
+			buildRules = (
+				EF0645DB225131CD001527C4 /* PBXBuildRule */,
+				EF0645DA22513179001527C4 /* PBXBuildRule */,
+			);
+			dependencies = (
+			);
+			name = SimpleCalculator;
+			productName = SimpleCalculator;
+			productReference = EF0645D02251316F001527C4 /* SimpleCalculator */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EF0645C82251316F001527C4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = "Glenview Software";
+				TargetAttributes = {
+					EF0645CF2251316F001527C4 = {
+						CreatedOnToolsVersion = 10.2;
+					};
+				};
+			};
+			buildConfigurationList = EF0645CB2251316F001527C4 /* Build configuration list for PBXProject "SimpleCalculator" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EF0645C72251316F001527C4;
+			productRefGroup = EF0645D12251316F001527C4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EF0645CF2251316F001527C4 /* SimpleCalculator */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EF0645CC2251316F001527C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF0645D42251316F001527C4 /* main.m in Sources */,
+				EF0645DD22514A21001527C4 /* CalcParser.y in Sources */,
+				EF0645E222514FB7001527C4 /* CalcStream.m in Sources */,
+				EF0645E5225150C4001527C4 /* CalcErrorDelegate.m in Sources */,
+				EF0645DF22514D44001527C4 /* CalcLex.l in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		EF0645D52251316F001527C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		EF0645D62251316F001527C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		EF0645D82251316F001527C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EF0645D92251316F001527C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MUUNEV88XL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EF0645CB2251316F001527C4 /* Build configuration list for PBXProject "SimpleCalculator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF0645D52251316F001527C4 /* Debug */,
+				EF0645D62251316F001527C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF0645D72251316F001527C4 /* Build configuration list for PBXNativeTarget "SimpleCalculator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF0645D82251316F001527C4 /* Debug */,
+				EF0645D92251316F001527C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EF0645C82251316F001527C4 /* Project object */;
+}

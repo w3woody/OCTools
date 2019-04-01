@@ -2,14 +2,7 @@
 	<head>
 		<title>Using OCTools</title>
 		<style type="text/css"><!--
-			/* Page rules for printing */
-			@page {
-				size: letter portrait;
-				margin: 1in;
-				orphans: 4;
-				widows: 2;
-			}
-			
+			/* Page rules for screen */
 			@media not print {
 				body {
 					margin-top: 1em;
@@ -35,18 +28,45 @@
 				}
 			}
 			
+			/* Page rules for print */
 			@media print {
+				/* Note: Safari does not honor @page margins, so we set the left/right
+				 * margins in the body tag. At least we can get the left and right correct
+				 */
+				@page {
+					size: letter portrait;
+					orphans: 4;
+					widows: 2;
+					margin-top: 1in;
+					margin-bottom: 1in;
+					margin-left: 0;
+					margin-right: 0;
+					
+					@bottom-right {
+						content: "Page " counter(page);
+					}
+				}
+				
+				body {
+					margin-left: 1in;
+					margin-right: 1in;
+				}
+			
 				html * {
 					font-size: 11pt;
 				}
+				
 				section {
 					page-break-after: always;
 				}
 				
 				footer {
-					position: absolute;
-					margin-top: auto;
-					bottom: 0;
+					/* Need to figure out way to make this sit bottom of last page of
+					 * section. Until then, this is the best we can do that works on
+					 * Safari.
+					 */
+					margin-top: 4em;
+					page-break-inside: avoid;
 				}
 
 				a {
@@ -227,6 +247,7 @@
 				font-size: 80%;
 				margin-left: 3em;
 				white-space: pre-wrap;
+				page-break-inside: avoid;
 			}
 			
 			codedef {
@@ -237,6 +258,7 @@
 				border-left: 1px solid #CCCCCC;
 				padding-left: 10px;
 				margin-left: -10px;
+				page-break-inside: avoid;
 			}
 			
 			img {
@@ -247,6 +269,7 @@
 				margin-right: auto;
 				margin-top: 1em;
 				margin-bottom: 1em;
+				page-break-inside: avoid;
 			}
 			
 			/* Table */
@@ -1232,7 +1255,7 @@ int main()
 			<p>Note that actions may span multiple lines.</p>
 			
 			<h4>Optional rules</h4>
-			<p>A rule may be made optional by adding the <code>&tl;START&gt;</code> prefix, with <code>START</code> as one of the states previously declared in the <code>%start</code> declaration section. If is added, then the rule is only executed if the <code>START</code> state is true.</p>
+			<p>A rule may be made optional by adding the <code>&lt;START&gt;</code> prefix, with <code>START</code> as one of the states previously declared in the <code>%start</code> declaration section. If is added, then the rule is only executed if the <code>START</code> state is true.</p>
 			<p>A rule state may be activated by adding the code <code>BEGIN START;</code>--this is translated to code which sets the state associated with <code>START</code>. If the statement <code>BEGIN 0;</code> is found, all states are cleared. The code <code>END START;</code> is used to clear the specific state associated with <code>START</code>.</p>
 			
 			<h4>Token Values associated with Rules</h4>
@@ -1299,7 +1322,7 @@ int main()
 		</section>
 		
 		<section>
-			<h1>Tutoruals</h1> 
+			<h1>Tutorials</h1> 
 			###
 		</section>
 	</body>
