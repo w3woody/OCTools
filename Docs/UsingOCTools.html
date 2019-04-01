@@ -291,6 +291,21 @@
 				color: red;
 				width: 6em;
 			}
+			
+			.tokentable {
+				margin-left: 2em;
+			}
+			
+			.tokentable tr:first-child {
+				font-size: 90%;
+				font-weight: bold;
+			}
+			.tokentable tr {
+				font-size: 80%;
+			}
+			.tokentable td:first-child {
+				padding-right: 2em;
+			}
 
 		--></style>
 	</head>
@@ -415,7 +430,7 @@
 			</div>
 		</section>
 		
-		<section>
+		<section id="installtools">
 			<h1>Installing OCTools</h1>
 			<p>You can, of course, use the OCTools software suite as a stand-alone command-line tool. OCTools can also be installed into Xcode.</p>
 			<h2>Installation</h2>
@@ -1322,8 +1337,96 @@ int main()
 		</section>
 		
 		<section>
-			<h1>Tutorials</h1> 
-			###
+			<h1>A simple calculator for Objective C</h1> 
+			<p>The next few sections will highlight a number of examples of using OCYacc and OCLex to build some simple applications in both Objective C and in C++. The goal is to highlight all of the features of OCYacc and OCLex, while showing several examples of simple languages.</p>
+			<p>This first example is for a simple calculator program which can add, subtract, multiply and divide integers, and shows a complete working example of a <code>.y</code> and <code>.l</code> file generating two classes which are then triggered in a simple stand-alone application.</p>
+			<p>The example is in GitHub at</p>
+			<note><a href="https://github.com/w3woody/OCTools/tree/master/Examples/SimpleCalculator">https://github.com/w3woody/OCTools/tree/master/Examples/SimpleCalculator</a></note>
+			<p>The project itself was set up adding the OCLex and OCYacc tools, as described in the section <a href="#installtools">Installing OCTools.</a>
+			<h2>Goals of our calculator</h2>
+			<p>Our basic goal with this calculator is to build a lexer and parser which can interpret strings like:</p>
+			<codeblock>11 + 2 * 3 - 4 / (1 + 1)</codeblock>
+			<p>That is, we want to do a few things. First, we want to be able to identify sequences of characters that are numbers from white space characters and the operators for addition, subtraction, multiplication and division. We also want to convert those sequences of characters that make up a number and convert it to an integer.</p>
+			<p>Second, we want to interpret those tokens--the sequences of characters that make up a number or which define an operator--and parse them, interpreting the sequences as a math operation. We want to then perform the math operation described in those tokens, returning a result.</p>
+			<p>Third, if there is an error, we want to identify the fact that there was an error.</p>
+			<p>These steps are common for all parsers. First, we convert an input string, a file stream or any other sequence of characters into an array of "tokens": identifiers that identify a sequence of characters. Second, we want to then parse those tokens--interpreting them in a sensible way and doing something sensible with that interpretation. All the while we want to be on the lookout for errors, warning the user if there was a problem with the input file or sting of characters.</p>
+			<h2>The OCLex Class CalcLex.l</h2>
+			<p>The first part of our process looks to convert a sequence of characters into "tokens." We can do this easily by using the OCLex tool to convert a lex file (with the extension <code>.l</code>) into a class which can tokenize a stream of characters.</p>
+			<p>Our language is very simple. If we have a sequence of digits, that represents a number. Whitespace is ignored. And all other characters are passed up as characters; our parser will then differentiate between the operators '+', '-', '/' and '*'.</p>
+			<p>Our complete lex file looks like the following:</p>
+<codeblock>/*  CalcLex.l
+ *
+ *      Defines a very simple lexical analyzer for our calculator language
+ */
+
+/* Load our CalcParser.h header for our token definitions */
+%{
+    #import "CalcParser.h"
+%}
+
+/* Simplify our definitions */
+
+D       [0-9]
+
+%%
+
+{D}+        {
+                /* Number */
+                self.value = @( self.text.intValue );
+                return NUMBER;
+            }
+
+[ \t\v\n\f] {
+                /* Skip whitespace */
+            }
+
+.           {
+                /* All else, return character value as token ID. */
+                return [self.text characterAtIndex:0];
+            }</codeblock>
+            <p>Let's work through this example.</p>
+            <p>In our language, the first part is the <code>%{...%}</code> section. This only contains one include declaration: <code>#import "CalcParser.h"</code>, and indicates to our complete lexical class that it should include the declarations for the CalcParser class, which we will build later.</p>
+            <p>This is a common pattern for our lexical code: if we plan to use our lexer with a parser, we want to include the parser's declarations in the <code>%{...%}</code> block. That way, the tokens our parser expects can all be declared by the parser--and the lexer can return those same token values as it does its thing.</p>
+            <p>Our parser only defines one token, <code>NUMBER</code>, which we use to represent an integer value.</p>
+            <p>The next part is a declaration:</p>
+            <codeblock>D       [0-9]</codeblock>
+            <p>What this means is that, in our rule section, if we encounter <code>{D}</code> (the thing we've defined), treat it as <code>[0-9]</code>. That is, {D} matches any character from '0' to '9'.</p>
+            <p>While this is a simple example, the ability to define regular expression elements can be quite powerful, as it allows reuse of common patterns throughout your code.</p>
+            <p>The next thing we encounter is <code>%%</code>, which indicates we're entering the rules section. Remember that all rules have the format <code>RULE { CODE }</code>, where the <code>RULE</code> is a regular expression to match, and <code>CODE</code> is the code to execute when we encounter this rule.</p>
+            <p>Our lexer has only three definitions.</p>
+            <p>The first is <code>{D}+</code>. Recall from above that <code>{D}</code> means match any character from 0 through 9. The '+' symbol means match one or more characters. So this pattern will match any sequence with one or more numbers from 0 through 9.</p>
+            <p>When this rule is encountered, the sequence of characters is stored in the property <code>self.text</code>, which is an <code>NSString</code>. The value of our token is stored in <code>self.value</code>, which is defined as an <code>id&lt;NSObject&gt;</code>, and in our parser (as we will see later), the token <code>NUMBER</code> is expected to be an <code>NSNumber</code>.</p>
+            <p>So our code takes the text string for the number we just encountered, converts it into an integer <code>NSNumber</code> object, and returns the token value <code>NUMBER</code>:</p>
+            <codeblock>{
+    /* Number */
+    self.value = @( self.text.intValue );
+    return NUMBER;
+}</codeblock>
+			<p>The second rule is <code>[ \t\v\n\f]</code>, which matches any whitespace character. Our code does nothing: this will effectively ignore any whitespace characters.</p>
+			<p>The third rule, which is required by OCLex, is <code>.</code>, which matches any character.</p>
+			<p>OCLex matches rules from the top down, which means if a sequence of characters can match an earlier rule, it will. But if it can't match an earlier rule, later rules will be tried until we run out of rules to try. (If nothing matches, OCLex halts.)</p>
+			<p>Thus, for our last rule, we match anything. Since it matches one character only, our <code>self.text</code> string contains one character. We then return that character as the value of our token.</p>
+			<p>That is our complete lexer definition, and when OCLex runs, it will be converted into an Objective C class with the name <code>CalcLex</code> that implements our lexical tokenizer.</p>
+			<p>When this class is run on our example string:</p>
+			<codeblock>11 + 2 * 3 - 4 / (1 + 1)</codeblock>
+			<p>The lexer will return the following tokens:</p>
+			<table class="tokentable">
+				<tr><td>Token:</td><td>value:</td></tr>
+				<tr><td>NUMBER</td><td>11</td></tr>
+				<tr><td>'+'</td><td></td></tr>
+				<tr><td>NUMBER</td><td>2</td></tr>
+				<tr><td>'*'</td><td></td></tr>
+				<tr><td>NUMBER</td><td>3</td></tr>
+				<tr><td>'-'</td><td></td></tr>
+				<tr><td>NUMBER</td><td>4</td></tr>
+				<tr><td>'/'</td><td></td></tr>
+				<tr><td>'('</td><td></td></tr>
+				<tr><td>NUMBER</td><td>1</td></tr>
+				<tr><td>'+'</td><td></td></tr>
+				<tr><td>NUMBER</td><td>1</td></tr>
+				<tr><td>')'</td><td></td></tr>
+				<tr><td>(eof)</td><td></td></tr>
+			</table>
 		</section>
 	</body>
 </html>
