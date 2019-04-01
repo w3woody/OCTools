@@ -11,13 +11,12 @@
 #import "CalcStream.h"
 #import "CalcLex.h"
 #import "CalcParser.h"
-#import "CalcErrorDelegate.h"
 
 int main(int argc, const char * argv[]) {
 	@autoreleasepool {
 
 		// First, create an input stream to parse our equation.
-	    CalcStream *stream = [[CalcStream alloc] initWithString:@"1 + 2 * 3"];
+	    CalcStream *stream = [[CalcStream alloc] initWithString:@"11 + 2 * 3 - 4 / (1 + 1)"];
 
 	    // Next, create the lexer to tokenize the input stream into tokens
 	    CalcLex *lex = [[CalcLex alloc] initWithStream:stream];
@@ -25,11 +24,7 @@ int main(int argc, const char * argv[]) {
 		// Third, create our parser to parse the token stream.
 	    CalcParser *parser = [[CalcParser alloc] initWithLexer:lex];
 
-	    // Fourth, create a delegate to handle errors during parsing
-		CalcErrorDelegate *delegate = [[CalcErrorDelegate alloc] init];
-		parser.errorDelegate = delegate;
-
-		// Fifth, actually run the parser.
+		// Fourth, actually run the parser.
 		if ([parser parse]) {
 			// YES indicates success. Get our results and present them.
 			NSNumber *n = parser.result;

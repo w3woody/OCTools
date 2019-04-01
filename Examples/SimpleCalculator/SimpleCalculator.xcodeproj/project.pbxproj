@@ -11,7 +11,6 @@
 		EF0645DD22514A21001527C4 /* CalcParser.y in Sources */ = {isa = PBXBuildFile; fileRef = EF0645DC22514A21001527C4 /* CalcParser.y */; };
 		EF0645DF22514D44001527C4 /* CalcLex.l in Sources */ = {isa = PBXBuildFile; fileRef = EF0645DE22514D44001527C4 /* CalcLex.l */; };
 		EF0645E222514FB7001527C4 /* CalcStream.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0645E122514FB7001527C4 /* CalcStream.m */; };
-		EF0645E5225150C4001527C4 /* CalcErrorDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0645E4225150C4001527C4 /* CalcErrorDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -58,8 +57,6 @@
 		EF0645DE22514D44001527C4 /* CalcLex.l */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.lex; path = CalcLex.l; sourceTree = "<group>"; };
 		EF0645E022514FB7001527C4 /* CalcStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CalcStream.h; sourceTree = "<group>"; };
 		EF0645E122514FB7001527C4 /* CalcStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalcStream.m; sourceTree = "<group>"; };
-		EF0645E3225150C4001527C4 /* CalcErrorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CalcErrorDelegate.h; sourceTree = "<group>"; };
-		EF0645E4225150C4001527C4 /* CalcErrorDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalcErrorDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,8 +94,6 @@
 				EF0645DE22514D44001527C4 /* CalcLex.l */,
 				EF0645E022514FB7001527C4 /* CalcStream.h */,
 				EF0645E122514FB7001527C4 /* CalcStream.m */,
-				EF0645E3225150C4001527C4 /* CalcErrorDelegate.h */,
-				EF0645E4225150C4001527C4 /* CalcErrorDelegate.m */,
 			);
 			path = SimpleCalculator;
 			sourceTree = "<group>";
@@ -164,7 +159,6 @@
 				EF0645D42251316F001527C4 /* main.m in Sources */,
 				EF0645DD22514A21001527C4 /* CalcParser.y in Sources */,
 				EF0645E222514FB7001527C4 /* CalcStream.m in Sources */,
-				EF0645E5225150C4001527C4 /* CalcErrorDelegate.m in Sources */,
 				EF0645DF22514D44001527C4 /* CalcLex.l in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -297,11 +297,13 @@
 			}
 			
 			.tokentable tr:first-child {
+				font-family: Helvetica, sans-serif;
 				font-size: 90%;
 				font-weight: bold;
 			}
 			.tokentable tr {
-				font-size: 80%;
+				font-family: Menlo, Courier, monospace;
+				font-size: 70%;
 			}
 			.tokentable td:first-child {
 				padding-right: 2em;
@@ -1342,7 +1344,7 @@ int main()
 			<p>This first example is for a simple calculator program which can add, subtract, multiply and divide integers, and shows a complete working example of a <code>.y</code> and <code>.l</code> file generating two classes which are then triggered in a simple stand-alone application.</p>
 			<p>The example is in GitHub at</p>
 			<note><a href="https://github.com/w3woody/OCTools/tree/master/Examples/SimpleCalculator">https://github.com/w3woody/OCTools/tree/master/Examples/SimpleCalculator</a></note>
-			<p>The project itself was set up adding the OCLex and OCYacc tools, as described in the section <a href="#installtools">Installing OCTools.</a>
+			<p>The project itself was set up adding the OCLex and OCYacc tools, as described in the section <a href="#installtools">Installing OCTools.</a></p>
 			<h2>Goals of our calculator</h2>
 			<p>Our basic goal with this calculator is to build a lexer and parser which can interpret strings like:</p>
 			<codeblock>11 + 2 * 3 - 4 / (1 + 1)</codeblock>
@@ -1390,11 +1392,18 @@ D       [0-9]
             <p>Our parser only defines one token, <code>NUMBER</code>, which we use to represent an integer value.</p>
             <p>The next part is a declaration:</p>
             <codeblock>D       [0-9]</codeblock>
-            <p>What this means is that, in our rule section, if we encounter <code>{D}</code> (the thing we've defined), treat it as <code>[0-9]</code>. That is, {D} matches any character from '0' to '9'.</p>
+            <p>What this means is that, in our rule section, if we encounter <code>{D}</code> (the thing we've defined), treat it as <code>[0-9]</code>. That is, <code>{D}</code> matches any character from '0' to '9'.</p>
             <p>While this is a simple example, the ability to define regular expression elements can be quite powerful, as it allows reuse of common patterns throughout your code.</p>
             <p>The next thing we encounter is <code>%%</code>, which indicates we're entering the rules section. Remember that all rules have the format <code>RULE { CODE }</code>, where the <code>RULE</code> is a regular expression to match, and <code>CODE</code> is the code to execute when we encounter this rule.</p>
             <p>Our lexer has only three definitions.</p>
-            <p>The first is <code>{D}+</code>. Recall from above that <code>{D}</code> means match any character from 0 through 9. The '+' symbol means match one or more characters. So this pattern will match any sequence with one or more numbers from 0 through 9.</p>
+            <p>The first is <code>{D}+</code>.</p>
+<codeblock>{D}+        {
+                /* Number */
+                self.value = @( self.text.intValue );
+                return NUMBER;
+            }</codeblock>
+            
+            <p>Recall from above that <code>{D}</code> means match any character from 0 through 9. The '+' symbol means match one or more characters. So this pattern will match any sequence with one or more numbers from 0 through 9.</p>
             <p>When this rule is encountered, the sequence of characters is stored in the property <code>self.text</code>, which is an <code>NSString</code>. The value of our token is stored in <code>self.value</code>, which is defined as an <code>id&lt;NSObject&gt;</code>, and in our parser (as we will see later), the token <code>NUMBER</code> is expected to be an <code>NSNumber</code>.</p>
             <p>So our code takes the text string for the number we just encountered, converts it into an integer <code>NSNumber</code> object, and returns the token value <code>NUMBER</code>:</p>
             <codeblock>{
@@ -1402,8 +1411,18 @@ D       [0-9]
     self.value = @( self.text.intValue );
     return NUMBER;
 }</codeblock>
-			<p>The second rule is <code>[ \t\v\n\f]</code>, which matches any whitespace character. Our code does nothing: this will effectively ignore any whitespace characters.</p>
+			<p>The second rule is <code>[ \t\v\n\f]</code>, which matches any whitespace character.</p>
+
+<codeblock>[ \t\v\n\f] {
+                /* Skip whitespace */
+            }</codeblock>
+			
+			<p>Our code does nothing: this will effectively ignore any whitespace characters.</p>
 			<p>The third rule, which is required by OCLex, is <code>.</code>, which matches any character.</p>
+<codeblock>.           {
+                /* All else, return character value as token ID. */
+                return [self.text characterAtIndex:0];
+            }</codeblock>
 			<p>OCLex matches rules from the top down, which means if a sequence of characters can match an earlier rule, it will. But if it can't match an earlier rule, later rules will be tried until we run out of rules to try. (If nothing matches, OCLex halts.)</p>
 			<p>Thus, for our last rule, we match anything. Since it matches one character only, our <code>self.text</code> string contains one character. We then return that character as the value of our token.</p>
 			<p>That is our complete lexer definition, and when OCLex runs, it will be converted into an Objective C class with the name <code>CalcLex</code> that implements our lexical tokenizer.</p>
@@ -1411,7 +1430,7 @@ D       [0-9]
 			<codeblock>11 + 2 * 3 - 4 / (1 + 1)</codeblock>
 			<p>The lexer will return the following tokens:</p>
 			<table class="tokentable">
-				<tr><td>Token:</td><td>value:</td></tr>
+				<tr><td>Token:</td><td>Value:</td></tr>
 				<tr><td>NUMBER</td><td>11</td></tr>
 				<tr><td>'+'</td><td></td></tr>
 				<tr><td>NUMBER</td><td>2</td></tr>
@@ -1427,6 +1446,123 @@ D       [0-9]
 				<tr><td>')'</td><td></td></tr>
 				<tr><td>(eof)</td><td></td></tr>
 			</table>
+			<h2>The OCYacc Class CalcParser.y</h2>
+			<p>Now that we have our tokenizer, we need to work on our parser. Our parser takes a list of tokens returned by our lexical tokenizer and runs through a [state machine](https://en.wikipedia.org/wiki/Finite-state_machine) with each state representing the discovery (and reduction) of a parser rule.</p>
+			<p>For our parser, the rules we want to "reduce" are the math operations: <code>+</code>, <code>-</code>, <code>*</code> (for multiplication), and <code>/</code> (for division). Each time we see something that looks like <code>expression + expression</code>, we want to add the value of the two numbers together--and the value of this new expression is that sum.</p>
+			<p>We would write this rule--that when we find an operator we do the math operation appropriate to that operator as part of our "reduction" (that is, converting a list of tokens into a rule that collapses or "reduces" those tokens into a single thing)--with the following code:</p>
+
+<codeblock>expression: NUMBER                          { $$ = $1; }
+          | expression '+' expression       { $$ = @( $1.intValue + $3.intValue ); }
+          | expression '-' expression       { $$ = @( $1.intValue - $3.intValue ); }
+          | expression '*' expression       { $$ = @( $1.intValue * $3.intValue ); }
+          | expression '/' expression       { $$ = @( $1.intValue / $3.intValue ); }
+          | '(' expression ')'              { $$ = $2; }
+          ;</codeblock>
+
+		<p>What this collection of rules say is that if we encounter a number token (from our lexer), that this is in fact an expression whose value is the value of the token. It also says if we encounter addition, subtraction, multiplication or division, then the value of the overall expression is found by adding, subtracting, multiplying or dividing the subexpressions of that rule. Finally we have a rule to handle parenthesis: the value of an expression in parenthesis is the value of the subexpression inside the parenthesis.</p>
+		
+		<p>The rest of our <code>.y</code> OCYacc file is relatively simple.</p>
+		
+<codeblock>/*  CalcParser.y
+ *
+ *      A very simple parser to parse calculator inputs. Works hand in hand
+ *  with CalcLex.l
+ */
+
+%token &lt;NSNumber&gt; NUMBER
+%type &lt;NSNumber&gt; expression
+
+/* Establish precedence of our operators */
+%left '+' '-'
+%left '*' '/'
+
+/* Establish our return value */
+%global {
+    @property (strong) NSNumber *result;
+}
+
+%start equation
+
+%%
+
+expression: NUMBER                          { $$ = $1; }
+          | expression '+' expression       { $$ = @( $1.intValue + $3.intValue ); }
+          | expression '-' expression       { $$ = @( $1.intValue - $3.intValue ); }
+          | expression '*' expression       { $$ = @( $1.intValue * $3.intValue ); }
+          | expression '/' expression       { $$ = @( $1.intValue / $3.intValue ); }
+          | '(' expression ')'              { $$ = $2; }
+          ;
+
+equation: expression                        { self.result = $1; }
+        ;</codeblock>
+
+		<p>The first part declares our list of tokens and their values. Recall that for Objective C, all token and type values are Objective-C classes, and for this parser we use the <code>NSNumber</code> class to store our values. The first statement declares our lone token, <code>NUMBER</code> with the value <code>NSNumber</code>:</p>
+		<codeblock>%token &lt;NSNumber&gt; NUMBER</codeblock>
+		<p>The next statement indicates that our rule <code>expression</code> also uses <code>NSNumber</code> as its value:</p>
+		<codeblock>%type &lt;NSNumber&gt; expression</codeblock>
+		<note>Note: Not all rules have to have a value. However, if a rule does not have a value, assigning to <code>$$</code> during reduction is undefined and will trigger compiler errors.</note>
+		<p>The next section establishes the precedence of our operators and the order in which they are evaluated. For addition and subtraction, they have a lower precedence than multiplication and division (that means <code>1 + 2 * 3</code> is interpreted as <code>1 + (2 * 3)</code> and not <code>(1 + 2) * 3</code>. However, addition and subtraction have the same precedence. And they are evaluated left to right. Multiplication and division, having higher precedence, appears after addition and subtraction. Like addition and subtraction, multiplication and division is evaluated left to right.</p>
+
+<codeblock>/* Establish precedence of our operators */
+%left '+' '-'
+%left '*' '/'</codeblock>
+
+		<p>We need a way to return the result of our math operation on success. So we declare a global property in our parser class which can store the results, <code>result:</code></p>
+
+<codeblock>%global {
+    @property (strong) NSNumber *result;
+}</codeblock>
+
+		<p>Finally, we need to indicate which rule is evaluated first in our parser. For our parser, the first rule we evaluate in our grammar is the <code>equation</code> rule.</p>
+		
+		<p>The <code>%%</code> token marks the end of our declaration and the start of our rules. The first rule describes an expression as noted above. The second rule is the starting rule of our grammer.</p>
+		
+<codeblock>equation: expression                        { self.result = $1; }
+        ;</codeblock>
+
+		<p>This rule is special, because it marks the start of our grammar. It also takes the value of the expression we just evaluated, and puts the results in the <code>self.result</code> global we just defined above.</p>
+		<p>When this file is compiled by OCYacc, it will generate a class <code>CalcParser</code> which can parse our file, evaluating the expressions encountered, and return the value of the math operation.</p>
+		
+		<h2>Support classes</h2>
+		
+		<p>We're not quite done. We're missing the class which can return the stream of characters as we parse our file.</p>
+		<p>For this class we will create a very simple utility class, <code>CalcStream</code>, which takes a string and returns the individual characters inside of that string. This class implements both the <code>peekByte</code> and <code>readByte</code> methods as follows:</p>
+<codeblock>- (int)peekByte
+{
+    if (pos >= input.length) return -1;
+    return [input characterAtIndex:pos];
+}
+
+- (int)readByte
+{
+    if (pos >= input.length) return -1;
+    return [input characterAtIndex:pos++];
+}</codeblock>
+		<p>Both routines are relatively similar; the only difference is that <code>readByte</code> advances the read position, while <code>peekByte</code> does not.</p>
+		<p>The full source kit can be found in GitHub.</p>
+		<h2>Putting it all together.</h2>
+		<p>Now that we have all the pieces of our parser, we can assemble them in our <code>main.m</code> class. The first thing our code does is initialize the input stream with the string we wish to parse:</p>
+		<codeblock>CalcStream *stream = [[CalcStream alloc] initWithString:@"11 + 2 * 3 - 4 / (1 + 1)"];</codeblock>
+		<p>The next thing we do is create our lexical tokenizer using our stream as input.</p>
+		<codeblock>CalcLex *lex = [[CalcLex alloc] initWithStream:stream];</codeblock>
+		<p>At this point, if there were additional fields to initialize (such as the name of the file that was being read), we would set them in the <code>lex</code> variable. However, for this example, we don't need to do any additional initialization.</p>
+		<p>Once we have our lexer, we can initialize our parser:</p>
+		<codeblock>CalcParser *parser = [[CalcParser alloc] initWithLexer:lex];</codeblock>
+		<p>At this point if there were additional fields to initialize or if we wanted to set the delegate to handle errors, we would set them in the <code>parser</code> variable. For this example, however, we don't need to do any additional initialization.</p>
+		<p>Now we can run our parser, which will return <code>YES</code> if the parser succeeded, and <code>NO</code> if there was an error:</p>
+		<codeblock>if ([parser parse]) {</codeblock>
+		<p>On success, our results are placed by the <code>equation</code> rule into the <code>result</code> field, so we fetch the contents of the <code>result</code> field and present them:</p>
+		<codeblock>    // YES indicates success. Get our results and present them.
+    NSNumber *n = parser.result;
+    NSLog(@"Answer: %d",n.intValue);</codeblock>
+		<p>Of course, if there was an error, we print "Error.":</p>
+		<codeblock>} else {
+    // NO indicate an error.
+    NSLog(@"Error.");
+}</codeblock>
+		<p>Once you compile and run this example, you should see the output</p>
+		<codeblock>Answer: 15</codeblock>
+		<p>which is the answer for the equation <code>11 + 2 * 3 - 4 / (1 + 1)</code></p>
 		</section>
 	</body>
 </html>
