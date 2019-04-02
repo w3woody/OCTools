@@ -116,6 +116,7 @@ This would create two Objective-C classes with names MyLangLex and MyLangParser.
 * Added MacOS installer and code to build an installer.
   * To build the installer yourself, download the source kit, open the OCTools workspace, and build the "OCTools" aggregate target. This will run the scripts necessary to build the installer package.
 * Started complete reworking of source kit and documentation set to make this more useful. Clean up some minor issues with C++ code generation. Started adding code examples.
+* Added new `%errors` declaration to OCYacc and improved error handling and error reporting. Fixed several error processing bugs.
 
 ### April 15, 2018
 
