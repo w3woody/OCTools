@@ -5,7 +5,7 @@
 
 /* Load our CalcParser.h header for our token definitions */
 %{
-	#import "CalcParser.h"
+	#include "CalcParser.h"
 %}
 
 /* Simplify our definitions */
@@ -16,7 +16,7 @@ D		[0-9]
 
 {D}+		{
 				/* Number */
-				self.value = @( self.text.intValue );
+				value.integer = atoi(text.c_str());
 				return NUMBER;
 			}
 
@@ -30,5 +30,5 @@ D		[0-9]
 
 .			{
 				/* All else, return character value as token ID. */
-				return [self.text characterAtIndex:0];
+				return text[0];
 			}

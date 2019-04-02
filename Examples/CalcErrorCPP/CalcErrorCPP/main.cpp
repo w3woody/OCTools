@@ -9,22 +9,25 @@
 #include <iostream>
 #include "CalcStream.h"
 #include "CalcLex.h"
-#include "CalcParser.h"
+#include "CalcParserError.h"
 
 int main(int argc, const char * argv[])
 {
 	// First, create an input stream to parse our equation.
-	CalcStream stream("11 + 2 * 3 - 4 / (1 + 1)");
+	CalcStream stream("1+2; 3+4; a+c; 5+4; 7+$; 9");
 
 	// Next, create the lexer to tokenize the input stream into tokens
 	CalcLex lex(&stream);
 
 	// Third, create our parser to parse the token stream.
-	CalcParser parser(&lex);
+	CalcParserError parser(&lex);
 
 	// Fourth, actually run the parser.
 	if (parser.parse()) {
-		printf("Answer: %d\n",parser.result);
+		int i,len = (int)parser.result.size();
+		for (i = 0; i < len; ++i) {
+			printf("%d\n",parser.result[i]);
+		}
 	} else {
 		printf("Error.\n");
 	}
