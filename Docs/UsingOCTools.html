@@ -1860,6 +1860,47 @@ Syntax Error at 0:22
 Error.</codeblock>
 
 			<p>(Notice the second error is a syntax error because, unlike our previous example, the second-to-last equation contains a <code>$</code> dollar sign instead of a variable.)</p>
+			
+			<h2>Errors in C++</h2>
+			
+			<p>The above discussion also applies to the C++ generator, though there are some subtle differences that one needs to pay attention to. All of the code discussed below is in GitHub at:</p>
+			<note><a href="https://github.com/w3woody/OCTools/tree/master/Examples/CalcErrorCPP">https://github.com/w3woody/OCTools/tree/master/Examples/CalcErrorCPP</a></note>
+			
+			<h3>Inheriting from the generated OCYacc class</h3>
+			<p>The C++ version of the OCYacc class uses inheritance rather than delegation in order to obtain error messages from the parser. (A future version of OCYacc may change this.)</p>
+			<p>So in order to receive errors and display them to the user, we must create a new class which inherits from our parser:</p>
+
+<codeblock>#include "CalcParser.h"
+
+class CalcParserError : public CalcParser
+{
+    public:
+        CalcParserError(CalcLex *lex) : CalcParser(lex)
+            {
+            }
+
+        void error(int32_t line, 
+                   int32_t col, 
+                   std::string fname, 
+                   int32_t errCode, 
+                   std::map&lt;std::string,std::string&gt; &map);
+};</codeblock>
+
+			<h3>Calling errorWithCode</h3>
+			<p>The signature of the method to call when we encounter an error is:</p>
+<codeblock>void errorWithCode(int32_t code, 
+                   std::map&lt;std::string,std::string&gt; &data);
+void errorWithCode(int32_t code);</codeblock>
+			<p>The second version simply passes an empty map into <code>data</code>.</p>
+			<p>Thus, when writing our rules to trigger an error, we would write:</p>
+			<codeblock>	  | error ';'           { errorWithCode(ERROR_SYNTAX); }</codeblock>
+			
+			<p>When you compile and run the C++ example, and run against the string</p>
+			<codeblock>1+2; 3+4; a+c; 5+4; 7+$; 9</codeblock>
+			<p>we see the expected output:</p>
+			<codeblock>Variables are unimplemented at 0:11
+Syntax Error at 0:26
+Error.</codeblock>
 		</section>
 	</body>
 </html>
