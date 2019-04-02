@@ -125,6 +125,11 @@ static const char *GHeader4 =
 	"\t\tbool success;\n"                                                     \
 	"\t\tint32_t errorCount;\n"                                               \
 	"\n"                                                                      \
+	"bool hasError;\n"                                                        \
+	"int32_t errorLine;\n"                                                    \
+	"int32_t errorColumn;\n"                                                  \
+	"std::string errorFileName;\n"											  \
+	"\n"                                                                      \
 	"\t\t%sStack processReduction(int16_t rule);\n"                           \
 	"\t\tint32_t actionForState(int32_t state, int32_t token);\n"             \
 	"\t\tint32_t gotoForState(int32_t state, int32_t token);\n"               \
@@ -331,9 +336,12 @@ static const char *GSource7 = // 16
 	"\n"                                                                      \
 	"\t// Call delegate with current token position\n"                        \
 	"\t// Token position is the topmost symbol\n"                             \
-	"\t%sStack &top = stack.back();\n"                                        \
-	"\n"                                                                      \
-	"\terror(top.line,top.column,top.filename,code,data);\n"                  \
+	"\tif (hasError) {\n"                                                     \
+	"\t\terror(errorLine,errorColumn,errorFileName,code,data);\n"             \
+	"\t} else {\n"                                                            \
+	"\t\t%sStack &top = stack.back();\n"                                      \
+	"\t\terror(top.line,top.column,top.filename,code,data);\n"                \
+	"\t}\n"                                                                   \
 	"\n"                                                                      \
 	"\t// And now skip the next 3 token shifts so we don\'t spew garbage.\n"  \
 	"\tif (0 == (code & ERRORMASK_WARNING)) {\n"                              \
@@ -407,6 +415,9 @@ static const char *GSource7 = // 16
 	"\t// Push new state\n"                                                   \
 	"\tstack.push_back(state);\n"                                             \
 	"\n"                                                                      \
+	"\t// Clear the error marker\n"											  \
+	"\thasError = false;\n"													  \
+	"\n"                                                                      \
 	"\t// Done.\n"                                                            \
 	"\treturn true;\n"                                                        \
 	"}\n"                                                                     \
@@ -427,6 +438,9 @@ static const char *GSource7 = // 16
 	"\n"                                                                      \
 	"\tsuccess = true;\n"                                                     \
 	"\tstack.clear();\n"                                                      \
+	"\n"                                                                      \
+	"\terrorCount = 0;\n"													  \
+	"\thasError = false;\n"													  \
 	"\n"                                                                      \
 	"\t%sStack initStack;\n"                                                  \
 	"\tinitStack.state = K_STARTSTATE;\n"                                     \
@@ -470,6 +484,10 @@ static const char *GSource7 = // 16
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\tsuccess = false;\t\t// regardless, we will always fail.\n"         \
+	"\t\t\terrorFileName = lex->filename;\n"                                  \
+	"\t\t\terrorLine = lex->line;\n"                                          \
+	"\t\t\terrorColumn = lex->column;\n"                                      \
+	"\t\t\thasError = true;\n"                                                \
 	"\n"                                                                      \
 	"\t\t\t/*\n"                                                              \
 	"\t\t\t *\tFirst, scan backwards from the current state, looking for one\n" \

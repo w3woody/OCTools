@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
 	@autoreleasepool {
 
 		// First, create an input stream to parse our equation.
-	    CalcStream *stream = [[CalcStream alloc] initWithString:@"11 + 2 * 3 - 4 / (1 + 1)"];
+	    CalcStream *stream = [[CalcStream alloc] initWithString:@"11 x + 2 * 3 - 4 / (1 + 1)"];
 
 	    // Next, create the lexer to tokenize the input stream into tokens
 	    CalcLex *lex = [[CalcLex alloc] initWithStream:stream];

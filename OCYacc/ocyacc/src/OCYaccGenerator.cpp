@@ -203,10 +203,14 @@ static const char *GSource3 = // 4
 	"\n"                                                                      \
 	"// Error support\n"                                                      \
 	"@property (assign) BOOL success;\n"                                      \
-	"\n"                                                                      \
 	"@property (assign) NSInteger errorCount;\n"                              \
 	"\n"                                                                      \
-	"// Yacc class declarations\n";
+	"@property (assign) BOOL hasError;\n"									  \
+	"@property (assign) NSInteger errorLine;\n"								  \
+	"@property (assign) NSInteger errorColumn;\n"							  \
+	"@property (assign) NSString *errorFileName;\n"							  \
+	"\n"                                                                      \
+	"// OCYacc class declarations\n";
 
 static const char *GSource4 = // 1
 	"@end\n"                                                                  \
@@ -354,8 +358,12 @@ static const char *GSource7 = // 11
 	"\n"                                                                      \
 	"\t// Call delegate with current token position\n"                        \
 	"\t// Token position is the topmost symbol\n"                             \
-	"\t%sStack *top = self.stack.lastObject;\n"                               \
-	"\t[self.errorDelegate errorFrom:self line:top.line column:top.column filename:top.filename errorCode:code data:data];\n" \
+	"\tif (self.hasError) {\n"                                                \
+	"\t\t[self.errorDelegate errorFrom:self line:self.errorLine column:self.errorColumn filename:self.errorFileName errorCode:code data:data];\n" \
+	"\t} else {\n"                                                            \
+	"\t\t%sStack *top = self.stack.lastObject;\n"                             \
+	"\t\t[self.errorDelegate errorFrom:self line:top.line column:top.column filename:top.filename errorCode:code data:data];\n" \
+	"\t}\n"																	  \
 	"\n"                                                                      \
 	"\t// And now skip the next 3 token shifts so we don\'t spew garbage.\n"  \
 	"\tif (0 == (code & ERRORMASK_WARNING)) {\n"                              \
@@ -415,6 +423,9 @@ static const char *GSource7 = // 11
 	"\t// Push new state\n"                                                   \
 	"\t[self.stack addObject:state];\n"                                       \
 	"\n"                                                                      \
+	"\t// Clear the error marker\n"											  \
+	"\tself.hasError = NO;\n"												  \
+	"\n"																	  \
 	"\t// Done.\n"                                                            \
 	"\treturn YES;\n"                                                         \
 	"}\n"																	  \
@@ -436,6 +447,9 @@ static const char *GSource7 = // 11
 	"\n"                                                                      \
 	"\tself.success = YES;\n"                                                 \
 	"\t[self.stack removeAllObjects];\n"                                      \
+	"\n"                                                                      \
+    "\tself.hasError = NO;\n"												  \
+    "\tself.errorCount = 0;\n"												  \
 	"\n"                                                                      \
 	"\ts = [[%sStack alloc] init];\n"                                         \
 	"\ts.state = K_STARTSTATE;\n"                                             \
@@ -481,6 +495,11 @@ static const char *GSource7 = // 11
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\tself.success = NO;\t\t// regardless, we will always fail.\n"       \
+	"\t\t\tself.errorFileName = self.lex.filename;\n"                         \
+	"\t\t\tself.errorLine = self.lex.line;\n"                                 \
+	"\t\t\tself.errorColumn = self.lex.column;\n"                             \
+	"\t\t\tself.hasError = YES;\t// And record the location of the last read token\n" \
+	"\n"                                                                      \
 	"\n"                                                                      \
 	"\t\t\t/*\n"                                                              \
 	"\t\t\t *\tFirst, scan backwards from the current state, looking for one\n" \
