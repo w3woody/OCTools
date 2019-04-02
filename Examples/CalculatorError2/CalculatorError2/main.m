@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
 	@autoreleasepool {
 
 		// First, create an input stream to parse our equation.
-	    CalcStream *stream = [[CalcStream alloc] initWithString:@"1+2; 3+4; a+c; 5+4; 7+x; 9"];
+	    CalcStream *stream = [[CalcStream alloc] initWithString:@"1+2; 3+4; a+c; 5+4; 7+$; 9"];
 
 	    // Next, create the lexer to tokenize the input stream into tokens
 	    CalcLex *lex = [[CalcLex alloc] initWithStream:stream];

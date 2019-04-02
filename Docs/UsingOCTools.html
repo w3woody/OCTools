@@ -1827,6 +1827,39 @@ Error.</codeblock>
 			<p>The first version of <code>errorWithCode</code> simply passes in nil for the data parameter.</p>
 			<p>The code that you use can be one of the predefined error codes noted above, or it can be defined in the <code>%errors</code> code block in your grammar definition. Any custom error should start at the integer value defined in <code>ERROR_STARTERRORID</code> (i.e., <code>ERROR_STARTERRORID+0</code>, <code>ERROR_STARTERRORID+1</code>, etc), and if the custom error is actually a warning (and the warning should not halt your parser), you should bit-wise OR the value with the constant <code>ERRORMASK_WARNING</code> to prevent halting the parser.</p>
 			<p>An example of this in action is in GitHub at:</p>
+			<note><a href="https://github.com/w3woody/OCTools/tree/master/Examples/CalculatorError2">https://github.com/w3woody/OCTools/tree/master/Examples/CalculatorError2</a></note>
+			<p>In the grammar we define a new lexer token <code>IDENTIFIER</code>:</p>
+<codeblock>[A-Za-z_][A-Za-z0-9_]* {
+                return IDENTIFIER;
+            }</codeblock>
+           <p>This causes the lexer to return an <code>IDENTIFIER</code> any time we see a C-style variable name or identifier. The <code>IDENTIFIER</code> token is defined in our <code>.y</code> file.</p>
+           <p>Now, our language does not implement identifiers. But ideally in the future we may have certain identifiers that could be defined or added to our grammar. For right now, however, we want to let the user know that variables are illegal. So we add a new error definition using the <code>%errors</code> declaration:</p>
+           
+           <codeblock>%errors {
+#define ERROR_UNIMPLEMENTED     (ERROR_STARTERRORID+1)
+}</codeblock>
+
+			<p>We then add our identifier token to the <code>expression</code> rule--however, when we encounter an identifier, we present an error and then set the value of the subexpression to 0:</p>
+			
+<codeblock>  | IDENTIFIER  {
+                    [self errorWithCode:ERROR_UNIMPLEMENTED];
+                    $$ = @0;
+                }
+</codeblock>
+
+			<p>We also add handling for our new error code <code>ERROR_UNIMPLEMENTED</code> in our <code>CalcErrorDelegate</code> class.</p>
+
+			<p>Now when we run our program on the string:</p>
+
+			<codeblock>1+2; 3+4; a+c; 5+4; 7+$; 9</codeblock>
+			
+			<p>We see:</p>
+
+<codeblock>Variables are unimplemented at 0:10
+Syntax Error at 0:22
+Error.</codeblock>
+
+			<p>(Notice the second error is a syntax error because, unlike our previous example, the second-to-last equation contains a <code>$</code> dollar sign instead of a variable.)</p>
 		</section>
 	</body>
 </html>
