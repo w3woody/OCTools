@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
 	@autoreleasepool {
 
 		// First, create an input stream to parse our equation.
-	    CalcStream *stream = [[CalcStream alloc] initWithString:@"11 + 2 * x 3 - 4 / (1 + 1)"];
+	    CalcStream *stream = [[CalcStream alloc] initWithString:@"1+2; 3+4; a+c; 5+4;"];
 
 	    // Next, create the lexer to tokenize the input stream into tokens
 	    CalcLex *lex = [[CalcLex alloc] initWithStream:stream];
@@ -32,8 +32,9 @@ int main(int argc, const char * argv[]) {
 		// Fifth, actually run the parser.
 		if ([parser parse]) {
 			// YES indicates success. Get our results and present them.
-			NSNumber *n = parser.result;
-			NSLog(@"Answer: %d",n.intValue);
+			for (NSNumber *n in parser.result) {
+				NSLog(@"%d",n.intValue);
+			}
 
 		} else {
 			// NO indicate an error.

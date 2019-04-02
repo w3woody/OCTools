@@ -473,6 +473,7 @@ static const char *GSource7 = // 11
 	"\n"                                                                      \
 	"\t\tNSInteger action = [self actionForState:s.state token:a];\n"         \
 	"\n"                                                                      \
+	"\t\tBOOL foundError = NO;\n"											  \
 	"\t\tif (action == NSIntegerMax) {\n"                                     \
 	"\t\t\t/*\n"                                                              \
 	"\t\t\t *\tHandle error. First, note we have an error, and note the\n"    \
@@ -487,7 +488,7 @@ static const char *GSource7 = // 11
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\tNSInteger ix = self.stack.count;\n"                                \
-	"\t\t\twhile (ix > 0) {\n"                                                \
+	"\t\t\twhile ((ix > 0) && !foundError) {\n"                               \
 	"\t\t\t\t%sStack *si = self.stack[--ix];\n"                               \
 	"\t\t\t\taction = [self actionForState:si.state token:K_ERRORTOKEN];\n"   \
 	"\t\t\t\tif ((action >= 0) && (action != NSIntegerMax)) {\n"              \
@@ -533,7 +534,8 @@ static const char *GSource7 = // 11
 	"\t\t\t\t\t\t\t *\tand we resume processing.\n"                           \
 	"\t\t\t\t\t\t\t */\n"                                                     \
 	"\n"                                                                      \
-	"\t\t\t\t\t\t\tcontinue;\n"                                               \
+	"\t\t\t\t\t\t\tfoundError = YES;\n"                                       \
+	"\t\t\t\t\t\t\tbreak;\n"                                                  \
 	"\n"                                                                      \
 	"\t\t\t\t\t\t} else if ((a == K_EOFTOKEN) || (a == -1)) {\n"              \
 	"\t\t\t\t\t\t\t/*\n"                                                      \
@@ -549,6 +551,7 @@ static const char *GSource7 = // 11
 	"\t\t\t\t\t}\n"                                                           \
 	"\t\t\t\t}\n"                                                             \
 	"\t\t\t}\n"                                                               \
+	"\t\t\tif (foundError) continue;\n"                                       \
 	"\n"                                                                      \
 	"\t\t\t/*\n"                                                              \
 	"\t\t\t *\tIf we reach this point, there is no error we can recover to.\n" \

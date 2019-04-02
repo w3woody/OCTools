@@ -462,6 +462,7 @@ static const char *GSource7 = // 16
 	"\n"                                                                      \
 	"\t\tint32_t action = actionForState(s.state, a);\n"                      \
 	"\n"                                                                      \
+	"\t\tbool foundError = false;\n"										  \
 	"\t\tif (action == INT_MAX) {\n"                                          \
 	"\t\t\t/*\n"                                                              \
 	"\t\t\t *\tHandle error. First, note we have an error, and note the\n"    \
@@ -476,7 +477,7 @@ static const char *GSource7 = // 16
 	"\t\t\t */\n"                                                             \
 	"\n"                                                                      \
 	"\t\t\tsize_t ix = stack.size();\n"                                       \
-	"\t\t\twhile (ix > 0) {\n"                                                \
+	"\t\t\twhile ((ix > 0) && !foundError) {\n"                               \
 	"\t\t\t\t%sStack &si = stack[--ix];\n"                                    \
 	"\t\t\t\taction = actionForState(si.state, K_ERRORTOKEN);\n"              \
 	"\t\t\t\tif ((action >= 0) && (action != INT_MAX)) {\n"                   \
@@ -520,7 +521,8 @@ static const char *GSource8 = // 10
 	"\t\t\t\t\t\t\t *\tand we resume processing.\n"                           \
 	"\t\t\t\t\t\t\t */\n"                                                     \
 	"\n"                                                                      \
-	"\t\t\t\t\t\t\tcontinue;\n"                                               \
+	"\t\t\t\t\t\t\tfoundError = true;\n"                                      \
+	"\t\t\t\t\t\t\tbreak;\n"                                                  \
 	"\n"                                                                      \
 	"\t\t\t\t\t\t} else if ((a == K_EOFTOKEN) || (a == -1)) {\n"              \
 	"\t\t\t\t\t\t\t/*\n"                                                      \
@@ -536,6 +538,7 @@ static const char *GSource8 = // 10
 	"\t\t\t\t\t}\n"                                                           \
 	"\t\t\t\t}\n"                                                             \
 	"\t\t\t}\n"                                                               \
+	"\t\t\tif (foundError) continue;\n"										  \
 	"\n"                                                                      \
 	"\t\t\t/*\n"                                                              \
 	"\t\t\t *\tIf we reach this point, there is no error we can recover to.\n" \

@@ -13,10 +13,14 @@
 
 /* Establish our return value */
 %global {
-	@property (strong) NSNumber *result;
+	@property (strong) NSMutableArray<NSNumber *> *result;
 }
 
-%start equation
+%init {
+	self.result = [[NSMutableArray alloc] init];
+}
+
+%start equations
 
 %%
 
@@ -28,5 +32,11 @@ expression: NUMBER							{ $$ = $1; }
 		  | '(' expression ')'				{ $$ = $2; }
 		  ;
 
-equation: expression						{ self.result = $1; }
+equation: expression ';'					{ [self.result addObject:$1]; }
+		| error ';'							{ [self errorWithCode:ERROR_SYNTAX]; }
 		;
+
+equations: equation
+         | equation equations
+         ;
+
