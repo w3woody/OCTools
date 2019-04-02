@@ -11,6 +11,8 @@ The suite of tools include:
 *   [OCYacc,](Docs/OCYacc.md) a parser generator which generates a parser in 
     Objective C.
 
+Full documentation, including examples of using OCLex and OCYacc together in Objective C and C++, can be found here: [Using OCTools](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html)
+
 ---
 
 This source kit also contains a detailed document on how YACC-style LR parser-generators work, and hopefully at a sufficient degree of detail to allow a beginning Computer Science student to understand how it works. This document includes a description of LR(0), SLR and LALR grammars. 
@@ -18,12 +20,6 @@ This source kit also contains a detailed document on how YACC-style LR parser-ge
 [The paper can be downloaded from here.](OCYacc/Docs/OCYacc%20Building%20LR1%20GLR.pdf)
 
 Unlike the rest of the source kit, this paper is freely available and reproducible for non-commercial purposes only, such as use in a classroom setting. For reproduction for the purpose of commercial gain (such as including in a larger book that is sold), please contact me for permission.
-
----
-
-_Update March 29, 2019:_ I'm currently working on an [updated document](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html) which gives more up-to-date instructions for downloading, installing and using OCTools. This is a work in progress, and will eventually include various tutorials showing off how to use OCYacc and OCLex to generate Objective-C and C++ parsers.
-
-Over the next few weeks all the documentation will be revised, and hopefully will make it easier to integrate and use OCTools.
 
 ---
 
@@ -124,7 +120,7 @@ This would create two Objective-C classes with names MyLangLex and MyLangParser.
 ### April 15, 2018
 
 * Added %finish declaration token, for inserting code into the generated class's destructor/dealloc method.
-* Added C++ generator. This is an untested experimental feature and is subject to change. [See the notes here for more information.](Docs/CPPNotes.md)
+* Added C++ generator.
 
 ## License
 

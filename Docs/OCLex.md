@@ -3,47 +3,8 @@
 A sorta drop-in replacement for Lex which generates a text lexical parser in
 Objective C.
 
-## Introduction
+Full documentation (in HTML) may be found here: [Using OCTools](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html).
 
-So this project started when I had the problem of wanting to build a simplified
-subset of the C language--but wanted to use Lex and YACC in 
-[Xcode.](https://developer.apple.com/xcode/) 
-
-Note that it kinda works. But I wanted to generate a re-entrant Objective C
-class which could parse my language, and I wanted a way to parse multiple
-languages in the same source kit. And that's where I hit a brick wall.
-
-Rather than continue to bang away at the existing tools, I decided (like many
-programmers) to roll my own tools. After all, why spend a week when I can spend
-a month? :-)
-
-Thus, OCLex was born.
-
-## License
-
-Licensed under the open-source BSD license:
-
-Copyright 2017-2019 William Woody and Glenview Software
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice, 
-this list of conditions and the following disclaimer in the documentation 
-and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Usage
 
@@ -317,295 +278,7 @@ in the code segment is written as part of the generated Objective C class, and
 is inserted in the code **before** the lexical parser method. This allows those
 methods to be invoked from within rule actions.
 
-## An overview of the output class
 
-The generated Objective C class includes a header file and a source file.
-By default they (and the class name itself) is the same as the name of the
-input source file (with the extension stripped).
-
-The generated Objective C class header takes an input file (specified as a
-class which inherits from the generated protocol) as the initializer of
-the class, and provides a single method to parse the contents of the input
-file "MyInput.l":
-
-    @interface MyInput : NSObject
-    
-    - (instancetype)initWithStream:(id<OCFileInput>)file;
-    
-    @property (assign) NSInteger line;     // line of last read token
-    @property (assign) NSInteger column;   // column of last read token
-    @property (copy)   NSString *filename; // marked filename (if provided)
-    @property (copy)   NSString *text;     // string of last read token
-    @property (assign) NSString *abort;    // Set to abort string if problem
-    @property (strong) id<NSObject> value; // Lex/Yacc value of token (optional)
-    
-    - (NSInteger)lex;                      // Method to read next token
-    
-    // (Optional %global declarations go here)
-    
-    @end
-
-The primary lexical analysis method is the method **lex**; subsequent calls to
-the **lex** method will provide the next token in the input stream, or -1 if
-the end of the file is reached.
-
-The fields provided are:
-
-* **line**: 
-    The current line number, starting with 1, of the input stream.
-
-* **column**:
-    The current column number (or character inset) on the line, starting at 0.
-    Note that no allowances for tabs is taken; tabs are treated by the column
-    count as 1 character wide. Also, no allowances for UTF-8 is taken.
-
-* **filename**:
-    The current file name. This parameter is not used by the lexical parser,
-    but can be used in a more complex scheme when a lexical parser may want
-    to handle C-style #line declarations.
-
-* **text**:
-    The text of the last read token.
-
-* **abort**:
-    If the **lex** method returns -1 because of an error, the **abort** field
-    will contain a text string explaining the error. On and end of file
-    condition, **abort** will be nil.
-
-* **value**
-    An optional value which is associated with a token that is used by OCYacc.
-    See the discussion above for more information.
-
-### The OCFileInput protocol
-
-Each generated header contains a protocol declaration, protected by #define
-declarations (so the protocol is only defined once):
-
-    @protocol OCFileInput <NSObject>
-    - (int)readByte;
-    @end
-
-Any input file must correspond to this protocol. The *readByte* method reads
-the next byte character from the input file. (Note that the generated lex
-file does not parse Unicode files, but treats input files as 8-bit characters.
-This implies if you are clever, you can create input rules which match
-UTF-8 unicode streams, though with limitations.)
-
-### The overall header file.
-
-The overall header file that is written by oclex looks like the following:
-
-    #import <Foundation/Foundation.h>
-    // (Optional %header declarations go here)
-    
-    #ifndef OCFileInputProtocol
-    #define OCFileInputProtocol
-    
-    @protocol OCFileInput <NSObject>
-    - (int)readByte;
-    @end
-    
-    #endif
-    
-    @interface MyInput : NSObject
-    
-    /*
-     *	External interfaces
-     */
-    
-    - (instancetype)initWithStream:(id<OCFileInput>)file;
-    
-    /*
-     *	Current reader state
-     */
-    
-    @property (assign) NSInteger line;		// line of last read token
-    @property (assign) NSInteger column;	// column of last read token
-    @property (copy)   NSString *filename;	// marked filename (if provided)
-    @property (copy)   NSString *text;		// string of last read token
-    @property (assign) NSString *abort;		// Set to abort string if problem
-    
-    - (NSInteger)lex;						    // Method to read next token
-    // (Optional %global declarations go here)
-    @end
-
-
-### The output source file.
-
-The output class itself has the following structure:
-
-    /*	MyInput.m
-     *
-     *		This file was automatically generated by OCLex, part of the OCTools
-     *	suite available at:
-     *
-     *		https://github.com/w3woody/OCTools
-     */
-
-    #import "MyInput.h"
-    
-    // Optional %{...%} header declarations goes here
-    
-    /************************************************************************/
-    /*                                                                      */
-    /*  Lex Transition State Tables                                         */
-    /*                                                                      */
-    /************************************************************************/
-
-    ... Lex state tables and declarations go here
-
-The headers are added after the "MyInput.h" file is included. This is
-important to keep in mind, as it implies if your generated lexical class
-
-Following the lex state tables, the following private interface declaration
-is written for your class:
-
-    @interface MyInput ()
-    {
-        // Read position support
-        NSInteger curLine;
-        NSInteger curColumn;
-
-        // Mark location support
-        NSInteger markLine;
-        NSInteger markColumn;
-    
-        // Mark buffer storage
-        BOOL isMarked;                // yes if we have mark set
-        unsigned char *markBuffer;    // mark buffer
-        NSInteger markSize;           // bytes stored in buffer
-        NSInteger markAlloc;          // capacity of buffer
-    
-        // Read cache
-        unsigned char *readBuffer;    // read cache buffer
-        NSInteger readPos;            // Read position
-        NSInteger readSize;           // size of data in read buffer
-        NSInteger readAlloc;          // Capacity of read cache
-    
-        // Text read buffer
-        unsigned char *textBuffer;    // text cache for reading buffer
-        NSInteger textMarkSize;
-        NSInteger textSize;
-        NSInteger textAlloc;
-    }
-    
-    @property (strong) id<OCFileInput> file;
-
-    // Optional local declarations go here
-    
-    @end
-
-Notice that a number of internal state variables are declared. Behavior of
-the parser is illegal if you attempt to replace or override any of these
-internal variables. It is also not recommended that you manipulate or access
-any of these internal state variables. The only exceptions are:
-
-- **textBuffer**:
-    This contains a buffer which is used to store the token as it is being
-    built. 
-
-If for some reason you wish to write a simple rule which returns the 
-character read as a token, you can write the following rule:
-
-    .               { return *textBuffer; }
-
-Note that before the rule action is executed, the text buffer is turned into
-a string in **self.text**, so you could also write this rule as:
-
-    .               { return [self.text characterAtIndex:0]; }
-
-Following this is the class code itself. You can read the generated comments
-if you are interested in how the class works.
-
-The class declaration itself has the following format:
-
-    @implementation MyInput
-    
-    /*
-     *  Instantiate parser.
-     */
-    
-    - (instancetype)initWithStream:(id<OCFileInput>)file
-    {
-    ... initializer
-    }
-    
-    /*
-     *  Free internal storage
-     */
-    
-    - (void)dealloc
-    {
-    ... free used memory
-    }
-    
-    - (void)mark
-    {
-    ... internally used method
-    }
-    
-    - (void)reset
-    {
-    ... internally used method
-    }
-    
-    - (int)input
-    {
-    ... returns next character in input stream
-    }
-    
-    // Optional code section is inserted here.
-    
-    - (NSInteger)lex
-    {
-    ... lexical analysis engine ...
-            /*
-             *  Convert text sequence into string
-             */
-    
-            self.text = [[NSString alloc] initWithBytes:textBuffer length:textSize encoding:NSUTF8StringEncoding];
-    
-            /*
-             *  Execute action
-             */
-    
-            switch (action) {
-                case 0:
-                    ... action for rule 0 ... 
-                    break;
-                case 1:
-                    ... action for rule 1 ... 
-                    break;
-                ...
-                default:
-                    break;
-            }
-        }
-    }
-    
-    @end
-
-Note there are several reserved method names: **mark**, **reset**, **input** 
-and **lex**. The one method provided which you may be interested in is the 
-**input** method; this returns the next byte in the input stream, or -1 if 
-the end of the file has been reached.
-
-This allows you to, for example, parse the input stream for closing a 
-C-style comment in the following way:
-
-    - (void)closeComment
-    {
-        int d = [self input];
-        while (d != -1) {
-            if (d == '*') {
-                d = [self input];
-                if (d == '/') return;
-            } else {
-                d = [self input];
-            }
-        }
-    }
-    
 ## Regular expressions
 
 The oclex file handles the following regular expression types. Note this is
@@ -630,85 +303,29 @@ be expanded.
     <y>x     rule x only if OCLex is in start condition y. (This must be at 
              the start of a regular expression.)
 
-## A trivial example
 
-The following file gives a trivial example showing a minimum grammar. This
-grammar will parse the integers in the input text file, and return the value
-of those integers. Any other characters are ignored:
+## License
 
-    %%
-    [0-9]+   { return self.text.integerValue; }
-    .        { /* Ignore all others */ }
+Licensed under the open-source BSD license:
 
-Note because the declaration section is optional, we skip the declarations
-by starting our file with a '%%'. And since the trailing code is optional,
-we simply omit the following code section.
+Copyright 2017-2019 William Woody and Glenview Software
 
-## A non-trivial example
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
 
-The following grammar acts as a simple postfix calculator. The input is
-scanned for floating point values and operators, and the intermediate value
-is stored on a stack of numbers. The parser then returns the value of the
-last operation on reaching a newline.
+1. Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
 
-    D           [0-9]
-    E           [Ee][+-]?{D}+
-    
-    %local {
-    @property (strong) NSMutableArray<NSNumber *> *stack;
-    }
-    
-    %%
-    
-    {D}*({D}|\.{D}*)({E})?  { [self pushNumber]; }
-    [+\-*/]                 { [self doOperator]; }
-    \n                      { return [self stackValue]; }
-    .                       { /* Ignore everything else */ }
-    
-    %%
-    
-    - (void)pushNumber
-    {
-        if (self.stack == nil) self.stack = [[NSMutableArray alloc] init];
-        [self.stack addObject:@( self.text.doubleValue )];
-    }
-    
-    - (void)doOperator
-    {
-        if (self.stack.count < 2) {
-            NSLog(@"Error in operation");
-        } else {
-            NSNumber *b = self.stack.lastObject;
-            [self.stack removeLastObject];
-            NSNumber *a = self.stack.lastObject;
-            [self.stack removeLastObject];
-    
-            if ([self.text isEqualToString:@"+"]) {
-                a = @( a.doubleValue + b.doubleValue );
-            } else if ([self.text isEqualToString:@"-"]) {
-                a = @( a.doubleValue - b.doubleValue );
-            } else if ([self.text isEqualToString:@"*"]) {
-                a = @( a.doubleValue * b.doubleValue );
-            } else if ([self.text isEqualToString:@"/"]) {
-                a = @( a.doubleValue / b.doubleValue );
-            }
-    
-            [self.stack addObject:a];
-        }
-    }
-    
-    - (NSInteger)stackValue
-    {
-        if (self.stack.count != 1) {
-            NSLog(@"Error in operation");
-            return 0;
-        }
-    
-        return self.stack[0].integerValue;
-    }
+2. Redistributions in binary form must reproduce the above copyright notice, 
+this list of conditions and the following disclaimer in the documentation 
+and/or other materials provided with the distribution.
 
-The above example could be cleaned up and better error handling could be added
-by creating a publicly available method to determine the nature of the error.
-
-But it does show a non-trivial example using many of the features of the oclex
-tool.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

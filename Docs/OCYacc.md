@@ -1,49 +1,9 @@
-# OCYacc
+# OCYacc Quick Reference
 
-A sorta drop-in replacement for Lex which generates a text lexical parser in
+A sorta drop-in replacement for Yacc which generates a text lexical parser in
 Objective C.
 
-## Introduction
-
-So this project started when I had the problem of wanting to build a simplified
-subset of the C language--but wanted to use Lex and YACC in 
-[Xcode.](https://developer.apple.com/xcode/) 
-
-Note that it kinda works. But I wanted to generate a re-entrant Objective C
-class which could parse my language, and I wanted a way to parse multiple
-languages in the same source kit. And that's where I hit a brick wall.
-
-Rather than continue to bang away at the existing tools, I decided (like many
-programmers) to roll my own tools. After all, why spend a week when I can spend
-a month? :-)
-
-Thus, OCLex was born.
-
-## License
-
-Licensed under the open-source BSD license:
-
-Copyright 2017-2019 William Woody and Glenview Software
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice, 
-this list of conditions and the following disclaimer in the documentation 
-and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Full documentation (in HTML) may be found here: [Using OCTools](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html).
 
 ## Usage
 
@@ -109,19 +69,15 @@ OCYacc accepts the following declarations in the declarations section:
 
 Declares a list of symbols as terminal tokens that will be returned by the lexer. The symbols are copied as #define statements in the generated header file, and can be used by the lexer as the integer value to return when those tokens are found.
 
-The value of a token is set in the lexer in the value field; see the comments below for more information.
-
 **%type** *\<type\> symbols*
 
 Defines the type of a given set of production rule names. This defines the type of the '$$' or '$n' symbols that represent the value of the rule.
 
-For both the token and type declarations, as well as the precedence symbols below, the *\<type\>* is an Objective C class name which gives the type of the value used in the rule or token.
+##### Value Types
 
-Types are internally passed around in the generated Objective-C code as an *id\<NSObject\>* value. This is cast into a pointer to the class type that is given in the *type* field. Thus, for example, if you have a rule whose value is an array of strings, you would write:
+**%union** { ... }
 
-    %type <NSMutableArray<NSString *>> rule
-
-**Note that this implies there is no %union declaration.** As all types are interpreted as class declarations, this implies that during error handling excess memory will be automatically released. It also allows you to use certain built-in classes without additional declaration.
+For C++, defines the union used to define token and type values. Objective-C assumes all types are given as class declarations (descendant from `id<NSObject>`), and thus %union is ignored.
 
 ##### Precedence
 
@@ -133,27 +89,11 @@ Types are internally passed around in the generated Objective-C code as an *id\<
 
 Sets the precedence and associativity of a group of tokens. Tokens declared on the same line have the same precedence, and are treated with left associativity, right associativity, or are made non-associative if they show up in the same statement. Later declarations have higher precedence than earlier declarations.
 
-For example, if we set the associativity of basic math operators as:
-
-    %left '+' '-'
-    %left '*' '/'
-
-The first two symbols (multiply and divide) are treated with higher precedence, so the following grammar rules will evaluate the statement 1 + 2 * 3 + 4 correctly:
-
-    expression : expression '*' expression
-               | expression '/' expression
-               | expression '+' expression
-               | expression '-' expression
-               | NUMBER
-               ;
-
-The type is optional, and provides a way to specify the type of the symbol; see the discussion about tokens and types above.
-
 ##### Start Symbol
 
 **%start** symbol
 
-The start symbol is the first rule in the grammar that defines your language.
+The start symbol is the first rule in the grammar that defines your language. Unlike *Yacc* or *Bison,* this parameter is required.
 
 ##### Embedded Code
 
@@ -185,64 +125,9 @@ Defines code that is inserted into the initializer of the generated class. This 
 
 Defines code that is inserted into the destructor/dealloc method of the generated class.
 
-###### Embedded Code Example
+**%errors** { ... }
 
-The following may help to visualize where each of these headers are placed. For Objective C, we generate a header and code. There are up to six different chunks of code which are copied into the class definition; these are labeled in red below.
-
-Your embedded code is inserted as follows:
-
-<pre>
- /* MyYacc.h */
- #import &lt;Foundation/Foundation.h&gt;
- <font style="color:red">%header</font>
- 
-     <i>...</i>
- 
- @interface MyYacc : NSObject
-     <i>...</i>
- - (BOOL)parse;
- <font style="color:red">%global</font>
- @end
-</pre>
-
-For our source kit:
-
-<pre>
- /* MyYacc.h */
- #import &lt;Foundation/Foundation.h&gt;
- <font style="color:red">%{..%}</font>
- 
-     <i>...</i>
- 
- @interface MyYacc ()
-     <i>... private definitions ...</i>
-     <font style="color:red">%local</font>
- @end
- 
- @implementation MyYacc
- - (instancetype)initWithLexer:(id&lt;OCLexInput&gt;)lexer
- {
- 	if (nil != (self = [super init])) {
- 	    <i>...</i>
-        <font style="color:red">%init</font>
- 	}
- 	return self;
- }
- 
- - (void)dealloc
- {
-     <font style="color:red">%finish</font>
- }
-     <i>...internal code...</i>
- 
- <font style="color:red">code_block from bottom of file</font>
-
- - (BOOL)parse
- {
- ...
- }
- @end
-</pre>
+Defines code inserted right after the standard error definitions in the header of a generated class file. This can be used to define your own custom errors.
 
 #### Rules
 
@@ -250,346 +135,84 @@ Production rules in OCYacc are declared similarly as in Yacc.
 
 A production rule has the format:
 
-    result : components... ;
+    result : components... { code };
 
-Where *result* is the production symbol this rule describes, and *components* are other tokens and productions that describe this rule.
+Where *result* is the production symbol this rule describes, and *components* are other tokens and productions that describe this rule. The *code* section is optional and gives the code that will be executed when the rule is reduced.
 
-Multiple rules may be written that give the same result by separating them with a vertical bar:
-
-    result : rule1-components...
-           | rule2-components...
-           ;
-
-Each rule may end with an optional *%prec \<token\>* which gives the precedence of the specific rule when deciding conflicts, as well as optional code which is executed when the rule is reduced.
-
-Optional code is written in Objective C and is made part of the generated class. The code may contain variables of the form **$$** which defines the value of the production, or **$1**...**$n**, which represent the value of each component that makes the rule.
+Each token or production rule may have a value. The value for the production rule is represented as **$$**, and the components of the rule have the values **$1..$n**, for the first through n'th component in the rule. Using a variable for a rule or token whose value is undefined is illegal.
 
 **Note:** OCYacc does not permit actions to be embedded in the components; an action in the form of Objective C code must be given at the end of the components.
 
-##### %prec
+##### %prec *token*
 
-The *%prec* declaration following a list of components gives the relative precedence of a rule and can be used to resolve the if/else problem.
+Each list of components in a rule may optionally be followed by the **%prec** declaration with a token defined in the list of **%left**, **%right** or **%nonassoc** precedence rules above. This defines the precedence that should be taken when evaluating the given rule.
 
-In C, you can write rules for if/else as:
-
-    if_statement : IF '(' expression ')' statement
-                 | IF '(' expression ')' statement ELSE statement
-                 ;
-
-This, however, creates a shift/reduce conflict, as if the user were to write the statement:
-
-    if (a) if (b) c else d
-
-Does he mean:
-
-    if (a)
-        if (b) c
-        else d
-
-Or
-
-    if (a)
-        if (b) c
-    else d
-
-That is, does the 'else' tie to the first if? Or the second?
-
-For C, where the else ties with the closest if (that is, the second if, making the first indention correct), this conflict can be resolved by using the *%prec* statement
-
-    %nonassoc IFSTATEMENT
-    %nonassoc ELSE
-    %%
-    if_statement : IF '(' expression ')' statement %prec IFSTATEMENT
-	             | IF '(' expression ')' statement ELSE statement
-	             ;
-
-This associates the else statement with a higher precedence than the naked if statement. This will cause the reduction by the 'else' statement so that it is tied to the closest if statement.
-
-#### Code
-
-The code segment following the rules is optional. If provided, the code is inserted into the body of the Objective C class being generated in the .m file. 
-
-## An overview of the output class
-
-The generated Objective C class includes a header file and a source file.
-By default they (and the class name itself) is the same as the name of the
-input source file (with the extension stripped).
-
-The generated Objective C class header takes an input lexer file which generates a stream of tokens. The lexer file is defined as a protocol that matches the lexer protocol generated by OCLex:
-
-    @protocol OCLexInput <NSObject>
-    - (NSInteger)line;
-    - (NSInteger)column;
-    - (NSString *)filename;
-    - (NSString *)text;
-    - (NSString *)abort;
-    
-    - (NSInteger)lex;
-    
-    - (id<NSObject>)value;
-    @end
-
-The generated parser class then has a single delegate for reporting parser error messages, and a single entry point for parsing the input file. The overall parser declaration generated by OCYacc is:
-
-    @interface MyClass : NSObject
-    @property (weak) id<MyClassError> errorDelegate;
-    
-    - (instancetype)initWithLexer:(id<OCLexInput>)lexer;
-    - (BOOL)parse;
-    // Additional %global declarations here
-    @end
-
-The error delegate (whose name is based on the class name of the generated class) declares a single method, one called on each error reported by the parser:
-
-    @protocol MyClassError <NSObject>
-    - (void)errorFrom:(MyClass *)yacc 
-                 line:(NSInteger)line 
-               column:(NSInteger)column
-		      filename:(NSString *)fname 
-		  errorMessage:(NSString *)error;
-    @end
-
-The error message itself is given in the error parameter; the rest gives the location in the input lex stream of the token which caused the error.
-
-The header file also has a list of constants which define the integer value of each token that should be returned by the Lexer; the header file can be included into the OCLex .l file to define the constants to return for each token.
-
-This gives the overall header file as:
-
-    /*	MyClass.h
-     *
-     *		This file was automatically generated by OCYacc, part of the OCTools
-     *	suite available at:
-     *
-     *		https://github.com/w3woody/OCTools
-     */
-    
-    #import <Foundation/Foundation.h>
-    
-    // %header declarations
-    
-    /*
-     *	Class forwards
-     */
-    
-    @class MyClass;
-    
-    /*
-     *	Yacc constants
-     */
-    
-    #define MUL_ASSIGN                                    0x00110002
-    // Other constant definitions go here
-    
-    /*	OCLexInput
-     *
-     *		The protocol for our lex reader file that the lex stream must
-     *	provide. This is the same as the protocol generated as part of the lex
-     *	output, and allows us to glue the Lexer and Parser together.
-     */
-    
-    #ifndef OCLexInputProtocol
-    #define OCLexInputProtocol
-    
-    @protocol OCLexInput <NSObject>
-    - (NSInteger)line;
-    - (NSInteger)column;
-    - (NSString *)filename;
-    - (NSString *)text;
-    - (NSString *)abort;
-    
-    - (NSInteger)lex;
-    
-    - (id<NSObject>)value;
-    @end
-    
-    #endif
-    
-    /*	MyClassError
-     *
-     *		The protocol for our parser for handling errors. As errors take place,
-     *	we invoke the method so the error can be recorded and displayed to the
-     *	user.
-     */
-    
-    @protocol MyClassError <NSObject>
-    - (void)errorFrom:(MyClass *)yacc line:(NSInteger)line column:(NSInteger)column
-    		filename:(NSString *)fname errorMessage:(NSString *)error;
-    @end
-    
-    /*	MyClass
-     *
-     *		The generated parser
-     */
-    
-    @interface MyClass : NSObject
-    @property (weak) id<MyClassError> errorDelegate;
-    
-    - (instancetype)initWithLexer:(id<OCLexInput>)lexer;
-    - (BOOL)parse;
-    // %global declarations
-    @end
-
-### The Output Source File
-
-The output source file has the following structure:
-
-    /*  MyClass.m
-     *
-     *      This file was automatically generated by OCYacc, part of the OCTools
-     *  suite available at:
-     *
-     *      https://github.com/w3woody/OCTools
-     */
-    
-    #import "MyClass.h"
-
-At this point the code declared in the %{ ... %} declaration section is inserted.
-    
-    /************************************************************************/
-    /*                                                                      */
-    /*  State Tables and Constants                                          */
-    /*                                                                      */
-    /************************************************************************/
-
-State tables are inserted in here. Afterwards we declare the internal class
-that is used to store the state stack and value stack.    
-    
-    /************************************************************************/
-    /*                                                                      */
-    /*  Internal Structures                                                 */
-    /*                                                                      */
-    /************************************************************************/
-    
-    /*
-     *  Internal parser stack
-     */
-    
-    @interface MyClassStack: NSObject
-    @property (assign) uint16_t state;
-    
-    /* Represent the intermediate values for reduction rule values */
-    @property (strong) id<NSObject> value;
-    @end
-    
-    @implementation MyClassStack
-    @end
-
-The parser engine itself consists of some internally declared values, and the class itself.
-    
-    /************************************************************************/
-    /*                                                                      */
-    /*  Parser Code                                                         */
-    /*                                                                      */
-    /************************************************************************/
-    
-    /*
-     *  Class internals
-     */
-    
-    @interface MyClass ()
-    @property (strong) NSMutableArray<MyClassStack *> *stack;
-    @property (strong) id<OCLexInput> lex;
-    
-    // Error support
-    @property (assign) NSInteger line;
-    @property (assign) NSInteger column;
-    @property (copy) NSString *filename;
-    
-    @property (assign) NSInteger errorCount;
-
-At this point %local declarations are inserted. This is how you can define private class variables within the generated class that is used by your production rule code.
-    
-    @end
-    
-    /*
-     *  Generated class
-     */
-    
-    @implementation MyClass
-    
-We don't give the code but just the method names of the internally used methods below.
-
-    - (instancetype)initWithLexer:(id<OCLexInput>)lexer;
-
-Your custom code, following the last %% in the .y file, is inserted as methods after the init constructor is declared. This code is declared within the class and must be declared as internal methods.
-    
-    /*
-     *  Process production rule. This processes the production rule and creates
-     *  a new stack state with the rule reduction.
-     */
-    
-    - (MyClassStack *)processReduction:(NSInteger)rule
-    {
-        NSInteger pos = self.stack.count - RuleLength[rule];
-        MyClassStack *s = [[MyClassStack alloc] init];
-    
-        // Now process production.
-        //
-        // Note that $$ translated into (s.value), and
-        // $n translates into ((<type> *)(self.stack[pos+(n-1)])), where <type>
-        // is the declared type of the token or production rule.
-    
-        @try {
-            switch (rule) {
-
-The code associated with each rule is inserted as a switch statement here. 
-
-            }
-        }
-        @catch (NSException *exception) {
-            /* This can happen in the event we start seeing errors */
-        }
-    
-        return s;
-    }
-
-Following the method to process productions are the following methods. The two significant methods you need to remember are -errorWithFormat:... and -errorOK.    
-    
-    - (NSInteger)actionForState:(NSInteger)state token:(NSInteger)token;
-    - (NSInteger)gotoForState:(NSInteger)state production:(NSInteger)token;
-    
-    // Error reporting entry point
-    - (void)errorWithFormat:(NSString *)format,...;
-    - (void)errorOK;
-    
-    - (const NSString *)tokenToString:(uint32_t)token;
-    - (BOOL)reduceByAction:(int16_t)action;
-
-Following these internal methods is the parse engine, which is documented in better detail in the generated source kit.
-    
-    - (BOOL)parse
-    {
-        ...
-    }
-    
-    @end
 
 ## Error Handling
 
-There are two methods you can use for error handling in conjunction with the predefined **error** token.
+You can obtain a list of errors as the parser discovers them by implementing the class protocol of the generated parser class and setting the field `errorDelegate` (Objective C), or by inheriting and overriding the `error` method (C++).
 
-Those methods are -errorWithFormat:... and -errorOK.
+Examples of this can be found in the Examples folder.
 
-The first dispatches a callback through the error handling delegate with the provided error message, and errorOK resets the count which hides further error reporting until after 3 tokens are successfully read. 
+### The `error` token
 
-For example, suppose we have a language where statements are separated by a semicolon. You can handle errors by writing:
+A rule may be written with the special `error` token. This token matches any syntax error that is discovered while parsing the specified rule, and allows you to handle the error yourself, and (hopefully) resolving the error so later code can also be parsed and further errors detected.
 
-    statement : stuff ';'
-              | error ';' { [self errorWithFormat:@"Syntax error"]; }
-              ;
+Without the `error` token, OCYacc makes a best-faith effort to resynchronize the parser to the input stream of tokens.
 
-If an error is seen while parsing *stuff*, the state stack is unwound and the **error** token will swallow tokens until we see a semicolon, and can resynchronize the token stream. The rule is called, an error is printed (with the location given as where the first offending token was found), and an internal counter is set: once we see 3 consecutive successfully read tokens, error reporting is permitted again.
+### Posting errors
 
-If you wish to halt the error counting, you may invoke the errorOK method:
+Two methods are provided in C++ and Objective C for your rules to invoke error handling.
 
-    statement : stuff ';'
-              | error ';' 
-                  { 
-                      [self errorWithFormat:@"Syntax error"];
-                      [self errorOK];
-                  }
-              ;
+For Objective-C, the method signatures are:
 
-## Examples
+    - (void)errorWithCode:(NSInteger)code;
+    - (void)errorWithCode:(NSInteger)code data:(NSDictionary<NSString *, id<NSObject>> *)data
 
-Several examples have been checked into the source kit, and it is worth examining those.
+For C++, they are:
+
+    void errorWithCode(int32_t code, std::map<std::string,std::string> &data);
+    void errorWithCode(int32_t code);
+
+Error constants can be defined in the `%errors` declaration above. Predefined symbols that can be used by your error declarations and for handling errors are:
+
+Built-in Errors     | Definition
+------------------- | -------------
+ERROR_SYNTAX        | A general syntax error was detected
+ERROR_MISSINGTOKEN  | An error was encountered in a rule that had only one possible token that should follow. (The missing token is returned in data[@"token"].)
+ERROR_MISSINGTOKENS | An error was encountered in a rule that had a limited number of possible tokens that could follow. (The array of possible tokens is returned in data[@"tokens"].)
+
+Other constants defined for your use are:
+
+Constants           | Definition
+------------------- | -------------
+ERRORMASK_WARNING   | A bitmask constant that should be OR'ed into your own error code to indicate that this is a warning. Warnings do not cause the parser to return failure or cause the parser to prematurely terminate.
+ERROR_STARTERRORID  | The first legal value you may use for your own errors. (You should eclare your errors `(ERROR_STARTERRORID+0)`, `(ERROR_STARTERRORID+1)`, etc.)
+
+
+## License
+
+Licensed under the open-source BSD license:
+
+Copyright 2017-2019 William Woody and Glenview Software
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, 
+this list of conditions and the following disclaimer in the documentation 
+and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
