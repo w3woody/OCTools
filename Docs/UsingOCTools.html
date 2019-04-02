@@ -1729,9 +1729,30 @@ Error.</codeblock>
 			<p>The following token is 'x', which is neither one of our four operators, nor is it a number. So what our parser is telling us is that following the '*' operator, we would expect either a number, or an open parenthesis.</p>
 			<p>The second error makes sense when you consider the corrective action taken by the first error. For our first error, we insert the first token in our list of tokens and act as if we performed a shift of the '(' token rather than the 'x' token we found.</p>
 			<p>This means as far as our parser is concerned, we found <code>11 + 2 * (</code>, and once we reach the end of the string, rather than the end of file marker, we are expecting a close parenthesis or another operator.</p>
+			
 			<h2>The <code>error</code> token</h2>
 			<p>This sort of ad-hoc processing is adequate for smaller grammars, but can be insufficient for more complex languages. For more complex languages we use the <code>error</code> token, a special token which matches any error.</p>
-			<p>The idea is straight forward: when a syntax error is encountered, ### rethink error handling.</p>
+			<p>The idea is straight forward: when a syntax error is encountered, and it's parsing a rule that contains a <code>error</code> token, the stack of tokens unwinds until the rule containing the <code>error</code> token is found. The rule then reduces the error, executes the associated code, and continues parsing.</p>
+			<p>For example, suppose we modify our calculator language so that it can evaluate multiple equations separated by semicolons:</p>
+
+<codeblock>expression: NUMBER                          { $$ = $1; }
+          | expression '+' expression       { $$ = @( $1.intValue + $3.intValue ); }
+          | expression '-' expression       { $$ = @( $1.intValue - $3.intValue ); }
+          | expression '*' expression       { $$ = @( $1.intValue * $3.intValue ); }
+          | expression '/' expression       { $$ = @( $1.intValue / $3.intValue ); }
+          | '(' expression ')'              { $$ = $2; }
+          ;
+
+equation: expression ';'                    { [self.result addObject:$1]; }
+        | error ';'                         { [self errorWithCode:ERROR_SYNTAX]; }
+        ;
+
+equations: equation
+         | equation equations
+         ;</codeblock>
+
+		 	<p>Each expression is separated by a semicolon. Notice the declaration <code>error ';'</code>. What this signifies is that if we encounter an error while parsing an expression, the stack of rules will pop until we reach the equation rule. We will then read through all the tokens until we encounter a semicolon. The rule <code>error ';'</code> will then be reduced, executing the statement <code>[self errorWithCode:ERROR_SYNTAX];</code> in the process.</p>
+		 	
 		</section>
 	</body>
 </html>
