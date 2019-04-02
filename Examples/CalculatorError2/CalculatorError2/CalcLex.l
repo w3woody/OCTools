@@ -11,7 +11,6 @@
 /* Simplify our definitions */
 
 D		[0-9]
-L		[A-Za-z_]
 
 %%
 
@@ -19,10 +18,6 @@ L		[A-Za-z_]
 				/* Number */
 				self.value = @( self.text.intValue );
 				return NUMBER;
-			}
-
-[A-Za-z_][A-Za-z0-9_]* {
-				return IDENTIFIER;
 			}
 
 [ \t\v\n\f]	{

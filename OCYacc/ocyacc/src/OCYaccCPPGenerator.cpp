@@ -1229,6 +1229,10 @@ void OCYaccCPPGenerator::WriteOCHeader(const char *classname, const char *output
 
 	// Bulk of declarations
 	fprintf(f,"%s",GHeader3);
+
+	// Errors
+	fprintf(f,"%s\n",parser.classErrors.c_str());
+
 	if (parser.lexerClass.size() > 0) {
 		fprintf(f,"class %s;\n",parser.lexerClass.c_str());
 	} else {

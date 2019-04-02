@@ -5,7 +5,6 @@
  */
 
 %token <NSNumber> NUMBER
-%token IDENTIFIER
 %type <NSNumber> expression
 
 /* Establish precedence of our operators */
@@ -21,10 +20,6 @@
 	self.result = [[NSMutableArray alloc] init];
 }
 
-%errors {
-#define ERROR_UNIMPLEMENTED     (ERROR_STARTERRORID+1)
-}
-
 %start equations
 
 %%
@@ -35,10 +30,6 @@ expression: NUMBER							{ $$ = $1; }
 		  | expression '*' expression		{ $$ = @( $1.intValue * $3.intValue ); }
 		  | expression '/' expression		{ $$ = @( $1.intValue / $3.intValue ); }
 		  | '(' expression ')'				{ $$ = $2; }
-		  | IDENTIFIER						{
-												[self errorWithCode:ERROR_UNIMPLEMENTED];
-												$$ = @0;
-		  									}
 		  ;
 
 equation: expression ';'					{ [self.result addObject:$1]; }

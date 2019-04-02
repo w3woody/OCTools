@@ -26,6 +26,10 @@
 				codeblock i {
 					color: #888888;
 				}
+				
+				.highlight {
+					color: red;	
+				}
 			}
 			
 			/* Page rules for print */
@@ -72,6 +76,10 @@
 				a {
 					color: black;
 					text-decoration: none;
+				}
+				
+				.highlight {
+					text-decoration: underline;	
 				}
 			}
 			
@@ -314,7 +322,7 @@
 			.tokentable td:first-child {
 				padding-right: 2em;
 			}
-
+			
 		--></style>
 	</head>
 	<body onload="buildTOC()">
@@ -644,6 +652,10 @@ Code</codeblock>
 
 // %header code inserted here
 
+<i>... OCYacc standard error declarations ...</i>
+
+// %errors code inserted here
+
 <i>... Other OCYacc generated declarations ...</i>
 
 @interface MyYacc : NSObject
@@ -717,12 +729,16 @@ Code</codeblock>
 
 // %{...%} code inserted here
 
-... Other OCYacc generated declarations ...
+<i>... OCYacc standard error declarations ...</i>
+
+// %errors code inserted here
+
+<i>... Other OCYacc generated declarations ...</i>
 
 class Example
 {
     public:
-        ... Other OCYacc generated class declarations ...
+        <i>... Other OCYacc generated class declarations ...</i>
 
         Example( /* lex class declaration */ );
         virtual ~Example(void);
@@ -732,7 +748,7 @@ class Example
         // %global code inserted here
 
     private:
-        ... Other OCYacc generated private state information here ...
+        <i>... Other OCYacc generated private state information here ...</i>
 
         // %local code inserted here
 };</codeblock>
@@ -743,11 +759,11 @@ class Example
 
 #include "MyYacc.h"
 
-... Other OCYacc generated declarations ...
+<i>... Other OCYacc generated declarations ...</i>
 
 MyYacc::MyYacc(OCLexInput *lexer)
 {
-    ... Other OCYacc generated initialization code ...
+    <i>... Other OCYacc generated initialization code ...</i>
 
     // %init code inserted here
 }
@@ -759,11 +775,11 @@ MyYacc::~MyYacc()
 
 // code_block from bottom of file goes here
 
-... OCYacc generated parser declarations ...
+<i>... OCYacc generated parser declarations ...</i>
 
 bool MyYacc::parse()
 {
-    ... OCYacc generated parser code ...
+    <i>... OCYacc generated parser code ...</i>
 }
 
 @end</codeblock>
@@ -806,6 +822,18 @@ bool MyYacc::parse()
 
 			<p>The <code>%local</code> code block is used to insert private declarations into the class that are only visible within the class itself. This would be used to declare internal method or fields that are required by your custom class.</p>
 			
+<codedef>%errors {
+    <i>code</i>
+}</codedef>
+
+			<p>The <code>%errors</code> code block is inserted immediately after the definition of the standard errors that are generated for use by OCYacc. This gives you an opportunity to define your own custom errors. For example, if you need to create a new error for indicating that a variable is not defined, you can write:</p>
+			
+<codeblock>%errors {
+#define ERROR_VARUNDEFINED      (ERROR_STARTERRORID+1)
+}</codeblock>
+
+			<p>See the discussion on error handling below for more information.</p>
+
 <codedef>%%
 Code</codedef>
 
@@ -875,7 +903,26 @@ void errorWithCode(int32_t code);</codeblock>
 	    	</ul>
 	    	<p>Regardless of which method winds up being employed, errors stop being presented to the user until after 3 successful tokens are shifted.</p>
 	    	
-	    	<h3>Receiving errors.</h3>
+	    	<h3>Custom error identifiers</h3>
+	    	
+	    	<p>To define your own custom error values, use the <code>%errors</code> declaration. This inserts the code inside the code block just after the standard error definitions, and allows you to define your errors in terms of the standard error identifiers.</p>
+	    	<p>For example, if you have a custom error code which indicates a variable is not defined, you can write:</p>
+	    	
+<codeblock>%errors {
+#define ERROR_VARUNDEFINED      (ERROR_STARTERRORID+1)
+}</codeblock>
+
+			<p>You can also define custom warnings for your parser. Warnings are handled similarly to errors, except with two key differences:</p>
+			<ol><li>Warnings do not cause the parser to return NO or false on completion. That is, the grammar will be accepted as-is, even though warnings are being presented to the user.</li>
+				<li>Warnings do not trigger a delay to wait for three successfully shifted tokens to reduce the number of potential errors produced to the user.</li>
+			</ol>
+			<p>To define a warning, you would define your error with the bit <code>ERRORMASK_WARNING</code> set. Thus, a warning that alerts the user a variable is not of the right type may be written:</p>
+
+<codeblock>%errors {
+#define ERROR_CASTWARNING       (ERRORMASK_WARNING | (ERROR_STARTERRORID + 2))
+}</codeblock>
+
+	    	<h3>Receiving errors</h3>
 	    	<p>Errors are reported by the parser class, through a delegate (in Objective-C), or through method inheritance (in C++). For Objective C, you would create a class which instantiates the <code><i>class</i>Error</code> protocol, with "class" being the class name of the generated parser:</p>
 	    	
 <codeblock>@protocol MyClassError &lt;NSObject&gt;
@@ -1713,7 +1760,7 @@ equation: expression                        { result = $1; }
 <codeblock>Missing tokens ((
     "(",
     NUMBER
-)) at 0:7
+)) at 0:9
 
 Missing tokens ((
     ")",
@@ -1721,7 +1768,7 @@ Missing tokens ((
     "+",
     "-",
     "/"
-)) at 0:25
+)) at 0:26
 
 Error.</codeblock>
 			<p>The first error states that roughly seven characters in we find an expression that is missing either a '(' or a NUMBER following it. This makes sense when you consider that by this point in the parser we've read:</p>
@@ -1752,7 +1799,34 @@ equations: equation
          ;</codeblock>
 
 		 	<p>Each expression is separated by a semicolon. Notice the declaration <code>error ';'</code>. What this signifies is that if we encounter an error while parsing an expression, the stack of rules will pop until we reach the equation rule. We will then read through all the tokens until we encounter a semicolon. The rule <code>error ';'</code> will then be reduced, executing the statement <code>[self errorWithCode:ERROR_SYNTAX];</code> in the process.</p>
-		 	
+		 	<p>This is demonstrated with the project CalcErrorToken in GitHub at:</p>
+		 	<note><a href="https://github.com/w3woody/OCTools/tree/master/Examples/CalculatorErrorToken">https://github.com/w3woody/OCTools/tree/master/Examples/CalculatorErrorToken</a></note>
+		 	<p>When this project is compiled and executed on the (erroneous string):</p>
+		 	<codeblock>1+2; 3+4; a+c; 5+4; 7+x; 9</codeblock>
+		 	<p>We get the following output:</p>
+
+<codeblock>Syntax Error at 0:10
+Syntax Error at 0:22
+Error.</codeblock>
+
+			<p>This is exactly what we expect. The first line indicates there is an error at character offset 10:</p>
+			<codeblock>1+2; 3+4; <span class="highlight">a</span>+c; 5+4; 7+x; 9</codeblock>
+			
+			<p>When the error was encountered, we performed a reduction through the <code>error ';'</code> rule--and executed <code>[self errorWithCode:ERROR_SYNTAX];</code> with the location of the token which triggered the error. Parsing then continued with the next equation <code>5+4</code>, then the next equation <code>7+x</code> was attempted. The second error was caught, at character offset 22:</p>
+			<codeblock>1+2; 3+4; a+c; 5+4; 7+<span class="highlight">x</span>; 9</codeblock>
+
+			<p>The error token can be used for sophisticated error handling within OCYacc generated grammars. For example, you can anticipate common errors that may arise or you can add rules which are invoked when an error within a well-defined subexpression is caught. This allows you to both customize the type of error displayed, as well as handle resynchronizing with the input stream to continue finding errors for the user.</p>
+			
+			<h2>Throwing Errors</h2>
+			<p>OCYacc generated classes provide a couple of methods which allow you to present errors during parsing beyond just syntax errors. For example, a more sophisticated parser that is compiling a computer language may wish to alert the user to undefined variables, or to illegal variable types. These sorts of semantic errors can easily be added to your code.</p>
+			<p>For Objective C generated classes there are two methods which are provided for reporting errors:</p>
+
+<codedef>- (void)errorWithCode:(NSInteger)code;
+- (void)errorWithCode:(NSInteger)code data:(NSDictionary&lt;NSString *, id&lt;NSObject&gt;&gt; *)data</codedef>
+
+			<p>The first version of <code>errorWithCode</code> simply passes in nil for the data parameter.</p>
+			<p>The code that you use can be one of the predefined error codes noted above, or it can be defined in the <code>%errors</code> code block in your grammar definition. Any custom error should start at the integer value defined in <code>ERROR_STARTERRORID</code> (i.e., <code>ERROR_STARTERRORID+0</code>, <code>ERROR_STARTERRORID+1</code>, etc), and if the custom error is actually a warning (and the warning should not halt your parser), you should bit-wise OR the value with the constant <code>ERRORMASK_WARNING</code> to prevent halting the parser.</p>
+			<p>An example of this in action is in GitHub at:</p>
 		</section>
 	</body>
 </html>

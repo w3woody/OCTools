@@ -51,7 +51,9 @@ static const char *GHeader3 =
 	"#define ERROR_MISSINGTOKEN\t\t0x0002\t// { @\"token\": string of token missing }\n" \
 	"#define ERROR_MISSINGTOKENS\t\t0x0003\t// { @\"tokens\": array of token strings }\n" \
 	"#define ERROR_STARTERRORID\t\t0x0100\t// Your errors should start with this\n" \
-	"\n"
+	"\n";
+
+static const char *GHeader3a =
 	"\n"                                                                      \
 	"/*\tOCLexInput\n"                                                        \
 	" *\n"                                                                    \
@@ -1194,8 +1196,13 @@ void OCYaccGenerator::WriteOCHeader(const char *classname, const char *outputNam
 //		}
 	}
 
+	// Preamble to declarations
+	fprintf(f,"%s",GHeader3);
+
+	fprintf(f,"%s\n",parser.classErrors.c_str());
+
 	// Bulk of declarations
-	fprintf(f,GHeader3,classname,classname,classname,classname,classname,classname,classname);
+	fprintf(f,GHeader3a,classname,classname,classname,classname,classname,classname,classname);
 
 	// Class globals
 	fprintf(f,"\n%s\n",parser.classGlobal.c_str());

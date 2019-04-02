@@ -352,7 +352,7 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 						lexerHeader = lex.fToken;
 					}
 
-				} else if ((lex.fToken == "global") || (lex.fToken == "local") || (lex.fToken == "header") || (lex.fToken == "init") ||
+				} else if ((lex.fToken == "global") || (lex.fToken == "local") || (lex.fToken == "header") || (lex.fToken == "init") || (lex.fToken == "errors") ||
 						(lex.fToken == "union") || (lex.fToken == "finish")) {
 					/*
 					 *	Parse the stream of tokens for code storage
@@ -394,6 +394,8 @@ bool OCYaccParser::ParseDeclarations(OCLexer &lex)
 							classFinish = code;
 						} else if (codeType == "local") {
 							classLocal = code;
+						} else if (codeType == "errors") {
+							classErrors = code;
 						} else if (codeType == "union") {
 							valueUnion = code;
 						} else {

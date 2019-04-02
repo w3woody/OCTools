@@ -27,9 +27,6 @@
 		case ERROR_MISSINGTOKENS:
 			err = [NSString stringWithFormat:@"Missing tokens (%@)",[data[@"tokens"] description]];
 			break;
-		case ERROR_UNIMPLEMENTED:
-			err = @"Variables are unimplemented";
-			break;
 		default:
 			err = @"Unknown error";
 			break;

@@ -16,6 +16,10 @@
 	@property (strong) NSNumber *result;
 }
 
+%header {
+#define FOO 5
+}
+
 %start equation
 
 %%
