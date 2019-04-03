@@ -1916,6 +1916,7 @@ Error.</codeblock>
 <codeblock>%union {
     int integer;
 }</codeblock>
+			<h2>The OCLex class signature</h2>
 			<p>Once those are changed, we can compile our lexer with the stream class <code>CalcStream</code> to build a standalone class. The signature of the class in Objective-C is:</p>
 <codeblock>@interface CalcLex : NSObject &lt;OCLexInput&gt;
 - (instancetype)initWithStream:(id&lt;OCFileInput&gt;)file;
@@ -1969,6 +1970,7 @@ Error.</codeblock>
 			<tr><td>setLine</td><td>Set the current line number of the file being parsed. This can be set at any time during parsing.</td></tr>
 			<tr><td>lex</td><td>Return the value of the next token in the stream, or -1 if the end of file was reached.</td></tr>
 		</table>
+		<h2>Using the OCLex generated class</h2>
 		<p>We can see this all in action with our sample code. For example, our C++ example lexer code (from the <i>TokenizerCPP</i> project) is invoked with the following code:</p>
 <codeblock>int main(int argc, const char * argv[])
 {
@@ -2001,5 +2003,11 @@ Error.</codeblock>
 0:22 Token 65537: '1', value 1
 0:23 Token 41: ')', value 0</codeblock>
 		</section>
+		<section>
+			<h1>Using OCYacc without OCLex</h1>
+			<p>You can also use OCYacc to generate a parser without obtaining tokens from an OCLex-based tokenizer. This requires that you implement the interface specified for a parser yourself. You may wish to do this if, for example, you have a customized tokenizer, or if your tokens are being loaded from a different type of stream than a text stream.</p>
+			The example code for the following is contained at GitHub at:</p>
+			<note>(Objective-C): <a href="https://github.com/w3woody/OCTools/tree/master/Examples/Tokenizer">https://github.com/w3woody/OCTools/tree/master/Examples/Parser</a></note>
+			<note>(C++): <a href="https://github.com/w3woody/OCTools/tree/master/Examples/TokenizerCPP">https://github.com/w3woody/OCTools/tree/master/Examples/ParserCPP</a></note>
 	</body>
 </html>
