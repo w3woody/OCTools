@@ -7,6 +7,10 @@
 #define NUMBER		0x10001
 }
 
+%union {
+	int integer;
+}
+
 /* Simplify our definitions */
 
 D		[0-9]
@@ -15,7 +19,7 @@ D		[0-9]
 
 {D}+		{
 				/* Number */
-				self.value = @( self.text.intValue );
+				value.integer = atoi(text.c_str());
 				return NUMBER;
 			}
 
@@ -25,5 +29,5 @@ D		[0-9]
 
 .			{
 				/* All else, return character value as token ID. */
-				return [self.text characterAtIndex:0];
+				return text[0];
 			}

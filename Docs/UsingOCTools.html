@@ -1905,5 +1905,101 @@ Error.</codeblock>
 		<section>
 			<h1>Using OCLex without OCYacc</h1>
 			<p>The OCLex tokenizer tool can certainly be used without an OCYacc-generated grammar. This is useful if, for example, you wish to build your own recursive-descent parser but do not want the hassle of building the string tokenizer for your language. The example code for the following is contained at GitHub at:</p>
+			<note>(Objective-C): <a href="https://github.com/w3woody/OCTools/tree/master/Examples/Tokenizer">https://github.com/w3woody/OCTools/tree/master/Examples/Tokenizer</a></note>
+			<note>(C++): <a href="https://github.com/w3woody/OCTools/tree/master/Examples/TokenizerCPP">https://github.com/w3woody/OCTools/tree/master/Examples/TokenizerCPP</a></note>
+			<p>Our example <code>.l</code> file is exactly the same as the one used in our prior <i>SimpleCalculator</i> example, but with a couple of minor differences, due to the fact that the lexer is being compiled without a parser.</p>
+			<p>First, our predefined tokens are not defined. So we need to define them, which we do using the <code>%header</code> directive:</p>
+<codeblock>%header {
+#define NUMBER		0x10001
+}</codeblock>
+			<p>Second, for C++, since we do not have the data types defined in the OCYacc <code>%union</code> directive, we need to add the <code>%union</code> directive to our lexer:</p>
+<codeblock>%union {
+    int integer;
+}</codeblock>
+			<p>Once those are changed, we can compile our lexer with the stream class <code>CalcStream</code> to build a standalone class. The signature of the class in Objective-C is:</p>
+<codeblock>@interface CalcLex : NSObject &lt;OCLexInput&gt;
+- (instancetype)initWithStream:(id&lt;OCFileInput&gt;)file;
+
+@property (assign) NSInteger line;      // line of last read token
+@property (assign) NSInteger column;    // column of last read token
+@property (copy)   NSString *filename;  // marked filename (if provided)
+@property (copy)   NSString *text;      // string of last read token
+@property (assign) NSString *abort;     // Set to abort string if problem
+@property (strong) id&lt;NSObject&gt; value;  // Lex/Yacc value of token (optional)
+
+- (void)setFile:(NSString *)file line:(NSInteger)line;
+- (NSInteger)lex;                       // Method to read next token
+@end</codeblock>
+			<p>For C++, the signature is similar:</p>
+<codeblock>class CalcLex
+{
+    public:
+        CalcLex(OCFileInput *file);
+        ~CalcLex(void);
+
+        /*
+         *  Current reader state
+         */
+
+        int32_t line;
+        int32_t column;
+        std::string filename;
+        std::string text;
+        std::string abort;
+
+#ifdef CalcLex_ValueDefined
+        union CalcLexValue value;
+#endif
+
+        void setFile(std::string &file, int32_t line);
+        void setLine(int32_t line);
+        int32_t lex();                      // Method to read next token
+    private:
+        /* ... Private stuff ... */
+};</codeblock>
+		<p>The different fields and methods are:</p>
+		<table class="summary">
+			<tr><td>line</td><td>The line number the token was read from, starting with 0. This line can be set with the setLine method or the setFile method.</td></tr>
+			<tr><td>column</td><td>The character position in the line of the start of the token, starting with 0.</td></tr>
+			<tr><td>filename</td><td>The filename being read. This value is set using the setFile method.</td></tr>
+			<tr><td>text</td><td>The text of the last read token, as a string.</td></tr>
+			<tr><td>abort</td><td>If not null (or not empty), the text of the error received while parsing the file. If an error happens (say, because no action was set by the user that matches the input pattern), the lexer will halt with an end of file condition, and the abort string will be set. This should normally not happen with a well-designed lexer.</td></tr>
+			<tr><td>value</td><td>The value of the last parsed token, if the token has a value set by the lexer.</td></tr>
+			<tr><td>setFile</td><td>Set the file name of the file being parsed, as well as the starting line. This can be set at any time during parsing, for example, if <code>#include</code> style directives are being handled by your input stream.</td></tr>
+			<tr><td>setLine</td><td>Set the current line number of the file being parsed. This can be set at any time during parsing.</td></tr>
+			<tr><td>lex</td><td>Return the value of the next token in the stream, or -1 if the end of file was reached.</td></tr>
+		</table>
+		<p>We can see this all in action with our sample code. For example, our C++ example lexer code (from the <i>TokenizerCPP</i> project) is invoked with the following code:</p>
+<codeblock>int main(int argc, const char * argv[])
+{
+    // First, create an input stream to parse our equation.
+    CalcStream stream("11 + 2 * 3 - 4 / (1 + 1)");
+
+    // Next, create the lexer to tokenize the input stream into tokens
+    CalcLex lex(&stream);
+
+    // Now read all the tokens.
+    int32_t tokenID;
+    while (-1 != (tokenID = lex.lex())) {
+        printf("%d:%d Token %d: '%s', value %d\n",
+            lex.line,lex.column,tokenID,
+            lex.text.c_str(),lex.value.integer);
+    }
+}</codeblock>
+		<p>Both the C++ and the Objective C versions of this example produce the same output:</p>
+<codeblock>0:0 Token 65537: '11', value 11
+0:3 Token 43: '+', value 0
+0:5 Token 65537: '2', value 2
+0:7 Token 42: '*', value 0
+0:9 Token 65537: '3', value 3
+0:11 Token 45: '-', value 0
+0:13 Token 65537: '4', value 4
+0:15 Token 47: '/', value 0
+0:17 Token 40: '(', value 0
+0:18 Token 65537: '1', value 1
+0:20 Token 43: '+', value 0
+0:22 Token 65537: '1', value 1
+0:23 Token 41: ')', value 0</codeblock>
+		</section>
 	</body>
 </html>

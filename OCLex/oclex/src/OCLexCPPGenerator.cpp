@@ -186,6 +186,9 @@ static const char *GSource2 =
 	"\ttextAlloc = 256;\n"                                                    \
 	"\ttextBuffer = (unsigned char *)malloc(textAlloc);\n"                    \
 	"\n"                                                                      \
+	"\tcurLine = 0;\n"                                                        \
+	"\tcurColumn = 0;\n"                                                      \
+	"\n"                                                                      \
 	"\tstates = 0;\n";
 
 // 4
