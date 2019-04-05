@@ -9,6 +9,20 @@
 #ifndef CalcLex_h
 #define CalcLex_h
 
-#include <stdio.h>
+#include "CalcParser.h"
+
+class CalcLex : public CalcParserInput
+{
+	public:
+		CalcLex()
+			{
+				ix = 1;
+			}
+
+		virtual int32_t lex();
+
+	private:
+		int ix;
+};
 
 #endif /* CalcLex_h */
