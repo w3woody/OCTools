@@ -56,19 +56,19 @@ static const char *GHeader3 =
 	"#define ERROR_STARTERRORID\t\t0x0100\t// Your errors should start with this\n" \
 	"\n";
 
-// 0
+// 4
 static const char *GHeader3a =
-	"/*\tOCLexInput\n"                                                        \
+	"/*\t%sInput\n"                                                        	  \
 	" *\n"                                                                    \
 	" *\t\tThe protocol for our lex reader file that the lex stream must\n"   \
 	" *\tprovide. This is the same as the protocol generated as part of the lex\n" \
 	" *\toutput, and allows us to glue the Lexer and Parser together.\n"      \
 	" */\n"                                                                   \
 	"\n"                                                                      \
-	"#ifndef OCLexInputProtocol\n"                                            \
-	"#define OCLexInputProtocol\n"                                            \
+	"#ifndef %sInputProtocol\n"                                            	  \
+	"#define %sInputProtocol\n"                                            	  \
 	"\n"                                                                      \
-	"class OCLexInput\n"                                                      \
+	"class %sInput\n"                                                      	  \
 	"{\n"                                                                     \
 	"\tpublic:\n"                                                             \
 	"\t\tint32_t line;\n"                                                     \
@@ -125,10 +125,10 @@ static const char *GHeader4 =
 	"\t\tbool success;\n"                                                     \
 	"\t\tint32_t errorCount;\n"                                               \
 	"\n"                                                                      \
-	"bool hasError;\n"                                                        \
-	"int32_t errorLine;\n"                                                    \
-	"int32_t errorColumn;\n"                                                  \
-	"std::string errorFileName;\n"											  \
+	"\t\tbool hasError;\n"                                                    \
+	"\t\tint32_t errorLine;\n"                                                \
+	"\t\tint32_t errorColumn;\n"                                              \
+	"\t\tstd::string errorFileName;\n"										  \
 	"\n"                                                                      \
 	"\t\t%sStack processReduction(int16_t rule);\n"                           \
 	"\t\tint32_t actionForState(int32_t state, int32_t token);\n"             \
@@ -1093,11 +1093,12 @@ void OCYaccCPPGenerator::WriteYTables(FILE *f)
 
 void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputName, FILE *f)
 {
-	const char *lexerClass;
+	std::string lexerClass;
 	if (parser.lexerClass.size() > 0) {
-		lexerClass = parser.lexerClass.c_str();
+		lexerClass = parser.lexerClass;
 	} else {
-		lexerClass = "OCLexInput";
+		lexerClass = classname;
+		lexerClass += "Input";
 	}
 
 	// Prefix
@@ -1115,7 +1116,7 @@ void OCYaccCPPGenerator::WriteOCFile(const char *classname, const char *outputNa
 	WriteYTables(f);
 
 	// Start generating the rest of the file
-	fprintf(f, GSource3, classname, classname, lexerClass);
+	fprintf(f, GSource3, classname, classname, lexerClass.c_str());
 
 	// Insert initializers
 	fprintf(f, "%s\n", parser.classInit.c_str());
@@ -1185,7 +1186,7 @@ void OCYaccCPPGenerator::WriteOCHeader(const char *classname, const char *output
 	if (parser.lexerClass.size() > 0) {
 		lexerClass = parser.lexerClass.c_str();
 	} else {
-		lexerClass = "OCLexInput";
+		lexerClass = classname;
 	}
 
 	// Prefix
@@ -1236,9 +1237,18 @@ void OCYaccCPPGenerator::WriteOCHeader(const char *classname, const char *output
 	if (parser.lexerClass.size() > 0) {
 		fprintf(f,"class %s;\n",parser.lexerClass.c_str());
 	} else {
-		fprintf(f,"%s",GHeader3a);
+		/*
+		 *	Generate the code for the generic protocol. When we do this
+		 *	we generate three new symbols:
+		 *
+		 *		(classname)Input  -- the name of the input protocol
+		 *		(classname)InputProtocol -- the #define
+		 *		(classname)Value -- the union value of the values
+		 */
+
+		fprintf(f,GHeader3a,classname,classname,classname,classname);
 		if (parser.valueUnion.size() > 0) {
-			fprintf(f,"\t\tunion %sValue value;\n",lexerClass);
+			fprintf(f,"\t\tunion %sValue value;\n",classname);
 		}
 		fprintf(f,"%s",GHeader3a1);
 	}
@@ -1246,16 +1256,33 @@ void OCYaccCPPGenerator::WriteOCHeader(const char *classname, const char *output
 	if (parser.valueUnion.size() > 0) {
 		fprintf(f,"\tunion %sValue value;\n",lexerClass);
 	}
-	fprintf(f,GHeader3c,classname,classname,classname,lexerClass,classname);
 
-	// Class globals
-	fprintf(f,"\n%s\n",parser.classGlobal.c_str());
+	/*
+	 *	The constructor; generate the correct lexer class name for input
+	 */
 
-	// Private
-	fprintf(f,GHeader4,classname,lexerClass,classname);
+	if (parser.lexerClass.size() > 0) {
+		fprintf(f,GHeader3c,classname,classname,classname,lexerClass,classname);
+
+		// Class globals
+		fprintf(f,"\n%s\n",parser.classGlobal.c_str());
+
+		// Private
+		fprintf(f,GHeader4,classname,lexerClass,classname);
+	} else {
+		std::string abstractName = lexerClass;
+		abstractName.append("Input");
+		fprintf(f,GHeader3c,classname,classname,classname,abstractName.c_str(),classname);
+
+		// Class globals
+		fprintf(f,"\n%s\n",parser.classGlobal.c_str());
+
+		// Private
+		fprintf(f,GHeader4,classname,abstractName.c_str(),classname);
+	}
 
 	// Insert class declarations
-	fprintf(f, "%s", parser.classLocal.c_str());
+	fprintf(f,"%s",parser.classLocal.c_str());
 
 	fprintf(f,"%s",GHeader5);
 }

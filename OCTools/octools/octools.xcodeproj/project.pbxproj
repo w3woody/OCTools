@@ -173,7 +173,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Go to build products\ncd $BUILT_PRODUCTS_DIR\n\n# Make installation root\nmkdir -p pkg/usr/local/bin\ncp -R ocyacc pkg/usr/local/bin\ncp -R oclex pkg/usr/local/bin\n\n# Build tool installation package\npkgbuild --root pkg --identifier com.chaosinmotion.OCTools --version 1.0 --ownership recommended tools.pkg\n\n# Build the package\nproductbuild --distribution $SRCROOT/Package/distribution.xml --resources $SRCROOT/Package --package-path tools.pkg --version 1.0 octools.pkg\n\n# Move to package root\ncp octools.pkg $SRCROOT/../..\n";
+			shellScript = "# Go to build products\ncd $BUILT_PRODUCTS_DIR\n\n# Make installation root\nmkdir -p pkg/usr/local/bin\ncp -R ocyacc pkg/usr/local/bin\ncp -R oclex pkg/usr/local/bin\n\n# Build tool installation package\npkgbuild --root pkg --identifier com.chaosinmotion.OCTools --version 1.0 --ownership recommended tools.pkg\n\n# Add timestamp\nsed \"s/DATE/$(date '+%B %-d, %Y @ %-l:%M %p %Z')/g\" $SRCROOT/Package/welcome.html > $SRCROOT/Package/welcome_.html\n\n# Build the package\nproductbuild --distribution $SRCROOT/Package/distribution.xml --resources $SRCROOT/Package --package-path tools.pkg --version 1.0 octools.pkg\n\n# Move to package root\ncp octools.pkg $SRCROOT/../..\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
