@@ -297,6 +297,7 @@
 			.summary td:first-child {
 				font-family: Menlo, Courier, monospace;
 				font-size: 80%;
+				padding-right: 2em;
 			}
 			
 			.summaryprefix {
@@ -2026,7 +2027,89 @@ Error.</codeblock>
 
 @end</codeblock>
 
-###
+			<p>Each invocation to the <code>lex</code> method in our class above reads the next token and returns it, setting the line, column, file name, text and value fields to the appropriate values associated with the just-read token.</p>
+			
+			<h2>Declaring our lex tokenizer in C++</h2>
+			
+			<p>Because each parser built with OCYacc is intended to be reusable, and because you may wish to develop an application that can parse multiple different languages at the same time, OCYacc gives a custom name for each <code>%union</code> declaration for each OCYacc-generated class. This is done by using the name of the OCYacc class as the basis for our declarations. When the <code>%lex</code> declaration is not used, OCYacc will declare the following things based on the class name of our generated class:</p>
+			<table class="summary">
+				<tr><td><i>classname</i>Value</td><td>The <code>%union</code> declaration expressed as a C++ union declaration.</td></tr>
+				<tr><td><i>classname</i>Input</td><td>The name of the abstract lexer class that your lexer class should inherit from. It has a unique name because one of the fields contained in the lexer class is the union declaration above.</td></tr>
+				<tr><td><i>classname</i>InputProtocol</td><td>A guard declaration used to determine if the <code><i>classname</i>Value</code> class has been declared.</td></tr>
+			</table>
 
+			<p>So in our case, the OCYacc generator will generate the following abstract class:</p>
+
+<codeblock>class CalcParserInput
+{
+    public:
+        int32_t line;
+        int32_t column;
+        std::string filename;
+        std::string text;
+        std::string abort;
+
+        virtual int32_t lex() = 0;
+        union CalcParserValue value;
+};</codeblock>
+
+			<p>And we declare a new class that inherits from this abstract class:</p>
+
+<codeblock>class CalcLex : public CalcParserInput
+{
+    public:
+        CalcLex()
+            {
+                /* Private initialization */
+            }
+
+        virtual int32_t lex();
+
+    private:
+        /* Private variables here */
+};</codeblock>
+
+			<p>Like our Objective C version, each call to <code>lex()</code> in our class above reads the next token and returns it, setting the line, column, file name, text and value fields to the appropriate values associated with the just-read token.</p>
+			
+		<h2>Putting it all together.</h2>
+		
+		<p>Using the OCYacc-generated parser with your custom lexer is easy, and more or less follows the same model as with using both OCLex and OCYacc together. You first create your lexer, then you create your parser, do any custom initialization, and execute the parser. For our Objective C code, that's done by writing:</p>
+
+<codeblock>// Next, create the lexer to tokenize the input stream into tokens
+CalcLex *lex = [[CalcLex alloc] init];
+
+// Third, create our parser to parse the token stream.
+CalcParser *parser = [[CalcParser alloc] initWithLexer:lex];
+
+// Fourth, actually run the parser.
+if ([parser parse]) {
+    // YES indicates success. Get our results and present them.
+    NSNumber *n = parser.result;
+    NSLog(@"Answer: %d",n.intValue);
+
+} else {
+    // NO indicate an error.
+    NSLog(@"Error.");
+}</codeblock>
+
+			<p>In C++, we do something similar:</p>
+
+<codeblock>// Create our custom lexer
+CalcLex lex;
+
+// Construct our parser
+CalcParser parser(&lex);
+
+// Parse
+if (parser.parse()) {
+    printf("Answer: %d\n",parser.result);
+} else {
+    printf("Error.\n");
+}</codeblock>
+
+			<p>And in both cases, we should get the same result:</p>
+			
+			<codeblock>Answer: 15</codeblock>
+		</section>
 	</body>
 </html>
