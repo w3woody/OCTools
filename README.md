@@ -2,7 +2,7 @@
 
 This is an experimental branch which contains on-going work for adding Apple's [Swift](http://swift.org) programming language to the list of code generator back-ends to OCTools.
 
-The current stable release of the OCTools system is contained in the "main" branch.
+The current stable release of the OCTools system is contained in the "master" branch.
 
 
 # OCTools
