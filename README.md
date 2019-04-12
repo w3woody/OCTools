@@ -1,3 +1,10 @@
+# OCTools Branch "swift"
+
+This is an experimental branch which contains on-going work for adding Apple's [Swift](http://swift.org) programming language to the list of code generator back-ends to OCTools.
+
+The current stable release of the OCTools system is contained in the "main" branch.
+
+
 # OCTools
 
 A suite of tools which serve as a plug-in replacement for yacc and lex. The goal
