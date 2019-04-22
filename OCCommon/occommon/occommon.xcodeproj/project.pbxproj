@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF1B2480226D1750005BA4CE /* OCTextReplace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B247F226D1750005BA4CE /* OCTextReplace.cpp */; };
 		EF530B152243E46A0061FFC6 /* OCLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = EF530B132243E46A0061FFC6 /* OCLexer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EF530B162243E46A0061FFC6 /* OCLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B142243E46A0061FFC6 /* OCLexer.cpp */; };
 		EF530B1B2243E4720061FFC6 /* OCUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = EF530B172243E4720061FFC6 /* OCUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		EF0111D21F264063006FFFFB /* liboccommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liboccommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF1B247F226D1750005BA4CE /* OCTextReplace.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OCTextReplace.cpp; path = src/OCTextReplace.cpp; sourceTree = "<group>"; };
 		EF530B132243E46A0061FFC6 /* OCLexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCLexer.h; path = src/OCLexer.h; sourceTree = "<group>"; };
 		EF530B142243E46A0061FFC6 /* OCLexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCLexer.cpp; path = src/OCLexer.cpp; sourceTree = "<group>"; };
 		EF530B172243E4720061FFC6 /* OCUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCUtilities.h; path = src/OCUtilities.h; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 				EF530B192243E4720061FFC6 /* OCAlloc.cpp */,
 				EF530B182243E4720061FFC6 /* OCCompressStates.cpp */,
 				EF530B1A2243E4720061FFC6 /* OCIntegerSet.cpp */,
+				EF1B247F226D1750005BA4CE /* OCTextReplace.cpp */,
 				EF530B172243E4720061FFC6 /* OCUtilities.h */,
 			);
 			name = Utilities;
@@ -146,6 +149,7 @@
 			files = (
 				EF530B1D2243E4720061FFC6 /* OCAlloc.cpp in Sources */,
 				EF530B1C2243E4720061FFC6 /* OCCompressStates.cpp in Sources */,
+				EF1B2480226D1750005BA4CE /* OCTextReplace.cpp in Sources */,
 				EF530B1E2243E4720061FFC6 /* OCIntegerSet.cpp in Sources */,
 				EF530B162243E46A0061FFC6 /* OCLexer.cpp in Sources */,
 			);

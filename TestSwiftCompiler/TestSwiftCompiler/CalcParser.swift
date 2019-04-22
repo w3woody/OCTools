@@ -8,6 +8,10 @@
 
 import Cocoa
 
+/*
+ *	%header/%{...%}
+ */
+
 protocol CalcParserError {
 	func error(parser: CalcParser, line: Int, column: Int, filename: String?, errorCode: Int, data: [String: AnyObject]?)
 }
@@ -20,7 +24,7 @@ class CalcParser {
 	public static let NUMBER = 0x00110002
 
 	/*
-	 *	%global ?
+	 *	%global / %local
 	 */
 
 	public var result: NSNumber? = nil
@@ -35,6 +39,10 @@ class CalcParser {
 	private static let K_FIRSTTOKEN: Int     = 0x110002    // Error token ID
 	private static let K_MAXSYMBOL: Int      = 0x110006    // Max ID for all symbols
 	private static let K_STARTSTATE: UInt16  = 0           // Start state is always 0
+
+	/*
+	 *	%errors
+	 */
 
 	/*  TokenArray
 	 *
@@ -202,6 +210,16 @@ class CalcParser {
 		errorColumn = 0
 		errorFileName = nil
 		errorDelegate = nil
+
+		/*
+		 *	%init
+		 */
+	}
+
+	deinit {
+		/*
+		 *	%finish
+		 */
 	}
 
 	/*
@@ -401,7 +419,7 @@ class CalcParser {
 	}
 
 
-//%{...%}
+//%%
 
 	/*
 	 *	Parser engine. Returns NO if there was an error during processing. Note

@@ -11,6 +11,7 @@
 #include "OCLexParser.h"
 #include "OCLexGenerator.h"
 #include "OCLexCPPGenerator.h"
+#include "OCLexSwiftGenerator.h"
 
 static const char *GHelp =
 	"oclex\n"                                                                 \
@@ -52,7 +53,8 @@ static const char *GHelp =
 typedef enum LanguageEnum
 {
 	KLanguageOP,
-	KLanguageCPP
+	KLanguageCPP,
+	KLanguageSwift
 } LanguageEnum;
 
 /************************************************************************/
@@ -62,6 +64,7 @@ typedef enum LanguageEnum
 /************************************************************************/
 
 static char GOutputFile[FILENAME_MAX];
+static char GBaseFile[FILENAME_MAX];
 static char GOutputFileName[FILENAME_MAX];
 static char GInputFile[FILENAME_MAX];
 static char GClassName[FILENAME_MAX];
@@ -129,6 +132,8 @@ static void ParseArgs(int argc, const char *argv[])
 					GLanguage = KLanguageOP;
 				} else if (!strcmp(ptr,"cpp")) {
 					GLanguage = KLanguageCPP;
+				} else if (!strcmp(ptr,"swift")) {
+					GLanguage = KLanguageSwift;
 				} else {
 					PrintError(argc,argv);
 				}
@@ -294,6 +299,75 @@ int main(int argc, const char * argv[])
 
 		strncpy(scratch,GOutputFile,sizeof(scratch));
 		strncat(scratch,".cpp",sizeof(scratch) - strlen(scratch) - 1);
+		out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCFile(GClassName, GOutputFileName, out);
+		fclose(out);
+	} else if (GLanguage == KLanguageSwift) {
+		/*
+		 *	Write predefined swift files using the output name as the source
+		 *	of the root directory
+		 */
+
+		strncpy(GBaseFile, GOutputFile, sizeof(GBaseFile)-1);
+		char *nref = GBaseFile;
+		for (char *ref = GBaseFile; ref; ++ref) {
+			if (*ref == '/') {
+				nref = ref+1;
+			}
+		}
+
+		/*
+		 *	Generate Swift File
+		 */
+
+		OCLexSwiftGenerator generator(parser.definitions);
+		generator.declCode = parser.declCode;
+		generator.classGlobal = parser.classGlobal;
+		generator.classLocal = parser.classLocal;
+		generator.classInit = parser.classInit;
+		generator.classFinish = parser.classFinish;
+		generator.classHeader = parser.classHeader;
+		generator.valueUnion = parser.valueUnion;
+		generator.endCode = parser.endCode;
+		generator.ruleStates = parser.ruleStates;
+
+		// Add rules and generate NFA
+		std::list<OCLexParser::Rule>::iterator i;
+
+		// Add rules and rule states
+		for (i = parser.rules.begin(); i != parser.rules.end(); ++i) {
+			generator.AddRuleSet(i->regex, i->code, i->start);
+		}
+
+		// Generate DFA
+		if (!generator.GenerateDFA()) {
+			// Should never happen.
+			printf("A problem happened while generating the final state machine.\n");
+			return -1;
+		}
+
+		// Now write the final output files
+		strcpy(nref,"OCLexInput.swift");
+		FILE *out = fopen(GBaseFile,"wx");	// Fail if file exists
+		if (out) {
+			generator.WriteOCLexInput(out);
+			fclose(out);
+		}
+
+		strcpy(nref,"OCFileInput.swift");
+		out = fopen(GBaseFile,"wx");	// Fail if file exists
+		if (out) {
+			generator.WriteOCFileInput(out);
+			fclose(out);
+		}
+
+		// Generate swift file
+		strncpy(scratch,GOutputFile,sizeof(scratch));
+		strncat(scratch,".swift",sizeof(scratch) - strlen(scratch) - 1);
 		out = fopen(scratch,"w");
 		if (out == NULL) {
 			printf("Unable to write to file %s\n\n",scratch);

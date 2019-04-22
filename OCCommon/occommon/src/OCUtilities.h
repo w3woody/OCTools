@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <string>
+#include <map>
 
 /************************************************************************/
 /*																		*/
@@ -94,7 +95,6 @@ class OCIntegerSet
 		uint32_t *list;		// Sorted list of integer items
 };
 
-
 /************************************************************************/
 /*																		*/
 /*	State Machine Compression											*/
@@ -127,6 +127,36 @@ class OCCompressStates
 		size_t asize;
 		uint32_t *ja;
 		uint32_t *a;
+};
+
+/************************************************************************/
+/*																		*/
+/*	Replacment Support													*/
+/*																		*/
+/************************************************************************/
+
+/*	OCTextReplace
+ *
+ *		Text replacement class. This handles the mapping and string replacement
+ */
+
+class OCTextReplace
+{
+	public:
+		OCTextReplace();
+		~OCTextReplace();
+
+		/*
+		 *	Value mapping
+		 */
+
+		std::map<std::string,std::string> map;
+
+		/*
+		 *	File writing
+		 */
+
+		void write(const char *text, FILE *f);
 };
 
 #endif /* OCUtilities_h */

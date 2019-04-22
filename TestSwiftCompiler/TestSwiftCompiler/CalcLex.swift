@@ -8,7 +8,17 @@
 
 import Cocoa
 
+/*
+ *	%header/%{...%}
+ */
+
 class CalcLex: OCLexInput {
+
+	/*
+	 *	%global / %local
+	 */
+
+
 	/*
 	 *	Internal generated state
 	 */
@@ -376,7 +386,7 @@ class CalcLex: OCLexInput {
 	 *	Internal methods declared within the Lex file
 	 */
 
-	// %{..%}
+	// %%
 
 	/*
 	 *  For conditional states this takes an end DFA state and
@@ -391,8 +401,6 @@ class CalcLex: OCLexInput {
 				return MAXACTIONS
 		}
 	}
-
-
 
 	public func lex() -> Int
 	{

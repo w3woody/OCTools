@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF1B247E226AAACC005BA4CE /* OCLexSwiftGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B247C226AAACC005BA4CE /* OCLexSwiftGenerator.cpp */; };
 		EF530B3C2243EA0F0061FFC6 /* OCCharSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B392243EA0F0061FFC6 /* OCCharSet.cpp */; };
 		EF530B3D2243EA0F0061FFC6 /* OCStartState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B3B2243EA0F0061FFC6 /* OCStartState.cpp */; };
 		EF530B402243EA330061FFC6 /* OCLexParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B3E2243EA330061FFC6 /* OCLexParser.cpp */; };
@@ -49,6 +50,8 @@
 
 /* Begin PBXFileReference section */
 		EF0111AB1F263F91006FFFFB /* oclex */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oclex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF1B247C226AAACC005BA4CE /* OCLexSwiftGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OCLexSwiftGenerator.cpp; path = src/OCLexSwiftGenerator.cpp; sourceTree = "<group>"; };
+		EF1B247D226AAACC005BA4CE /* OCLexSwiftGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OCLexSwiftGenerator.h; path = src/OCLexSwiftGenerator.h; sourceTree = "<group>"; };
 		EF530B382243EA0F0061FFC6 /* OCCharSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCCharSet.h; path = src/OCCharSet.h; sourceTree = "<group>"; };
 		EF530B392243EA0F0061FFC6 /* OCCharSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCCharSet.cpp; path = src/OCCharSet.cpp; sourceTree = "<group>"; };
 		EF530B3A2243EA0F0061FFC6 /* OCStartState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCStartState.h; path = src/OCStartState.h; sourceTree = "<group>"; };
@@ -120,12 +123,14 @@
 		EF530B352243E9E40061FFC6 /* Process */ = {
 			isa = PBXGroup;
 			children = (
+				EF1B247C226AAACC005BA4CE /* OCLexSwiftGenerator.cpp */,
+				EF1B247D226AAACC005BA4CE /* OCLexSwiftGenerator.h */,
 				EF530B452243EA630061FFC6 /* OCLexCPPGenerator.cpp */,
 				EF530B462243EA630061FFC6 /* OCLexCPPGenerator.h */,
-				EF530B442243EA630061FFC6 /* OCLexDFA.cpp */,
-				EF530B472243EA630061FFC6 /* OCLexDFA.h */,
 				EF530B4A2243EA630061FFC6 /* OCLexGenerator.cpp */,
 				EF530B482243EA630061FFC6 /* OCLexGenerator.h */,
+				EF530B442243EA630061FFC6 /* OCLexDFA.cpp */,
+				EF530B472243EA630061FFC6 /* OCLexDFA.h */,
 				EF530B432243EA630061FFC6 /* OCLexNFA.cpp */,
 				EF530B492243EA630061FFC6 /* OCLexNFA.h */,
 			);
@@ -238,6 +243,7 @@
 			files = (
 				EF530B402243EA330061FFC6 /* OCLexParser.cpp in Sources */,
 				EF530B4C2243EA640061FFC6 /* OCLexDFA.cpp in Sources */,
+				EF1B247E226AAACC005BA4CE /* OCLexSwiftGenerator.cpp in Sources */,
 				EF530B422243EA420061FFC6 /* main.cpp in Sources */,
 				EF530B4D2243EA640061FFC6 /* OCLexCPPGenerator.cpp in Sources */,
 				EF530B4B2243EA640061FFC6 /* OCLexNFA.cpp in Sources */,
