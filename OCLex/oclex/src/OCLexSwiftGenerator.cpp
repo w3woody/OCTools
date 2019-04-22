@@ -16,7 +16,7 @@
 /************************************************************************/
 
 static const char *GSource1 =
-	"//\t$(classname).swift\n"                                                \
+	"//\t$(outname)\n"                                                        \
 	"\n"                                                                      \
 	"import Cocoa\n"                                                          \
 	"\n"                                                                      \
@@ -795,6 +795,7 @@ void OCLexSwiftGenerator::WriteOCFile(const char *className, const char *outName
 	OCTextReplace replace;
 
 	replace.map["classname"] = className;
+	replace.map["outname"] = outName;
 
 	replace.map["%"] = declCode;
 	replace.map["header"] = classHeader;

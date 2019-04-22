@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF1B2483226E2FBA005BA4CE /* OCYaccSwiftGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1B2481226E2FBA005BA4CE /* OCYaccSwiftGenerator.cpp */; };
 		EF530B282243E8540061FFC6 /* OCYaccCPPGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B222243E8540061FFC6 /* OCYaccCPPGenerator.cpp */; };
 		EF530B292243E8540061FFC6 /* OCYaccLR1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B232243E8540061FFC6 /* OCYaccLR1.cpp */; };
 		EF530B2A2243E8540061FFC6 /* OCYaccGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF530B262243E8540061FFC6 /* OCYaccGenerator.cpp */; };
@@ -46,6 +47,8 @@
 
 /* Begin PBXFileReference section */
 		EF0111BE1F263FBA006FFFFB /* ocyacc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ocyacc; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF1B2481226E2FBA005BA4CE /* OCYaccSwiftGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OCYaccSwiftGenerator.cpp; path = src/OCYaccSwiftGenerator.cpp; sourceTree = "<group>"; };
+		EF1B2482226E2FBA005BA4CE /* OCYaccSwiftGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OCYaccSwiftGenerator.h; path = src/OCYaccSwiftGenerator.h; sourceTree = "<group>"; };
 		EF530B222243E8540061FFC6 /* OCYaccCPPGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCYaccCPPGenerator.cpp; path = src/OCYaccCPPGenerator.cpp; sourceTree = "<group>"; };
 		EF530B232243E8540061FFC6 /* OCYaccLR1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OCYaccLR1.cpp; path = src/OCYaccLR1.cpp; sourceTree = "<group>"; };
 		EF530B242243E8540061FFC6 /* OCYaccCPPGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCYaccCPPGenerator.h; path = src/OCYaccCPPGenerator.h; sourceTree = "<group>"; };
@@ -102,6 +105,8 @@
 		EF530B1F2243E8190061FFC6 /* Process */ = {
 			isa = PBXGroup;
 			children = (
+				EF1B2481226E2FBA005BA4CE /* OCYaccSwiftGenerator.cpp */,
+				EF1B2482226E2FBA005BA4CE /* OCYaccSwiftGenerator.h */,
 				EF530B222243E8540061FFC6 /* OCYaccCPPGenerator.cpp */,
 				EF530B242243E8540061FFC6 /* OCYaccCPPGenerator.h */,
 				EF530B262243E8540061FFC6 /* OCYaccGenerator.cpp */,
@@ -218,6 +223,7 @@
 				EF530B2D2243E86D0061FFC6 /* OCYaccParser.cpp in Sources */,
 				EF530B2F2243E8830061FFC6 /* main.cpp in Sources */,
 				EF530B282243E8540061FFC6 /* OCYaccCPPGenerator.cpp in Sources */,
+				EF1B2483226E2FBA005BA4CE /* OCYaccSwiftGenerator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

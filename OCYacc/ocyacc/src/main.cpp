@@ -13,6 +13,7 @@
 #include "OCYaccLR1.h"
 #include "OCYaccGenerator.h"
 #include "OCYaccCPPGenerator.h"
+#include "OCYaccSwiftGenerator.h"
 
 static const char *GHelp =
 	"ocyacc\n"                                                                \
@@ -53,7 +54,8 @@ static const char *GHelp =
 typedef enum LanguageEnum
 {
 	KLanguageOP,
-	KLanguageCPP
+	KLanguageCPP,
+	KLanguageSwift
 } LanguageEnum;
 
 
@@ -131,6 +133,8 @@ static void ParseArgs(int argc, const char *argv[])
 					GLanguage = KLanguageOP;
 				} else if (!strcmp(ptr,"cpp")) {
 					GLanguage = KLanguageCPP;
+				} else if (!strcmp(ptr,"swift")) {
+					GLanguage = KLanguageSwift;
 				} else {
 					PrintError(argc,argv);
 				}
@@ -305,6 +309,36 @@ int main(int argc, const char * argv[])
 
 		strncpy(scratch,GOutputFile,sizeof(scratch));
 		strncat(scratch,".cpp",sizeof(scratch) - strlen(scratch) - 1);
+		out = fopen(scratch,"w");
+		if (out == NULL) {
+			printf("Unable to write to file %s\n\n",scratch);
+			PrintError(argc, argv);
+		}
+		generator.WriteOCFile(GClassName, GOutputFileName, out);
+		fclose(out);
+	} else if (GLanguage == KLanguageSwift) {
+		OCYaccSwiftGenerator generator(parser,stateMachine);
+
+		// base output file from output file global
+		char baseOutput[FILENAME_MAX];
+		strncpy(baseOutput, GOutputFile, sizeof(baseOutput)-1);
+
+		char *ref = baseOutput;
+		for (char *x = baseOutput; *x; ++x) {
+			if (*x == '/') ref = x+1;
+		}
+
+		// Write the fixed files
+		strncpy(ref, "OCLexInput.swift", FILENAME_MAX - (ref - baseOutput) - 1);
+		FILE *out = fopen(ref,"we");
+		if (out) {
+			generator.WriteOCLexInput(out);
+			fclose(out);
+		}
+
+		// Now write the final output files
+		strncpy(scratch,GOutputFile,sizeof(scratch));
+		strncat(scratch,".swift",sizeof(scratch) - strlen(scratch) - 1);
 		out = fopen(scratch,"w");
 		if (out == NULL) {
 			printf("Unable to write to file %s\n\n",scratch);
