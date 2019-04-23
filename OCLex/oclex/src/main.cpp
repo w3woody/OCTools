@@ -255,6 +255,12 @@ int main(int argc, const char * argv[])
 	}
 
 	/*
+	 *	If we're generating swift code, we need to make a minor modification
+	 */
+	
+	parser.swiftCode = (GLanguage == KLanguageSwift);
+
+	/*
 	 *	Now construct and generate the output file
 	 */
 

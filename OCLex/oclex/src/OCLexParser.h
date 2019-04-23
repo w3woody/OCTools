@@ -74,6 +74,9 @@ class OCLexParser
 		// End code block
 		std::string endCode;
 
+		// Generating Swift?
+		bool swiftCode;
+
 	private:
 		bool ParseDeclarations(OCLexer &lex);
 		bool ParseRules(OCLexer &lex);

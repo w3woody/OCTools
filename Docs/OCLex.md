@@ -15,10 +15,10 @@ Usage: oclex [-h] [-l [oc|cpp]] [-o filename] [-c classname] inputfile
     Prints this help file. This help file will also be printed if any illegal
     parameters are provided. 
     
-* -l [oc|cpp] 
+* -l [oc|cpp|swift] 
 
     Choose language. Currently supports Objective-C by default. Can generate
-    a re-entrant C++ file instead. (This feature is currently experimental.)
+    a re-entrant C++ or Swift file instead.
 
 * -o  
 

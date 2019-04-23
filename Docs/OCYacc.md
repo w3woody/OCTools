@@ -7,17 +7,17 @@ Full documentation (in HTML) may be found here: [Using OCTools](http://htmlprevi
 
 ## Usage
 
-Usage: ocyacc [-h] [-l [oc|cpp]] [-o filename] [-c classname] inputfile
+Usage: ocyacc [-h] [-l [oc|cpp|swift]] [-o filename] [-c classname] inputfile
 
 * -h  
 
     Prints this help file. This help file will also be printed if any illegal
     parameters are provided. 
     
-* -l [oc|cpp] 
+* -l [oc|cpp|swift] 
 
     Choose language. Currently supports Objective-C by default. Can generate
-    a re-entrant C++ file instead. (This feature is currently experimental.)
+    a re-entrant C++ file or a re-entrant Swift file instead.
 
 * -o  
 

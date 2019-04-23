@@ -331,7 +331,7 @@
 			<p class="title">Using OCTools</p>
 			<p class="author">William Woody<br/>Glenview Software<br/><a href="mailto:woody@alumni.caltech.edu">woody@alumni.caltech.edu</a></p>
 			<p class="abstract">Abstract</p>
-			<p>This document gives an overview of the OCLex/OCYacc command line tools, including how to install them into XCode, and how to build lexers and parsers using these tools. OCLex and OCYacc both generate Objective-C and C++ runtime files, which allow them to be used in MacOS and iOS applications relatively easily.</p>
+			<p>This document gives an overview of the OCLex/OCYacc command line tools, including how to install them into XCode, and how to build lexers and parsers using these tools. OCLex and OCYacc both generate Objective-C, C++ and Swift runtime files, which allow them to be used in MacOS and iOS applications relatively easily.</p>
 			<footer class="copyright">
 				<p>Copyright &copy; 2019 William Edward Woody, Glenview Software, all rights reserved.</p>
 				<p>Permission to make digital or hard copies of all or part of this work is granted under the provisions of the open-source BSD license, outlined later in this document.</p>
@@ -423,13 +423,13 @@
 		
 		<section>
 			<h1>About OCTools</h1>
-			<p>The OCTools command-line programs OCYacc and OCLex are tools which can be used as rough substitutes for yacc and lex in generating file tokenizers and file parsers. The goal is to provide roughly source-compatible substitutes for yacc and lex that can generate re-entrant parsers in Objective-C code or C++ code.</p>
-			<p>The suite of tools generate a re-entrant Objective-C or C++ class which can be used to tokenize and parse an input file. The system generates LR1 grammars, which means they are limited to the family of grammars which require only one look-ahead. (LR1 grammars operate in linear time and can be quite fast.)</p>
+			<p>The OCTools command-line programs OCYacc and OCLex are tools which can be used as rough substitutes for yacc and lex in generating file tokenizers and file parsers. The goal is to provide roughly source-compatible substitutes for yacc and lex that can generate re-entrant parsers in Objective-C, C++ or Swift.</p>
+			<p>The suite of tools generate a re-entrant Objective-C, C++ or Swift class which can be used to tokenize and parse an input file. The system generates LR1 grammars, which means they are limited to the family of grammars which require only one look-ahead. (LR1 grammars operate in linear time and can be quite fast.)</p>
 			<p>OCTools were built to be incorporated into Xcode, and instructions as to how to do that is later in this paper.</p>
-			<p>It's worth noting at this point that the original yacc and lex tools incorporate C code in their files, to allow the user to create C parsers and include code to execute as parts of a file are successfully parsed. This inline code (generated when part of a language is reduced) may not be compatible with Objective-C or with C++. Thus, while you cannot use the exact same yacc or lex file to generate an Objective-C or C++ parser as you would use with yacc or lex, the changes mostly revolve around the requirements for building an Objective-C or C++ file.</p>
+			<p>It's worth noting at this point that the original yacc and lex tools incorporate C code in their files, to allow the user to create C parsers and include code to execute as parts of a file are successfully parsed. This inline code (generated when part of a language is reduced) may not be compatible with Objective-C, C++ or Swift. Thus, while you cannot use the exact same yacc or lex file to generate an Objective-C, C++ or Swift parser as you would use with yacc or lex, the changes mostly revolve around the requirements for building an Objective-C, C++ or Swift.</p>
 			
 			<h2>About This Document</h2>
-			<p>This document provides several examples for building complex parsers using OCLex and OCYacc, including how to write .y and .l files that include code snippets that work with Objective-C and C++.</p>
+			<p>This document provides several examples for building complex parsers using OCLex and OCYacc, including how to write .y and .l files that include code snippets that work with Objective-C, C++ and Swift.</p>
 			<p>Examples include example code for building tokenizers, for building parsers that take a custom tokenizer not built using OCLex, and for building complete parsers that take as its input a stream of characters and produce a complete parser/tokenizer stack.</p>
 
 			<h2>Assumptions</h2>
@@ -464,35 +464,53 @@
 			<codeblock>/usr/local/bin/oclex -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"</codeblock>
 			<p>for Yacc, enter:</p>
 			<codeblock>/usr/local/bin/ocyacc -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"</codeblock>
-			<p>If you're building a C++ file you may wish to add the appropriate flags.</p>
-			<p>For both you also need to add the following output files:</p>
+			<p>If you're building in C++ or Swift, you may wish to add the appropriate flags.</p>
+			<p>For C++ that would look like:</p>
+			<codeblock>/usr/local/bin/oclex <font color="red">-l cpp</font> -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"</codeblock>
+			<p>or</p>
+			<codeblock>/usr/local/bin/ocyacc <font color="red">-l cpp</font> -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"</codeblock>
+			<p>For Swift that would look like:</p>
+			<codeblock>/usr/local/bin/oclex <font color="red">-l swift</font> -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"</codeblock>
+			<p>or</p>
+			<codeblock>/usr/local/bin/ocyacc <font color="red">-l swift</font> -o "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE" "$INPUT_FILE_PATH"</codeblock>
+			<p>For both OCLex and OCYacc you also need to add the following output files for Objective-C:</p>
 <codeblock>$($DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).m
 $($DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).h</codeblock>
-			<p>(or .cpp if a C++ file).</p>
+			<p>For C++ you would add:</p>
+<codeblock>$($DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).<font color="red">cpp</font>
+$($DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).h</codeblock>
+			<p>For Swift you would add:</p>
+<codeblock>$($DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).<font color="red">swift</font></codeblock>
+
 			<p>The result should look like the following:</p>
 			<img src="images/xcode10.png" />
-			<note>Note: The above instructions assume you are using Xcode 10. Earlier versions of Xcode seemed to work with the output files omitting the <code>$(DERIVED_SOURCES_DIR)/</code> prefix.
+			<note>Note: The above instructions assume you are using Xcode 10. Earlier versions of Xcode seemed to work with the output files omitting the <code>$(DERIVED_SOURCES_DIR)/</code> prefix.</note>
+			
+			<h2>Including Swift source files</h2>
+			<p>The Swift version of the generated code relies on two additional source files which declare two public classes: <code>OCFileInput</code> and <code>OCLexInput</code>, described below. (The Objective-C and C++ versions of these files may declare these classes in the generated header files using #ifdef/#endif blocks as needed.)</p>
+			<p>In order to compile your project correctly, you must include these two source files, which are installed at /usr/local/src/octools. The two files can be copied to your project or included in your project from their original locations.</p>
 		</section>
+		
 		
 		<section>
 			<h1>OCYacc Usage</h1>
 			
 			<p>This is a brief overview and quick reference guide to using OCYacc, including the specification for the <code>.y</code> file as well as how to invoke OCYacc from the command line. More detailed examples of using the ocyacc command line tool and building applications with ocyacc can be found in later chapters.</p>
 			<h2>OCYacc Command Line Arguments</h2>
-			<codeblock>ocyacc [-h] [-l [oc|cpp]] [-o filename] [-c classname] inputfile</codeblock>
+			<codeblock>ocyacc [-h] [-l [oc|cpp|swift]] [-o filename] [-c classname] inputfile</codeblock>
 
 			<p>Where:</p>
 			<dl class="usage">
 			<dt>-h</dt>
 			<dd>Print a help file giving a summary of the command-line arguments.</dd>
-			<dt>-l [oc|cpp]</dt>
-			<dd>Choose output language. By default Objective-C is generated. This can generate re-entrant C++  code file by using the cpp option.</dd>
+			<dt>-l [oc|cpp|swift]</dt>
+			<dd>Choose output language. By default Objective-C is generated. This can generate re-entrant C++ or Swift by using the appropriate declaration.</dd>
 			<dt>-o <i>filename</i></dt>
 			<dd>Uses the file name as the base name for the file. (So <code>-o foo</code> outputs <code>foo.m</code> and <code>foo.h</code> for Objective-C files.)</dd>
 			<dt>-c <i>classname</i></dt>	
 			<dd>Uses the specified class name for the generated class. (By default the input file name is used to generate the class name.)</dd>
 			</dl>
-This program by default takes an input file of form <code>MyFile.y</code>, and will generate a class <code>MyFile</code> with two output files <code>MyFile.m</code> and <code>MyFile.h</code> for an Objective-C output file.
+			<p>This program by default takes an input file of form <code>MyFile.y</code>, and will generate a class <code>MyFile</code> with two output files <code>MyFile.m</code> and <code>MyFile.h</code> for an Objective-C output file. For C++ this produces the files <code>MyFile.cpp</code> and <code>MyFile.h</code>; for Swift this produces the file <code>MyFile.swift</code>.</p>
 
 			<h2>The OCYacc Input File</h2>
 			<p>The input file for OCYacc is similar to the input file used by yacc or bison, but with some very important differences.</p>
@@ -591,9 +609,9 @@ Code</codeblock>
 			<p>This defines the type associated with the production rules listed in the list of symbols. The <code>%type</code> declaration is optional, and is only required when a production rule has a value associated with it.</p>
 			<p>Both the <code>%token</code> and <code>%type</code> declarations can be used to associate a type with a terminal token or with a production rule. The type defines the value of the <code>$$</code>, and <code>$0</code> through <code>$n</code> pseudovariables used in writing the code associated with a production rule.</p>
 			<p>How the type parameter is interpreted depends on the target language.</p>
-			<p>For Objective C, the type parameter is the Objective C class type that defines the value of an object. The Objective C type must be an NSObject or descendant of an NSObject class. For example, if you have a rule whose value is an array of strings you would write:</p>
+			<p>For Objective C and Swift, the type parameter is the Objective C or Swift class type that defines the value of an object. The Objective C type must be an NSObject or descendant of an NSObject class. For Swift, the type must be a class; it cannot be a structure. For example, if you have a rule whose value is an array of strings in Objective-C you would write:</p>
 			<codeblock>%type &lt;NSMutableArray&lt;NSString *&gt;&gt; rule</codeblock>
-			<p>This implies that with Objective C, there is no %union declaration. As all the types are interpreted as class declarations, this implies during error handling excess memory can be automatically released. It also allows you to use certain built-in classes without additional declarations.</p>
+			<p>This implies that with Objective C and with Swift, there is no %union declaration. As all the types are interpreted as class declarations, this implies during error handling excess memory can be automatically released. It also allows you to use certain built-in classes without additional declarations.</p>
 			<p>For C++, the type parameter indicates the variable name in the %union declaration.</p>
 			
 <codeblock>%union {
@@ -784,6 +802,52 @@ bool MyYacc::parse()
 }
 
 @end</codeblock>
+
+			<p>In Swift, the generated class looks like:</p>
+
+<codeblock>//  MyYacc
+
+import Cocoa
+
+// %header, %{ ... %} code goes here
+
+protocol MyYaccError {
+    <i>... OCYacc generated protocol ...</i>
+}
+
+class MyYacc {
+    <i>... OCYacc generated constants ...</i>
+
+    // %global, %local code goes here
+    
+    <i>... OCYacc generated parser tables ...</i>
+
+    <i>... OCYacc error constants ...</i>
+    
+    // %error code goes here
+
+    <i>... Other OCYacc generated declarations ...</i>
+
+    public init(lexer: OCLexInput)
+    {
+        <i>... OCYacc specific initalization ...</i>
+
+        // %init code goes here
+    }
+
+    deinit {
+        // %finish code goes here
+    }
+
+    <i>... OCYacc generated code ...</i>
+
+    // code_block from bottom of file goes here
+
+    public func parse() -> Bool
+    {
+        <i>... OCYacc generated parser code ...</i>
+    }
+}</codeblock>
 			
 			<p>The placement of each segment of code implies certain blocks of code have certain defined purposes. That's given below, though note this can be "abused" if you know where the code you're writing will be inserted into the generated file.</p>
 			
@@ -833,6 +897,12 @@ bool MyYacc::parse()
 #define ERROR_VARUNDEFINED      (ERROR_STARTERRORID+1)
 }</codeblock>
 
+			<p>Or in Swift:</p>
+
+<codeblock>%errors {
+static let ERROR_VARUNDEFINED = (CalcParser.ERROR_STARTERRORID+1)
+}</codeblock>
+
 			<p>See the discussion on error handling below for more information.</p>
 
 <codedef>%%
@@ -875,6 +945,11 @@ Code</codedef>
 
 <codeblock>void errorWithCode(int32_t code, std::map<std::string,std::string> &data);
 void errorWithCode(int32_t code);</codeblock>
+
+			<p>For Swift, the methods are:</p>
+
+<codeblock>func error(code: Int, data: [String: AnyObject])
+func error(code: Int)</codeblock>
 
 			<p>For both methods, the first parameter <code>code</code> is an error value which translates to a specific error in your parser. Several error values are predefined in the generated header file; for both, the values <code>ERROR_SYNTAX</code>, <code>ERROR_MISSINGTOKEN</code> and <code>ERROR_MISSINGTOKENS</code> are defined. Your own error tokens should begin with the value <code>ERROR_STARTERRORID</code>, and warnings can have the <code>ERRORMASK_WARNING</code> bit set.</p>
 			<p>The second parameter in the first version of each is an optional set of key/value pairs that your error can return for more information. The second version of each method simply passes an empty set of key/value pairs to the error handler.</p>
@@ -931,6 +1006,17 @@ void errorWithCode(int32_t code);</codeblock>
 	      filename:(NSString *)fname 
 	  errorMessage:(NSString *)error;
 @end</codeblock>
+
+			<p>For Swift, you would create a delegate in Swift that instantiates the <code><i>class</i>Error</code> protocol:</p>
+			
+<codeblock>protocol CalcParserError {
+    func error(parser: CalcParser, 
+               line: Int, 
+               column: Int, 
+               filename: String?, 
+               errorCode: Int, 
+               data: [String: AnyObject]?)
+}</codeblock>
 	          
 	    	<p>For C++, you would create a custom class which inherits from the generated parser class, and override the method:</p>
 	    	<codeblock>	virtual void error(int32_t line, 
@@ -940,11 +1026,11 @@ void errorWithCode(int32_t code);</codeblock>
 	    	           std::map&lt;std::string,std::string&gt; &map);</codeblock>
 		    <p>The default C++ implementation does nothing.</p>
 		    
-		    <p>In both cases the line number, column number and file name of the input token is returned. The file name, line number and column number of the input token is taken from the lexer input stream.</p>
+		    <p>In all cases the line number, column number and file name of the input token are returned. The file name, line number and column number of the input token is taken from the lexer input stream.</p>
 			<p>Examples of error processing can be found in the examples below.</p>
 			
 			<h2>Using The Generated Class</h2>
-			<p>The Objective C and C++ generation code will both generate a stand-alone parser file. Both classes also generate an optional protocol (or abstract class in C++) which define the lexer that provides a string of tokens (and their value) to the parser.</p>
+			<p>The Objective C, C++ and Swift generation code will both generate a stand-alone parser file. Both classes also generate an optional protocol (or abstract class in C++) which define the lexer that provides a string of tokens (and their value) to the parser.</p>
 			<p>Assuming you've built a lexer class which conforms to the OCLexInput protocol, in Objective C you would use your parser by writing:</p>
 			
 <codeblock>MyLexer *lexer = [[MyLexer alloc] init...];
@@ -964,32 +1050,41 @@ if (parser.parse()) {
 } else {
     // handle error
 }</codeblock>
+
+			<p>And Swift:</p>
+
+<codeblock>let lexer = MyLexer.init()
+let parser = MyYacc.init()
+if parser.parse() {
+    // use results
+} else {
+    // handle error
+}</codeblock>
 			
 			<p>Typically the results are stored in the class itself in custom code you provide. That is, in order to get the results (say, in the form of a parse tree), you would declare a %global section which presents the results, and access the results through that declaration.</p>
 			<p>More information about how to do this is contained in later chapters.</p>
 		</section>
-					
+
 		<section>
 			<h1>OCLex Usage</h1>
 			<p>This is a brief overview and quick reference guide to using OCLex, including the specification for the .l file as well as how to invoke OCLex from the command line. More detailed examples of using the oclex command line tool and building applications with oclex can be found in later chapters.</p>
 			<note>Note: The command line arguments and many parameters of the input lex file are similar to the OCYacc input files.</note>
 			
 			<h2>OCLex Command Line Arguments</h2>
-			<codeblock>oclex [-h] [-l [oc|cpp]] [-o filename] [-c classname] inputfile</codeblock>
+			<codeblock>oclex [-h] [-l [oc|cpp|swift]] [-o filename] [-c classname] inputfile</codeblock>
 			
 			<p>Where:</p>
 			<dl class="usage">
 			<dt>-h</dt>
 			<dd>Print a help file giving a summary of the command-line arguments.</dd>
-			<dt>-l [oc|cpp]</dt>
-			<dd>Choose output language. By default Objective-C is generated. This can generate re-entrant C++  code file by using the cpp option.</dd>
+			<dt>-l [oc|cpp|swift]</dt>
+			<dd>Choose output language. By default Objective-C is generated. This can generate re-entrant C++ code by using the cpp option, and re-entrant Swift code by using the swift option.</dd>
 			<dt>-o <i>filename</i></dt>
 			<dd>Uses the file name as the base name for the file. (So <code>-o foo</code> outputs <code>foo.m</code> and <code>foo.h</code> for Objective-C files.)</dd>
 			<dt>-c <i>classname</i></dt>	
 			<dd>Uses the specified class name for the generated class. (By default the input file name is used to generate the class name.)</dd>
 			</dl>
-
-			<p>This program by default takes an input file of form <code>MyFile.l</code>, and will generate a class <code>MyFile</code> with two output files <code>MyFile.m</code> and <code>MyFile.h</code> for an Objective-C output file.</p>
+			<p>This program by default takes an input file of form <code>MyFile.y</code>, and will generate a class <code>MyFile</code> with two output files <code>MyFile.m</code> and <code>MyFile.h</code> for an Objective-C output file. For C++ this produces the files <code>MyFile.cpp</code> and <code>MyFile.h</code>; for Swift this produces the file <code>MyFile.swift</code>.</p>
 			
 			<h2>The OCLex Input File</h2>
 			<p>The input file for OCYacc is similar to the input file used by lex or flex, but with some very important differences.</p>
@@ -1171,6 +1266,40 @@ int32_t Example2::lex(void)
 }
 
 @end</codeblock>
+
+			<p>Code generated in Swift looks like:</p>
+			
+<codeblock>//	MyLex
+
+import Cocoa
+
+// %header and %{..%} code goes here
+
+class MyLex: OCLexInput {
+    // %global and %local code goes here
+
+    <i>... Other OCLex generated declarations ...</i>
+
+	public init(stream f: OCFileInput)
+	{
+        <i>... Other OCLex generated initialization ...</i>
+
+        // %init code goes here
+	}
+
+	deinit {
+	    // %finish code goes here
+	}
+
+    <i>... OCLex generated code ...</i>
+
+    // code_block from bottom of file goes here
+
+	public func lex() -> Int
+	{
+        <i>... OCLex generated parser ...</i>
+	}
+}</codeblock>
 			
 			<p>The placement of each segment of code implies certain blocks of code have certain defined purposes. That's given below, though note this can be "abused" if you know where the code you're writing will be inserted into the generated file.</p>
 
@@ -1213,7 +1342,7 @@ int32_t Example2::lex(void)
 <codedef>%%
 Code</codedef>
 
-			<p>The third part of the overall oclex file contains a block of optional code at the bottom of the file. This is where you would declare methods that are internal to your custom class which provide additional functionality required by your application. This is where the C++ or Objective-C style methods would be added. The methods are guaranteed to be written in such a way so that they are accessible by any inline code associated with your production rules.</p>
+			<p>The third part of the overall oclex file contains a block of optional code at the bottom of the file. This is where you would declare methods that are internal to your custom class which provide additional functionality required by your application. This is where the C++, Objective-C or Swift style methods would be added. The methods are guaranteed to be written in such a way so that they are accessible by any inline code associated with your production rules.</p>
 			
 			<h3>The Lex Rules Section</h3>
 			<p>The rules section contains one or more rules of the form:</p>
@@ -1326,6 +1455,7 @@ int main()
 			<h4>Optional rules</h4>
 			<p>A rule may be made optional by adding the <code>&lt;START&gt;</code> prefix, with <code>START</code> as one of the states previously declared in the <code>%start</code> declaration section. If is added, then the rule is only executed if the <code>START</code> state is true.</p>
 			<p>A rule state may be activated by adding the code <code>BEGIN START;</code>--this is translated to code which sets the state associated with <code>START</code>. If the statement <code>BEGIN 0;</code> is found, all states are cleared. The code <code>END START;</code> is used to clear the specific state associated with <code>START</code>.</p>
+			<note>Note: The ending semicolon is optional when generating Swift code.</note>
 			
 			<h4>Token Values associated with Rules</h4>
 			<p>OCLex uses a slightly different mechanism for passing values to OCYacc than used by Lex and Yacc. To review, Yacc uses the <code>%union</code> directive to specify a union structure in C to represent the potential values of symbols and tokens. This structure is exposed to Lex via the <code>yylval</code> global, which is a union object declared with the contents of the <code>%union</code> declaration.</p>
@@ -1338,7 +1468,7 @@ int main()
 
 			<p>And in your Lex production rule, write:</p>
 			<codeblock>[0-9]+    { yylval.tokenValue = atoi(yytext); return INTEGER; }</codeblock>
-			<p>Objective-C does not provide unions, so OCLex and OCYacc uses a different mechanism. Each token in OCYacc may have an associated type; the type represents a class that stores the value. No <code>%union</code> declaration is required.</p>
+			<p>Objective-C and Swift do not provide unions, so OCLex and OCYacc uses a different mechanism. Each token in OCYacc may have an associated type; the type represents a class that stores the value. No <code>%union</code> declaration is required.</p>
 			<p>Thus, in OCYacc, you'd replace the above with:</p>
 			<codeblock>%token &lt;NSNumber&gt; INTEGER</codeblock>
 			<p>This indicates our integer value is returned in an NSNumber object. You would then set the value self.value to the value in your Lex production rule:</p>
@@ -1380,7 +1510,13 @@ int main()
         virtual int peekByte() = 0;
 };</codeblock>
 
-			<p>In both cases, <code>readByte</code> reads the next byte and advances the file reader to the next byte position in the file, returning <code>-1</code> if the end of file has been reached. And <code>peekByte</code> reads the next byte in the file but does not advance the position in the file. (This is used to peek at the next byte in the file without reading it.)</p>
+<p>In Swift it has the declaration:</p>
+<codeblock>protocol OCFileInput {
+    func readByte() -> Int
+    func peekByte() -> Int
+}</codeblock>
+
+			<p>In all cases, <code>readByte</code> reads the next byte and advances the file reader to the next byte position in the file, returning <code>-1</code> if the end of file has been reached. And <code>peekByte</code> reads the next byte in the file but does not advance the position in the file. (This is used to peek at the next byte in the file without reading it.)</p>
 			<p>You need to provide the file input class yourself. Examples of this can be found later in this document.</p>
 			<h3>File and line handling</h3>
 			<p>The generated lexer class provides the Objective-C method:</p>
@@ -1388,6 +1524,9 @@ int main()
 			<p>This method can be used to set the current file and line number of the input file, and can be used to set the current file name or the file name and line number during parsing. (For example, you may use this method when writing a compiler that handles <code>#include</code> preprocessor directives.)</p>
 			<p>For C++, the same method is:</p>
 			<codeblock>void setFile(std::string &file, int32_t line);</codeblock>
+			<p>For Swift, the methods are:</p>
+<codeblock>public func set(file: String?, line l: Int)
+public func set(line l: Int)</codeblock>
 		</section>
 		
 		<section>
@@ -1901,6 +2040,14 @@ void errorWithCode(int32_t code);</codeblock>
 Syntax Error at 0:26
 Error.</codeblock>
 		</section>
+		
+		<section>
+			<h1>A Complex Example in Swift</h1>
+			<p>This example shows creating our complex calculator example, complete with error processing, but in the Swift language. Rather than repeat the documentation above, this will only highlight the differences with the .y and .l files in order to make this example work.</p>
+			###
+		</section>
+		
+		
 		<section>
 			<h1>Using OCLex without OCYacc</h1>
 			<p>The OCLex tokenizer tool can certainly be used without an OCYacc-generated grammar. This is useful if, for example, you wish to build your own recursive-descent parser but do not want the hassle of building the string tokenizer for your language. The example code for the following is contained at GitHub at:</p>

@@ -397,7 +397,11 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 					} else {
 						if (lex.fToken == "0") {
 							// insert code to clear state
-							code += "states = 0;";
+							if (swiftCode) {
+								code += "states = 0";
+							} else {
+								code += "states = 0;";
+							}
 						} else {
 							// Find bitmask
 							uint32_t index = 1;
@@ -413,14 +417,20 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 
 							if (found) {
 								char buffer[64];
-								sprintf(buffer,"states |= %u;",index);
+								if (swiftCode) {
+									sprintf(buffer,"states |= %u",index);
+								} else {
+									sprintf(buffer,"states |= %u;",index);
+								}
 								code += buffer;
 							} else {
 								fprintf(stderr,"%s:%d Illegal state after BEGIN declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
 							}
 						}
-						if (';' != lex.ReadToken()) {
-							fprintf(stderr,"%s:%d Expect ';' after BEGIN declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+						if (!swiftCode) {
+							if (';' != lex.ReadToken()) {
+								fprintf(stderr,"%s:%d Expect ';' after BEGIN declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+							}
 						}
 					}
 				} else if (lex.fToken == "END") {
@@ -450,13 +460,20 @@ bool OCLexParser::ParseRules(OCLexer &lex)
 
 						if (found) {
 							char buffer[64];
-							sprintf(buffer,"states &= ~%u;",index);
+							if (swiftCode) {
+								sprintf(buffer,"states &= ~%u",index);
+							} else {
+								sprintf(buffer,"states &= ~%u;",index);
+							}
 							code += buffer;
 						} else {
 							fprintf(stderr,"%s:%d Illegal state after END declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
 						}
-						if (';' != lex.ReadToken()) {
-							fprintf(stderr,"%s:%d Expect ';' after END declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+
+						if (!swiftCode) {
+							if (';' != lex.ReadToken()) {
+								fprintf(stderr,"%s:%d Expect ';' after END declaration\n",lex.fFileName.c_str(),lex.fTokenLine);
+							}
 						}
 					}
 				} else {
