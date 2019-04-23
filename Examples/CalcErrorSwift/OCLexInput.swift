@@ -1,8 +1,4 @@
-//  OCLexInput.swift
-//
-//  OCTools support source file
-//
-//  (C) 2019 William Woody, All Rights Reserved
+//	OCLexInput.swift
 
 import Foundation
 
@@ -23,5 +19,3 @@ protocol OCLexInput {
 
 	func lex() -> Int
 }
-
-

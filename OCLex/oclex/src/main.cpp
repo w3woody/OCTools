@@ -64,7 +64,6 @@ typedef enum LanguageEnum
 /************************************************************************/
 
 static char GOutputFile[FILENAME_MAX];
-static char GBaseFile[FILENAME_MAX];
 static char GOutputFileName[FILENAME_MAX];
 static char GInputFile[FILENAME_MAX];
 static char GClassName[FILENAME_MAX];
@@ -308,19 +307,6 @@ int main(int argc, const char * argv[])
 		fclose(out);
 	} else if (GLanguage == KLanguageSwift) {
 		/*
-		 *	Write predefined swift files using the output name as the source
-		 *	of the root directory
-		 */
-
-		strncpy(GBaseFile, GOutputFile, sizeof(GBaseFile)-1);
-		char *nref = GBaseFile;
-		for (char *ref = GBaseFile; ref; ++ref) {
-			if (*ref == '/') {
-				nref = ref+1;
-			}
-		}
-
-		/*
 		 *	Generate Swift File
 		 */
 
@@ -350,25 +336,10 @@ int main(int argc, const char * argv[])
 			return -1;
 		}
 
-		// Now write the final output files
-		strcpy(nref,"OCLexInput.swift");
-		FILE *out = fopen(GBaseFile,"wx");	// Fail if file exists
-		if (out) {
-			generator.WriteOCLexInput(out);
-			fclose(out);
-		}
-
-		strcpy(nref,"OCFileInput.swift");
-		out = fopen(GBaseFile,"wx");	// Fail if file exists
-		if (out) {
-			generator.WriteOCFileInput(out);
-			fclose(out);
-		}
-
 		// Generate swift file
 		strncpy(scratch,GOutputFile,sizeof(scratch));
 		strncat(scratch,".swift",sizeof(scratch) - strlen(scratch) - 1);
-		out = fopen(scratch,"w");
+		FILE *out = fopen(scratch,"w");
 		if (out == NULL) {
 			printf("Unable to write to file %s\n\n",scratch);
 			PrintError(argc, argv);

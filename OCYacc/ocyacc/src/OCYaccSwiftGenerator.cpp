@@ -36,6 +36,9 @@ static const char *GParser1 =
 
 static const char *GParser2 =
 	"\n"                                                                      \
+	"\t$(global)\n"                                                           \
+	"\t$(local)\n"                                                            \
+	"\n"                                                                      \
 	"\t/*\n"                                                                  \
 	"\t *\tError Values\n"                                                    \
 	"\t */\n"                                                                 \
@@ -688,15 +691,12 @@ void OCYaccSwiftGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 
 				if (isAssign) {
 					ret += "s.value";
-					if (rule.prodType.length() != 0) {
-						ret += "." + rule.prodType;
-					}
 				} else {
 					if (rule.prodType.length() == 0) {
 						fprintf(stderr,"Warning: Production for rule %s has no type\n",rule.prodDebug.c_str());
 						ret += "(s.value)";
 					} else {
-						ret += " (s.value.";
+						ret += " (s.value as! ";
 						ret += rule.prodType;
 						ret += ")";
 					}
@@ -758,7 +758,7 @@ void OCYaccSwiftGenerator::WriteRule(FILE *f, const OCYaccLR1::Reduction &rule)
 					}
 
 					if (valueType.size() > 0) {
-						ret += ".";
+						ret += " as! ";
 						ret += valueType;
 					} else {
 						fprintf(stderr,"Warning: Rule %s, $%zu has no type\n",rule.prodDebug.c_str(),value);
@@ -796,7 +796,7 @@ void OCYaccSwiftGenerator::WriteYTables(FILE *f)
 	char buffer[64];
 
 	// Constants to print
-	fprintf(f,"// Various constants\n");
+	fprintf(f,"\t// Various constants\n");
 	fprintf(f,"\tprivate static let K_ACCEPTSTATE: UInt16 = %-8zu    // Final accept state\n",state.accept);
 	fprintf(f,"\tprivate static let K_EOFTOKEN: Int       = 0x%-8x   // EOF token ID\n",state.eofTokenID);
 	fprintf(f,"\tprivate static let K_ERRORTOKEN: Int     = 0x%-8x   // Error token ID\n",state.errorTokenID);
@@ -811,7 +811,7 @@ void OCYaccSwiftGenerator::WriteYTables(FILE *f)
 	fprintf(f,"\t */\n\n");
 
 	bool first = true;
-	fprintf(f,"private static let TokenArray: [String] = [\n");
+	fprintf(f,"\tprivate static let TokenArray: [String] = [\n");
 	std::vector<OCYaccLR1::TokenConstant>::const_iterator tokIter;
 	for (tokIter = state.tokens.cbegin(); tokIter != state.tokens.cend(); ++tokIter) {
 		if (first) {
@@ -822,7 +822,7 @@ void OCYaccSwiftGenerator::WriteYTables(FILE *f)
 		}
 		fprintf(f,"\"%s\"",tokIter->token.c_str());
 	}
-	fprintf(f,"\t\n]\n\n");
+	fprintf(f,"\n\t]\n\n");
 
 	// Reduction table
 	len = state.reductions.size();
@@ -887,11 +887,7 @@ void OCYaccSwiftGenerator::WriteYTables(FILE *f)
 			fprintf(f,"\t\t");
 		}
 		uint32_t token = state.actionJ[i];
-		if ((32 < token) && (token < 127) && (token != '\'') && (token != '\\')) {
-			sprintf(buffer,"'%c'",(char)token);
-		} else {
-			sprintf(buffer,"0x%x",token);
-		}
+		sprintf(buffer,"0x%x",token);
 		fprintf(f,"%8s",buffer);
 	}
 	fprintf(f,"\n\t]\n\n");
@@ -966,45 +962,6 @@ void OCYaccSwiftGenerator::WriteYTables(FILE *f)
 
 /************************************************************************/
 /*																		*/
-/*	Fixed Files															*/
-/*																		*/
-/************************************************************************/
-
-static const char *GLexInput =
-	"//\tOCLexInput.swift\n"                                                  \
-	"\n"                                                                      \
-	"import Foundation\n"                                                     \
-	"\n"                                                                      \
-	"/*\tOCLexInput\n"                                                        \
-	" *\n"                                                                    \
-	" *\t\tThe protocol for our lex reader file that the lex stream must\n"   \
-	" *\tprovide. This is the same as the protocol generated as part of the OCYacc\n" \
-	" *\toutput, and allows us to glue the Lexer and Parser together.\n"      \
-	" */\n"                                                                   \
-	"\n"                                                                      \
-	"protocol OCLexInput {\n"                                                 \
-	"\tvar line: Int { get }\n"                                               \
-	"\tvar column: Int { get }\n"                                             \
-	"\tvar filename: String\? { get }\n"                                      \
-	"\tvar text: String { get }\n"                                            \
-	"\tvar abort: String\? { get }\n"                                         \
-	"\tvar value: AnyObject\? { get }\n"                                      \
-	"\n"                                                                      \
-	"\tfunc lex() -> Int\n"                                                   \
-	"}\n";
-
-/*	OCLexSwiftGenerator::WriteOCLexInput
- *
- *		This generates the fixed OCLexInput file
- */
-
-void OCYaccSwiftGenerator::WriteOCLexInput(FILE *f)
-{
-	fprintf(f,"%s",GLexInput);
-}
-
-/************************************************************************/
-/*																		*/
 /*	Write Files															*/
 /*																		*/
 /************************************************************************/
@@ -1043,6 +1000,7 @@ void OCYaccSwiftGenerator::WriteOCFile(const char *classname, const char *output
 //			fprintf(f,"\n");
 //		}
 	}
+	fprintf(f,"\n");
 
 	// Write internal constants
 	WriteYTables(f);

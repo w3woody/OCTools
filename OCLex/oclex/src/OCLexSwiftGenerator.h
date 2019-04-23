@@ -39,8 +39,6 @@ class OCLexSwiftGenerator : public OCLexDFA
 		 *	Write the Objective C file, after the DFA is generated.
 		 */
 
-		void WriteOCFileInput(FILE *f);
-		void WriteOCLexInput(FILE *f);
 		void WriteOCFile(const char *className, const char *outputName, FILE *f);
 
 	private:

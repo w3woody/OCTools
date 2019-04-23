@@ -54,6 +54,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EF1B24A5226E94B9005BA4CE /* OCFileInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCFileInput.swift; sourceTree = "<group>"; };
+		EF1B24A6226E94B9005BA4CE /* OCLexInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCLexInput.swift; sourceTree = "<group>"; };
 		EF530B6C2243EB8A0061FFC6 /* ocyacc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ocyacc.xcodeproj; path = ../../OCYacc/ocyacc/ocyacc.xcodeproj; sourceTree = "<group>"; };
 		EF530B722243EB8F0061FFC6 /* oclex.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = oclex.xcodeproj; path = ../../OCLex/oclex/oclex.xcodeproj; sourceTree = "<group>"; };
 		EF530B7E224541C20061FFC6 /* conclusion.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = conclusion.html; sourceTree = "<group>"; };
@@ -95,6 +97,8 @@
 				EF530B7F224541C20061FFC6 /* license.html */,
 				EF530B80224541C20061FFC6 /* welcome.html */,
 				EF530B81224541C20061FFC6 /* distribution.xml */,
+				EF1B24A5226E94B9005BA4CE /* OCFileInput.swift */,
+				EF1B24A6226E94B9005BA4CE /* OCLexInput.swift */,
 			);
 			path = Package;
 			sourceTree = "<group>";
@@ -173,7 +177,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Go to build products\ncd $BUILT_PRODUCTS_DIR\n\n# Make installation root\nmkdir -p pkg/usr/local/bin\ncp -R ocyacc pkg/usr/local/bin\ncp -R oclex pkg/usr/local/bin\n\n# Build tool installation package\npkgbuild --root pkg --identifier com.chaosinmotion.OCTools --version 1.0 --ownership recommended tools.pkg\n\n# Add timestamp\nsed \"s/DATE/$(date '+%B %-d, %Y @ %-l:%M %p %Z')/g\" $SRCROOT/Package/welcome.html > $SRCROOT/Package/welcome_.html\n\n# Build the package\nproductbuild --distribution $SRCROOT/Package/distribution.xml --resources $SRCROOT/Package --package-path tools.pkg --version 1.0 octools.pkg\n\n# Move to package root\ncp octools.pkg $SRCROOT/../..\n";
+			shellScript = "# Go to build products\ncd $BUILT_PRODUCTS_DIR\n\n# Make installation root\nmkdir -p pkg/usr/local/bin\ncp -R ocyacc pkg/usr/local/bin\ncp -R oclex pkg/usr/local/bin\n\n# Make shared sources\nmkdir -p pkg/usr/local/src/octools\ncp -R $SRCROOT/Package/OCFileInput.swift pkg/usr/local/src/octools\ncp -R $SRCROOT/Package/OCLexInput.swift pkg/usr/local/src/octools\n\n# Build tool installation package\npkgbuild --root pkg --identifier com.chaosinmotion.OCTools --version 1.0 --ownership recommended tools.pkg\n\n# Add timestamp\nsed \"s/DATE/$(date '+%B %-d, %Y @ %-l:%M %p %Z')/g\" $SRCROOT/Package/welcome.html > $SRCROOT/Package/welcome_.html\n\n# Build the package\nproductbuild --distribution $SRCROOT/Package/distribution.xml --resources $SRCROOT/Package --package-path tools.pkg --version 1.0 octools.pkg\n\n# Move to package root\ncp octools.pkg $SRCROOT/../..\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

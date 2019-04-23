@@ -29,7 +29,6 @@ class OCYaccSwiftGenerator
 		OCYaccSwiftGenerator(const OCYaccParser &p, const OCYaccLR1 &y);
 		~OCYaccSwiftGenerator();
 
-		void WriteOCLexInput(FILE *f);
 		void WriteOCFile(const char *classname, const char *outputName, FILE *f);
 
 	private:

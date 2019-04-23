@@ -319,27 +319,10 @@ int main(int argc, const char * argv[])
 	} else if (GLanguage == KLanguageSwift) {
 		OCYaccSwiftGenerator generator(parser,stateMachine);
 
-		// base output file from output file global
-		char baseOutput[FILENAME_MAX];
-		strncpy(baseOutput, GOutputFile, sizeof(baseOutput)-1);
-
-		char *ref = baseOutput;
-		for (char *x = baseOutput; *x; ++x) {
-			if (*x == '/') ref = x+1;
-		}
-
-		// Write the fixed files
-		strncpy(ref, "OCLexInput.swift", FILENAME_MAX - (ref - baseOutput) - 1);
-		FILE *out = fopen(ref,"we");
-		if (out) {
-			generator.WriteOCLexInput(out);
-			fclose(out);
-		}
-
 		// Now write the final output files
 		strncpy(scratch,GOutputFile,sizeof(scratch));
 		strncat(scratch,".swift",sizeof(scratch) - strlen(scratch) - 1);
-		out = fopen(scratch,"w");
+		FILE *out = fopen(scratch,"w");
 		if (out == NULL) {
 			printf("Unable to write to file %s\n\n",scratch);
 			PrintError(argc, argv);
