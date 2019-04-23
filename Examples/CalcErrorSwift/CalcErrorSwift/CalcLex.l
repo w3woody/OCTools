@@ -16,7 +16,7 @@ D		[0-9]
 			}
 
 [A-Za-z_][A-Za-z0-9_]* {
-				return CalcParser.IDENTIFIER;
+				return CalcParser.IDENTIFIER
 			}
 
 [ \t\v\n\f]	{

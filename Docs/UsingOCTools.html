@@ -2044,9 +2044,68 @@ Error.</codeblock>
 		<section>
 			<h1>A Complex Example in Swift</h1>
 			<p>This example shows creating our complex calculator example, complete with error processing, but in the Swift language. Rather than repeat the documentation above, this will only highlight the differences with the .y and .l files in order to make this example work.</p>
-			###
+			<p>The example is in GitHub at</p>
+			<note><a href="https://github.com/w3woody/OCTools/tree/master/Examples/CalcErrorCPP">https://github.com/w3woody/OCTools/tree/swift/Examples/CalcErrorCPP</a></note>
+			<p>The project itself was set up by adding the OCLex and OCYacc tools, as described in the section <a href="#installtools">Installing OCTools.</a></p>
+			<h2>The OCLex class CalcLex.l</h2>
+			<p>The changes we need to make to our ClassLex.l class in order for it to work with Swift is limited to changes in the triggered code in the rules themselves. We pass an <code>NSNumber</code> object for the value of a number.</p>
+			<p>So for our <code>{D}+</code> rule, we would write:</p>
+<codeblock>{D}+        {
+                /* Number */
+                value = NSNumber.init(value:Int(text) ?? 0)
+                return CalcParser.NUMBER        // CalcLex.NUMBER???
+            }</codeblock>
+            <p>The other differences include removing the <code>%union</code> declaration; both Objective C and Swift ignore this parameter. And we also remove the <code>%{...%}</code> section; we do not need to handle include declarations while writing Swift code in the same way we would with Objective C or with C++.</p>
+            <p>Of course for our final rule we would need to write:</p>
+<codeblock>.           {
+                /* All else, return character value as token ID. */
+                return Int(text.unicodeScalars.first?.value ?? 0)
+            }</codeblock>
+            <h2>The OCYacc Class CalcParser.y</h2>
+            <p>Like our .l file, the .y has few differences from our Objective-C counterpart--mostly code changes.</p>
+			<p>Our <code>%global</code> declaration uses standard the standard Swift idiom for declaring an array of numbers:</p>
+<codeblock>%global {
+    public var result:[NSNumber] = []
+}
+</codeblock>
+			<p>We also make changes to use the standard Swift idiom for declaring constant values for our error codes:</p>
+<codeblock>%errors {
+    static let ERROR_UNIMPLEMENTED = (CalcParser.ERROR_STARTERRORID+1)
+}</codeblock>
+			<p>Our rule declarations also need to unwrap the integer value and rewrap them when handling basic math operations:</p>
+<codeblock>expression: NUMBER                          { $$ = $1 }
+          | expression '+' expression       { $$ = NSNumber(value: $1.intValue + $3.intValue) }
+          | expression '-' expression       { $$ = NSNumber(value: $1.intValue - $3.intValue) }
+          | expression '*' expression       { $$ = NSNumber(value: $1.intValue * $3.intValue) }
+          | expression '/' expression       { $$ = NSNumber(value: $1.intValue / $3.intValue) }
+          | '(' expression ')'              { $$ = $2 }
+          | IDENTIFIER                      {
+                                                error(code: CalcParser.ERROR_UNIMPLEMENTED)
+                                                $$ = NSNumber(0)
+                                            }
+          ;</codeblock>
+		<p>Notice we also need to change the way we invoke the <code>func error(code: Int)</code> method from the way it was written in Objective C.</p>
+		<h2>Support Classes</h2>
+		<p>We also need to rewrite our support classes for the input stream <code>CalcStream</code> in Swift, and we need to rewrite our error delegate <code>CalcErrorDelegate</code> in Swift as well.</p>
+		<h2>Putting it all together</h2>
+		<p>In our <code>main.swift</code> class we invoke our parser. First, we create our file stream:</p>
+		<codeblock>let stream = CalcStream.init(string: "11 + 2 * 3 - 4 / (1 + 1);")</codeblock>
+		<p>Next, we create our lexer:</p>
+		<codeblock>let lex = CalcLex.init(stream: stream)</codeblock>
+		<p>Then our parser:</p>
+		<codeblock>let parser = CalcParser.init(lexer: lex)</codeblock>
+		<p>We next create our error delegate and set the error delegate field in our parser so as to handle errors:</p>
+		<codeblock>let error = CalcErrorDelegate.init()
+parser.errorDelegate = error</codeblock>
+		<p>Finally we can invoke our parser:</p>
+		<codeblock>if (parser.parse()) {
+    print("Answer: ", parser.result)
+} else {
+    print("Error.")
+}</codeblock>
+		<p>When this is invoked, we get the output:</p>
+		<codeblock>Answer:  [15]</codeblock>
 		</section>
-		
 		
 		<section>
 			<h1>Using OCLex without OCYacc</h1>
