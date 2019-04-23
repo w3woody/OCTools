@@ -1,24 +1,17 @@
-# OCTools Branch "swift"
-
-This is an experimental branch which contains on-going work for adding Apple's [Swift](http://swift.org) programming language to the list of code generator back-ends to OCTools.
-
-The current stable release of the OCTools system is contained in the "master" branch.
-
-
 # OCTools
 
 A suite of tools which serve as a plug-in replacement for yacc and lex. The goal
 is to provide a (roughly) source compatible tool which can convert yacc and lex
-grammars into Objective C or C++ for building parsers that run on MacOS and iOS.
+grammars into Objective C, C++ or Swift for building parsers that run on MacOS and iOS.
 
 The suite of tools include:
 
 *   [OCLex,](Docs/OCLex.md) a lexical analysis tool for generating text lexical
-    parsers in Objective C.
+    parsers in Objective C, C++ or Swift.
 *   [OCYacc,](Docs/OCYacc.md) a parser generator which generates a parser in 
-    Objective C.
+    Objective C, C++ or Swift.
 
-Full documentation, including examples of using OCLex and OCYacc together in Objective C and C++, can be found here: [Using OCTools](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html)
+Full documentation, including examples of using OCLex and OCYacc together in Objective C, C++ and Swift, can be found here: [Using OCTools](http://htmlpreview.github.io/?https://github.com/w3woody/OCTools/blob/master/Docs/UsingOCTools.html)
 
 ---
 
@@ -30,7 +23,7 @@ Unlike the rest of the source kit, this paper is freely available and reproducib
 
 ---
 
-Each of these tools produce a re-entrant* Objective C class which can be used to
+Each of these tools produce a re-entrant* class which can be used to
 parse an input text file using a specification similar to the input files for 
 [Lex and YACC.](http://dinosaur.compilertools.net)
 
@@ -115,6 +108,7 @@ This would create two Objective-C classes with names MyLangLex and MyLangParser.
         $DERIVED_SOURCES_DIR/$(INPUT_FILE_BASE).cpp
         $DERIVED_SOURCES_DIR/$(INPUT_FILE_BASE).h
 
+For Swift, you'd add the `-l swift` declaration, and change the output files to `$(INPUT_FILE_BASE).swift`.
 
 ## New Features
 
@@ -124,6 +118,7 @@ This would create two Objective-C classes with names MyLangLex and MyLangParser.
   * To build the installer yourself, download the source kit, open the OCTools workspace, and build the "OCTools" aggregate target. This will run the scripts necessary to build the installer package.
 * Started complete reworking of source kit and documentation set to make this more useful. Clean up some minor issues with C++ code generation. Started adding code examples.
 * Added new `%errors` declaration to OCYacc and improved error handling and error reporting. Fixed several error processing bugs.
+* Added support for generating Swift.
 
 ### April 15, 2018
 
