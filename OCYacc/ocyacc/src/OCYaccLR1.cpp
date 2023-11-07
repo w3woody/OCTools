@@ -985,14 +985,14 @@ bool OCYaccLR1::BuildActionTable(const OCYaccParser &parser)
 								 *	or %nonassoc values.
 								 */
 
-								if (shiftPrec.prec == OCYaccParser::Assoc::Left) {
+								if (shiftPrec.assoc == OCYaccParser::Assoc::Left) {
 									/*
 									 *	Left: reduce first.
 									 */
 
 									Action a = { true, iter->rule };
 									row[iter->follow] = a;
-								} else if (shiftPrec.prec == OCYaccParser::Assoc::NonAssoc) {
+								} else if (shiftPrec.assoc == OCYaccParser::Assoc::NonAssoc) {
 									/*
 									 *	Non-assoc; this means two tokens cannot
 									 *	be next to each other. (Example in
