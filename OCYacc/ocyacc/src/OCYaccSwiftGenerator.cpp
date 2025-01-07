@@ -19,7 +19,7 @@
 static const char *GParser1 =
 	"//  $(outname)\n"                                                        \
 	"\n"                                                                      \
-	"import Cocoa\n"                                                          \
+	"import Foundation\n"                                                     \
 	"\n"                                                                      \
 	"$(header)\n"                                                             \
 	"$(%)\n"                                                                  \

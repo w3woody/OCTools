@@ -18,7 +18,7 @@
 static const char *GSource1 =
 	"//\t$(outname)\n"                                                        \
 	"\n"                                                                      \
-	"import Cocoa\n"                                                          \
+	"import Foundation\n"                                                     \
 	"\n"                                                                      \
 	"$(header)\n"                                                             \
 	"$(%)\n"                                                                  \
