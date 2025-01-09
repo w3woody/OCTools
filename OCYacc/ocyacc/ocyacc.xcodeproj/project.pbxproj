@@ -174,7 +174,7 @@
 				TargetAttributes = {
 					EF0111BD1F263FBA006FFFFB = {
 						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = K28EK7WSN9;
+						DevelopmentTeam = MUUNEV88XL;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -354,7 +354,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K28EK7WSN9;
+				DEVELOPMENT_TEAM = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -366,7 +366,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K28EK7WSN9;
+				DEVELOPMENT_TEAM = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
